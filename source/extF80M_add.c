@@ -49,9 +49,11 @@ void
     uint_fast16_t uiB64;
     uint_fast64_t uiB0;
     bool signB;
+#if ! defined INLINE_LEVEL || (INLINE_LEVEL < 2)
     extFloat80_t
         (*magsFuncPtr)(
             uint_fast16_t, uint_fast64_t, uint_fast16_t, uint_fast64_t, bool );
+#endif
 
     aSPtr = (const struct extFloat80M *) aPtr;
     bSPtr = (const struct extFloat80M *) bPtr;
@@ -61,9 +63,17 @@ void
     uiB64 = bSPtr->signExp;
     uiB0  = bSPtr->signif;
     signB = signExtF80UI64( uiB64 );
+#if defined INLINE_LEVEL && (2 <= INLINE_LEVEL)
+    if ( signA == signB ) {
+        *zPtr = softfloat_addMagsExtF80( uiA64, uiA0, uiB64, uiB0, signA );
+    } else {
+        *zPtr = softfloat_subMagsExtF80( uiA64, uiA0, uiB64, uiB0, signA );
+    }
+#else
     magsFuncPtr =
         (signA == signB) ? softfloat_addMagsExtF80 : softfloat_subMagsExtF80;
     *zPtr = (*magsFuncPtr)( uiA64, uiA0, uiB64, uiB0, signA );
+#endif
 
 }
 

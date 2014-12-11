@@ -50,11 +50,11 @@ float64_t f64_rem( float64_t a, float64_t b )
     int_fast16_t expB;
     uint_fast64_t sigB;
     struct exp16_sig64 normExpSig;
-    uint_fast64_t rem;
+    uint64_t rem;
     int_fast16_t expDiff;
     uint32_t q, recip32;
-    uint_fast64_t q64, altRem;
-    uint64_t meanRem;
+    uint_fast64_t q64;
+    uint64_t altRem, meanRem;
     bool signRem;
     uint_fast64_t uiZ;
     union ui64_f64 uZ;

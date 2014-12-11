@@ -466,8 +466,8 @@ In addition to the variables and functions documented here, SoftFloat defines
 some symbol names for its own private use.
 These private names always begin with the prefix `<CODE>softfloat_</CODE>'.
 When a program includes header <CODE>softfloat.h</CODE> or links with the
-SoftFloat library, all names with prefix `<CODE>softfloat_</CODE>' and not
-documented for an application's use are reserved for possible use by SoftFloat.
+SoftFloat library, all names with prefix `<CODE>softfloat_</CODE>' are reserved
+for possible use by SoftFloat.
 Applications that use SoftFloat should not define their own names with this
 prefix, and should reference only such names as are documented.
 </P>
@@ -899,7 +899,7 @@ When floating-point values are passed indirectly through pointers, arguments
 <P>
 If one of the multiplication operands <CODE><I>a</I></CODE> and
 <CODE><I>b</I></CODE> is infinite and the other is zero, these functions raise
-the invalid exception even if operand <CODE><I>c</I></CODE> is a NaN.
+the invalid exception even if operand <CODE><I>c</I></CODE> is a quiet NaN.
 </P>
 
 <H3>8.6. Remainder Functions</H3>
@@ -1087,9 +1087,9 @@ function may cause a trap or abort appropriate for the current system.
 <H3>9.1. Name Changes</H3>
 
 <P>
-One of the biggest differences compared to <NOBR>Release 2</NOBR> is that the
-names of most functions and variables have changed, even when the behavior has
-not.
+The most obvious and pervasive difference compared to <NOBR>Release 2</NOBR> is
+that the names of most functions and variables have changed, even when the
+behavior has not.
 First, the floating-point types, the mode variables, the exception flags
 variable, the function to raise exceptions, and various associated constants
 have been renamed as follows:
@@ -1375,8 +1375,8 @@ However, because <NOBR>Release 2</NOBR> compiled all of SoftFloat together as a
 single object file, compilers could make optimizations across function calls
 when one SoftFloat function calls another.
 Now that the functions of SoftFloat are compiled separately and only afterward
-linked together into a program, there is not the same opportunity to optimize
-across function calls.
+linked together into a program, there is not usually the same opportunity to
+optimize across function calls.
 Some loss of speed has been observed due to this change.
 </P>
 

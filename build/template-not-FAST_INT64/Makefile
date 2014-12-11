@@ -1,8 +1,8 @@
 
 #=============================================================================
 #
-# This Makefile is part of the SoftFloat IEEE Floating-Point Arithmetic
-# Package, Release 3, by John R. Hauser.
+# This Makefile template is part of the SoftFloat IEEE Floating-Point
+# Arithmetic Package, Release 3, by John R. Hauser.
 #
 # Copyright 2011, 2012, 2013, 2014 The Regents of the University of California
 # (Regents).  All Rights Reserved.  Redistribution and use in source and
@@ -31,20 +31,20 @@
 #
 #=============================================================================
 
-SOURCE_DIR = ../../source
-SPECIALIZE_TYPE = 8086
+# Edit lines marked with `==>'.  See "SoftFloat-source.html".
 
-SOFTFLOAT_OPTS = -DINLINE_LEVEL=5 -DSOFTFLOAT_FAST_DIV64TO32
+==> SOURCE_DIR = ../../source
+==> SPECIALIZE_TYPE = 8086
 
-DELETE = rm -f
-C_INCLUDES = -I. -I$(SOURCE_DIR)/$(SPECIALIZE_TYPE) -I$(SOURCE_DIR)/include
-COMPILE_C = \
-  gcc -c -Werror-implicit-function-declaration $(SOFTFLOAT_OPTS) \
-    $(C_INCLUDES) -O2 -o $@
-MAKELIB = ar crs $@
+==> SOFTFLOAT_OPTS = -DINLINE_LEVEL=5 -DSOFTFLOAT_FAST_DIV64TO32
 
-OBJ = .o
-LIB = .a
+==> DELETE = rm -f
+==> C_INCLUDES = -I. -I$(SOURCE_DIR)/$(SPECIALIZE_TYPE) -I$(SOURCE_DIR)/include
+==> COMPILE_C = cc -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -O2 -o $@
+==> MAKELIB = ar crs $@
+
+==> OBJ = .o
+==> LIB = .a
 
 .PHONY: all
 all: softfloat$(LIB)

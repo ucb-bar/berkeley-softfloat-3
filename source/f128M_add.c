@@ -47,9 +47,11 @@ void
     bool signA;
     uint_fast64_t uiB64, uiB0;
     bool signB;
+#if ! defined INLINE_LEVEL || (INLINE_LEVEL < 2)
     float128_t
         (*magsFuncPtr)(
             uint_fast64_t, uint_fast64_t, uint_fast64_t, uint_fast64_t, bool );
+#endif
 
     aWPtr = (const uint64_t *) aPtr;
     bWPtr = (const uint64_t *) bPtr;
@@ -59,9 +61,17 @@ void
     uiB64 = bWPtr[indexWord( 2, 1 )];
     uiB0  = bWPtr[indexWord( 2, 0 )];
     signB = signF128UI64( uiB64 );
+#if defined INLINE_LEVEL && (2 <= INLINE_LEVEL)
+    if ( signA == signB ) {
+        *zPtr = softfloat_addMagsF128( uiA64, uiA0, uiB64, uiB0, signA );
+    } else {
+        *zPtr = softfloat_subMagsF128( uiA64, uiA0, uiB64, uiB0, signA );
+    }
+#else
     magsFuncPtr =
         (signA == signB) ? softfloat_addMagsF128 : softfloat_subMagsF128;
     *zPtr = (*magsFuncPtr)( uiA64, uiA0, uiB64, uiB0, signA );
+#endif
 
 }
 

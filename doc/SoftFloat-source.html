@@ -55,7 +55,7 @@ For basic documentation about SoftFloat refer to
 
 <P>
 The source code for SoftFloat is intended to be relatively machine-independent
-and should be compilable with any ISO-standard C compiler that also supports
+and should be compilable with any ISO-Standard C compiler that also supports
 <NOBR>64-bit</NOBR> integers.
 SoftFloat has been successfully compiled with the GNU C Compiler
 (<CODE>gcc</CODE>) for several platforms.
@@ -193,8 +193,10 @@ The supplied directory structure is as follows:
      build
          template-FAST_INT64
          template-not-FAST_INT64
-         Win32-MinGW
          Linux-386-GCC
+         Linux-x86_64-GCC
+         Win32-MinGW
+         Win64-MinGW-w64
 </PRE>
 The majority of the SoftFloat sources are provided in the <CODE>source</CODE>
 directory.
@@ -212,8 +214,8 @@ Floating-Point Behavior</I>.
 The <CODE>build</CODE> directory is intended to contain a subdirectory for each
 target platform for which a build of the SoftFloat library may be created.
 For each build target, the target's subdirectory is where all derived object
-files and the completed SoftFloat library (typically <CODE>softfloat.a</CODE>)
-are created.
+files and the completed SoftFloat library (typically <CODE>softfloat.a</CODE>
+or <CODE>libsoftfloat.a</CODE>) are created.
 The two <CODE>template</CODE> subdirectories are not actual build targets but
 contain sample files for creating new target directories.
 (The meaning of <CODE>FAST_INT64</CODE> will be explained later.)
@@ -224,10 +226,11 @@ Ignoring the <CODE>template</CODE> directories, the supplied target directories
 are intended to follow a naming system of
 <NOBR><CODE>&lt;execution-environment&gt;-&lt;compiler&gt;</CODE></NOBR>.
 For the example targets,
-<NOBR><CODE>&lt;execution-environment&gt;</CODE></NOBR> is <CODE>Win32</CODE>
-and <CODE>Linux-386</CODE>, and
-<NOBR><CODE>&lt;compiler&gt;</CODE></NOBR> is <CODE>MinGW</CODE> and
-<CODE>GCC</CODE>, respectively.
+<NOBR><CODE>&lt;execution-environment&gt;</CODE></NOBR> is
+<NOBR><CODE>Linux-386</CODE></NOBR>, <NOBR><CODE>Linux-x86_64</CODE></NOBR>,
+<CODE>Win32</CODE>, or <CODE>Win64</CODE>, and
+<NOBR><CODE>&lt;compiler&gt;</CODE></NOBR> is <CODE>GCC</CODE>,
+<CODE>MinGW</CODE>, or <NOBR><CODE>MinGW-w64</CODE></NOBR>.
 </P>
 
 <P>

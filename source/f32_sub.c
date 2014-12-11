@@ -45,7 +45,9 @@ float32_t f32_sub( float32_t a, float32_t b )
     union ui32_f32 uB;
     uint_fast32_t uiB;
     bool signB;
+#if ! defined INLINE_LEVEL || (INLINE_LEVEL < 1)
     float32_t (*magsFuncPtr)( uint_fast32_t, uint_fast32_t, bool );
+#endif
 
     uA.f = a;
     uiA = uA.ui;
@@ -53,9 +55,17 @@ float32_t f32_sub( float32_t a, float32_t b )
     uB.f = b;
     uiB = uB.ui;
     signB = signF32UI( uiB );
+#if defined INLINE_LEVEL && (1 <= INLINE_LEVEL)
+    if ( signA == signB ) {
+        return softfloat_subMagsF32( uiA, uiB, signA );
+    } else {
+        return softfloat_addMagsF32( uiA, uiB, signA );
+    }
+#else
     magsFuncPtr =
         (signA == signB) ? softfloat_subMagsF32 : softfloat_addMagsF32;
-    return (*magsFuncPtr)( uiA, uiB ^ 0x80000000, signA );
+    return (*magsFuncPtr)( uiA, uiB, signA );
+#endif
 
 }
 

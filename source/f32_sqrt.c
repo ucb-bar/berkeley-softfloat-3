@@ -47,7 +47,8 @@ float32_t f32_sqrt( float32_t a )
     uint_fast32_t sigA, uiZ;
     struct exp16_sig32 normExpSig;
     int_fast16_t expZ;
-    uint_fast32_t sigZ, shiftedSigZ, negRem;
+    uint_fast32_t sigZ, shiftedSigZ;
+    uint32_t negRem;
     union ui32_f32 uZ;
 
     /*------------------------------------------------------------------------

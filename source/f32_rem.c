@@ -50,11 +50,9 @@ float32_t f32_rem( float32_t a, float32_t b )
     int_fast16_t expB;
     uint_fast32_t sigB;
     struct exp16_sig32 normExpSig;
-    uint_fast32_t rem;
+    uint32_t rem;
     int_fast16_t expDiff;
-    uint32_t q, recip32;
-    uint_fast32_t altRem;
-    uint32_t meanRem;
+    uint32_t q, recip32, altRem, meanRem;
     bool signRem;
     uint_fast32_t uiZ;
     union ui32_f32 uZ;
@@ -125,7 +123,7 @@ float32_t f32_rem( float32_t a, float32_t b )
         *--------------------------------------------------------------------*/
         sigB <<= 6;
         for (;;) {
-            q = ((uint32_t) rem * (uint_fast64_t) recip32)>>32;
+            q = (rem * (uint_fast64_t) recip32)>>32;
             if ( expDiff < 0 ) break;
             rem = -(q * (uint32_t) sigB);
             expDiff -= 29;

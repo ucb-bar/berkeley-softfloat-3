@@ -45,9 +45,11 @@ float128_t f128_sub( float128_t a, float128_t b )
     union ui128_f128 uB;
     uint_fast64_t uiB64, uiB0;
     bool signB;
+#if ! defined INLINE_LEVEL || (INLINE_LEVEL < 2)
     float128_t
         (*magsFuncPtr)(
             uint_fast64_t, uint_fast64_t, uint_fast64_t, uint_fast64_t, bool );
+#endif
 
     uA.f = a;
     uiA64 = uA.ui.v64;
@@ -57,9 +59,17 @@ float128_t f128_sub( float128_t a, float128_t b )
     uiB64 = uB.ui.v64;
     uiB0  = uB.ui.v0;
     signB = signF128UI64( uiB64 );
+#if defined INLINE_LEVEL && (2 <= INLINE_LEVEL)
+    if ( signA == signB ) {
+        return softfloat_subMagsF128( uiA64, uiA0, uiB64, uiB0, signA );
+    } else {
+        return softfloat_addMagsF128( uiA64, uiA0, uiB64, uiB0, signA );
+    }
+#else
     magsFuncPtr =
         (signA == signB) ? softfloat_subMagsF128 : softfloat_addMagsF128;
     return (*magsFuncPtr)( uiA64, uiA0, uiB64, uiB0, signA );
+#endif
 
 }
 
