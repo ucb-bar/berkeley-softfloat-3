@@ -47,35 +47,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 uint_fast32_t
  softfloat_propagateNaNF32UI( uint_fast32_t uiA, uint_fast32_t uiB )
 {
-    bool isSigNaNA, isSigNaNB;
-    uint_fast32_t uiNonsigA, uiNonsigB, uiMagA, uiMagB;
+    bool isSigNaNA;
 
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
     isSigNaNA = softfloat_isSigNaNF32UI( uiA );
-    isSigNaNB = softfloat_isSigNaNF32UI( uiB );
-    /*------------------------------------------------------------------------
-    | Make NaNs non-signaling.
-    *------------------------------------------------------------------------*/
-    uiNonsigA = uiA | 0x00400000;
-    uiNonsigB = uiB | 0x00400000;
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    if ( isSigNaNA | isSigNaNB ) {
+    if ( isSigNaNA || softfloat_isSigNaNF32UI( uiB ) ) {
         softfloat_raiseFlags( softfloat_flag_invalid );
-        if ( isSigNaNA ) {
-            if ( isSigNaNB ) goto returnLargerMag;
-            return isNaNF32UI( uiB ) ? uiNonsigB : uiNonsigA;
-        } else {
-            return isNaNF32UI( uiA ) ? uiNonsigA : uiNonsigB;
-        }
+        if ( isSigNaNA ) return uiA | 0x00400000;
     }
- returnLargerMag:
-    uiMagA = uiNonsigA & 0x7FFFFFFF;
-    uiMagB = uiNonsigB & 0x7FFFFFFF;
-    if ( uiMagA < uiMagB ) return uiNonsigB;
-    if ( uiMagB < uiMagA ) return uiNonsigA;
-    return (uiNonsigA < uiNonsigB) ? uiNonsigA : uiNonsigB;
+    return (isNaNF32UI( uiA ) ? uiA : uiB) | 0x00400000;
 
 }
 

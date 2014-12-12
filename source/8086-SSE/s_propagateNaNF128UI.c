@@ -39,43 +39,40 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "softfloat.h"
 
 /*----------------------------------------------------------------------------
-| Interpreting `uiA' and `uiB' as the bit patterns of two 32-bit floating-
-| point values, at least one of which is a NaN, returns the bit pattern of
-| the combined NaN result.  If either `uiA' or `uiB' has the pattern of a
-| signaling NaN, the invalid exception is raised.
+| Interpreting the unsigned integer formed from concatenating `uiA64' and
+| `uiA0' as a 128-bit floating-point value, and likewise interpreting the
+| unsigned integer formed from concatenating `uiB64' and `uiB0' as another
+| 128-bit floating-point value, and assuming at least on of these floating-
+| point values is a NaN, returns the bit pattern of the combined NaN result.
+| If either original floating-point value is a signaling NaN, the invalid
+| exception is raised.
 *----------------------------------------------------------------------------*/
-uint_fast32_t
- softfloat_propagateNaNF32UI( uint_fast32_t uiA, uint_fast32_t uiB )
+struct uint128
+ softfloat_propagateNaNF128UI(
+     uint_fast64_t uiA64,
+     uint_fast64_t uiA0,
+     uint_fast64_t uiB64,
+     uint_fast64_t uiB0
+ )
 {
-    bool isSigNaNA, isSigNaNB;
-    uint_fast32_t uiNonsigA, uiNonsigB, uiMagA, uiMagB;
+    bool isSigNaNA;
+    struct uint128 uiZ;
 
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    isSigNaNA = softfloat_isSigNaNF32UI( uiA );
-    isSigNaNB = softfloat_isSigNaNF32UI( uiB );
-    /*------------------------------------------------------------------------
-    | Make NaNs non-signaling.
-    *------------------------------------------------------------------------*/
-    uiNonsigA = uiA | 0x00400000;
-    uiNonsigB = uiB | 0x00400000;
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    if ( isSigNaNA | isSigNaNB ) {
+    isSigNaNA = softfloat_isSigNaNF128UI( uiA64, uiA0 );
+    if ( isSigNaNA || softfloat_isSigNaNF128UI( uiB64, uiB0 ) ) {
         softfloat_raiseFlags( softfloat_flag_invalid );
-        if ( isSigNaNA ) {
-            if ( isSigNaNB ) goto returnLargerMag;
-            return isNaNF32UI( uiB ) ? uiNonsigB : uiNonsigA;
-        } else {
-            return isNaNF32UI( uiA ) ? uiNonsigA : uiNonsigB;
-        }
+        if ( isSigNaNA ) goto returnNonsigA;
     }
- returnLargerMag:
-    uiMagA = uiNonsigA & 0x7FFFFFFF;
-    uiMagB = uiNonsigB & 0x7FFFFFFF;
-    if ( uiMagA < uiMagB ) return uiNonsigB;
-    if ( uiMagB < uiMagA ) return uiNonsigA;
-    return (uiNonsigA < uiNonsigB) ? uiNonsigA : uiNonsigB;
+    if ( isNaNF128UI( uiA64, uiA0 ) ) {
+ returnNonsigA:
+        uiZ.v64 = uiA64;
+        uiZ.v0  = uiA0;
+    } else {
+        uiZ.v64 = uiB64;
+        uiZ.v0  = uiB0;
+    }
+    uiZ.v64 |= UINT64_C( 0x0000800000000000 );
+    return uiZ;
 
 }
 

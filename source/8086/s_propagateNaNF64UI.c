@@ -48,7 +48,7 @@ uint_fast64_t
  softfloat_propagateNaNF64UI( uint_fast64_t uiA, uint_fast64_t uiB )
 {
     bool isSigNaNA, isSigNaNB;
-    uint_fast64_t uiMagA, uiMagB;
+    uint_fast64_t uiNonsigA, uiNonsigB, uiMagA, uiMagB;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -57,25 +57,25 @@ uint_fast64_t
     /*------------------------------------------------------------------------
     | Make NaNs non-signaling.
     *------------------------------------------------------------------------*/
-    uiA |= UINT64_C( 0x0008000000000000 );
-    uiB |= UINT64_C( 0x0008000000000000 );
+    uiNonsigA = uiA | UINT64_C( 0x0008000000000000 );
+    uiNonsigB = uiB | UINT64_C( 0x0008000000000000 );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( isSigNaNA | isSigNaNB ) {
         softfloat_raiseFlags( softfloat_flag_invalid );
         if ( isSigNaNA ) {
             if ( isSigNaNB ) goto returnLargerMag;
-            return isNaNF64UI( uiB ) ? uiB : uiA;
+            return isNaNF64UI( uiB ) ? uiNonsigB : uiNonsigA;
         } else {
-            return isNaNF64UI( uiA ) ? uiA : uiB;
+            return isNaNF64UI( uiA ) ? uiNonsigA : uiNonsigB;
         }
     }
  returnLargerMag:
-    uiMagA = uiA & UINT64_C( 0x7FFFFFFFFFFFFFFF );
-    uiMagB = uiB & UINT64_C( 0x7FFFFFFFFFFFFFFF );
-    if ( uiMagA < uiMagB ) return uiB;
-    if ( uiMagB < uiMagA ) return uiA;
-    return (uiA < uiB) ? uiA : uiB;
+    uiMagA = uiNonsigA & UINT64_C( 0x7FFFFFFFFFFFFFFF );
+    uiMagB = uiNonsigB & UINT64_C( 0x7FFFFFFFFFFFFFFF );
+    if ( uiMagA < uiMagB ) return uiNonsigB;
+    if ( uiMagB < uiMagA ) return uiNonsigA;
+    return (uiNonsigA < uiNonsigB) ? uiNonsigA : uiNonsigB;
 
 }
 

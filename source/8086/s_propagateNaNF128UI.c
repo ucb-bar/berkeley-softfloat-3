@@ -56,7 +56,7 @@ struct uint128
  )
 {
     bool isSigNaNA, isSigNaNB;
-    uint_fast64_t uiMagA64, uiMagB64;
+    uint_fast64_t uiNonsigA64, uiNonsigB64, uiMagA64, uiMagB64;
     struct uint128 uiZ;
 
     /*------------------------------------------------------------------------
@@ -66,8 +66,8 @@ struct uint128
     /*------------------------------------------------------------------------
     | Make NaNs non-signaling.
     *------------------------------------------------------------------------*/
-    uiA64 |= UINT64_C( 0x0000800000000000 );
-    uiB64 |= UINT64_C( 0x0000800000000000 );
+    uiNonsigA64 = uiA64 | UINT64_C( 0x0000800000000000 );
+    uiNonsigB64 = uiB64 | UINT64_C( 0x0000800000000000 );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( isSigNaNA | isSigNaNB ) {
@@ -82,19 +82,19 @@ struct uint128
         }
     }
  returnLargerMag:
-    uiMagA64 = uiA64 & UINT64_C( 0x7FFFFFFFFFFFFFFF );
-    uiMagB64 = uiB64 & UINT64_C( 0x7FFFFFFFFFFFFFFF );
+    uiMagA64 = uiNonsigA64 & UINT64_C( 0x7FFFFFFFFFFFFFFF );
+    uiMagB64 = uiNonsigB64 & UINT64_C( 0x7FFFFFFFFFFFFFFF );
     if ( uiMagA64 < uiMagB64 ) goto returnB;
     if ( uiMagB64 < uiMagA64 ) goto returnA;
     if ( uiA0 < uiB0 ) goto returnB;
     if ( uiB0 < uiA0 ) goto returnA;
-    if ( uiA64 < uiB64 ) goto returnA;
+    if ( uiNonsigA64 < uiNonsigB64 ) goto returnA;
  returnB:
-    uiZ.v64 = uiB64;
+    uiZ.v64 = uiNonsigB64;
     uiZ.v0  = uiB0;
     return uiZ;
  returnA:
-    uiZ.v64 = uiA64;
+    uiZ.v64 = uiNonsigA64;
     uiZ.v0  = uiA0;
     return uiZ;
 

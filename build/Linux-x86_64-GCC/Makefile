@@ -32,7 +32,7 @@
 #=============================================================================
 
 SOURCE_DIR = ../../source
-SPECIALIZE_TYPE = 8086
+SPECIALIZE_TYPE = 8086-SSE
 
 SOFTFLOAT_OPTS = -DINLINE_LEVEL=5 -DSOFTFLOAT_FAST_DIV64TO32
 
