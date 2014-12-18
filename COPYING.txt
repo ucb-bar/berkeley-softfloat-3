@@ -2,7 +2,7 @@
 License for Berkeley SoftFloat Release 3
 
 John R. Hauser
-2014 ________
+2014 Dec 17
 
 The following applies to the whole of SoftFloat Release 3 as well as to each
 source file individually.

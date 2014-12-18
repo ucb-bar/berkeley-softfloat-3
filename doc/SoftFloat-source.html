@@ -11,36 +11,39 @@
 
 <P>
 John R. Hauser<BR>
-2014 _____<BR>
-</P>
-
-<P>
-*** REPLACE QUOTATION MARKS.
+2014 Dec 17<BR>
 </P>
 
 
 <H2>Contents</H2>
 
-<P>
-*** CHECK.<BR>
-*** FIX FORMATTING.
-</P>
-
-<PRE>
-    Introduction
-    Limitations
-    Acknowledgments and License
-    SoftFloat Package Directory Structure
-    Issues for Porting SoftFloat to a New Target
-        Standard Headers &lt;stdbool.h&gt; and &lt;stdint.h&gt;
-        Specializing Floating-Point Behavior
-        Macros for Build Options
-        Adapting a Template Target Directory
-        Target-Specific Optimization of Primitive Functions
-    Testing SoftFloat
-    Providing SoftFloat as a Common Library for Applications
-    Contact Information
-</PRE>
+<BLOCKQUOTE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
+<COL WIDTH=25>
+<COL WIDTH=*>
+<TR><TD COLSPAN=2>1. Introduction</TD></TR>
+<TR><TD COLSPAN=2>2. Limitations</TD></TR>
+<TR><TD COLSPAN=2>3. Acknowledgments and License</TD></TR>
+<TR><TD COLSPAN=2>4. SoftFloat Package Directory Structure</TD></TR>
+<TR><TD COLSPAN=2>5. Issues for Porting SoftFloat to a New Target</TD></TR>
+<TR>
+  <TD></TD>
+  <TD>5.1. Standard Headers <CODE>&lt;stdbool.h&gt;</CODE> and
+    <CODE>&lt;stdint.h&gt;</CODE></TD>
+</TR>
+<TR><TD></TD><TD>5.2. Specializing Floating-Point Behavior</TD></TR>
+<TR><TD></TD><TD>5.3. Macros for Build Options</TD></TR>
+<TR><TD></TD><TD>5.4. Adapting a Template Target Directory</TD></TR>
+<TR>
+  <TD></TD><TD>5.5. Target-Specific Optimization of Primitive Functions</TD>
+</TR>
+<TR><TD COLSPAN=2>6. Testing SoftFloat</TD></TR>
+<TR>
+  <TD COLSPAN=2>7. Providing SoftFloat as a Common Library for Applications</TD>
+</TR>
+<TR><TD COLSPAN=2>8. Contact Information</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
 
 
 <H2>1. Introduction</H2>
@@ -98,7 +101,7 @@ strictly required.
 integer types.
 If these headers are not supplied with the C compiler, minimal substitutes must
 be provided.
-SoftFloat's dependence on these headers is detailed later in
+SoftFloat&rsquo;s dependence on these headers is detailed later in
 <NOBR>section 5.1</NOBR>, <I>Standard Headers &lt;stdbool.h&gt; and
 &lt;stdint.h&gt;</I>.
 </P>
@@ -110,15 +113,20 @@ SoftFloat's dependence on these headers is detailed later in
 The SoftFloat package was written by me, <NOBR>John R.</NOBR> Hauser.
 <NOBR>Release 3</NOBR> of SoftFloat is a completely new implementation
 supplanting earlier releases.
-This project was done in the employ of the University of California, Berkeley,
-within the Department of Electrical Engineering and Computer Sciences, first
-for the Parallel Computing Laboratory (Par Lab) and then for the ASPIRE Lab.
+This project (<NOBR>Release 3</NOBR> only, not earlier releases) was done in
+the employ of the University of California, Berkeley, within the Department of
+Electrical Engineering and Computer Sciences, first for the Parallel Computing
+Laboratory (Par Lab) and then for the ASPIRE Lab.
 The work was officially overseen by Prof. Krste Asanovic, with funding provided
 by these sources:
 <BLOCKQUOTE>
 <TABLE>
+<COL WIDTH=*>
+<COL WIDTH=10>
+<COL WIDTH=*>
 <TR>
-<TD><NOBR>Par Lab:</NOBR></TD>
+<TD VALIGN=TOP><NOBR>Par Lab:</NOBR></TD>
+<TD></TD>
 <TD>
 Microsoft (Award #024263), Intel (Award #024894), and U.C. Discovery
 (Award #DIG07-10227), with additional support from Par Lab affiliates Nokia,
@@ -126,7 +134,8 @@ NVIDIA, Oracle, and Samsung.
 </TD>
 </TR>
 <TR>
-<TD><NOBR>ASPIRE Lab:</NOBR></TD>
+<TD VALIGN=TOP><NOBR>ASPIRE Lab:</NOBR></TD>
+<TD></TD>
 <TD>
 DARPA PERFECT program (Award #HR0011-12-2-0016), with additional support from
 ASPIRE industrial sponsor Intel and ASPIRE affiliates Google, Nokia, NVIDIA,
@@ -185,27 +194,40 @@ Because SoftFloat is targeted to multiple platforms, its source code is
 slightly scattered between target-specific and target-independent directories
 and files.
 The supplied directory structure is as follows:
+<BLOCKQUOTE>
 <PRE>
-     doc
-     source
-         include
-         8086
-     build
-         template-FAST_INT64
-         template-not-FAST_INT64
-         Linux-386-GCC
-         Linux-x86_64-GCC
-         Win32-MinGW
-         Win64-MinGW-w64
+doc
+source
+    include
+    8086
+    8086-SSE
+build
+    template-FAST_INT64
+    template-not-FAST_INT64
+    Linux-386-GCC
+    Linux-386-SSE2-GCC
+    Linux-x86_64-GCC
+    Win32-MinGW
+    Win32-SSE2-MinGW
+    Win64-MinGW-w64
 </PRE>
+</BLOCKQUOTE>
 The majority of the SoftFloat sources are provided in the <CODE>source</CODE>
 directory.
 The <CODE>include</CODE> subdirectory of <CODE>source</CODE> contains several
-header files (unsurprisingly), while the <CODE>8086</CODE> subdirectory
-contains source files that specialize the floating-point behavior to match the
-Intel x86 line of processors.
+header files (unsurprisingly), while the <CODE>8086</CODE> and
+<NOBR><CODE>8086-SSE</CODE></NOBR> subdirectories contain source files that
+specialize the floating-point behavior to match the Intel x86 line of
+processors.
+The files in directory <CODE>8086</CODE> give floating-point behavior
+consistent solely with Intel&rsquo;s older, 8087-derived floating-point, while
+those in <NOBR><CODE>8086-SSE</CODE></NOBR> update the behavior of the
+non-extended formats (<CODE>float32_t</CODE>, <CODE>float64_t</CODE>, and
+<CODE>float128_t</CODE>) to mirror Intel&rsquo;s more recent Streaming SIMD
+Extensions (SSE) and other compatible extensions.
 If other specializations are attempted, these would be expected to be other
-subdirectories of <CODE>source</CODE> alongside <CODE>8086</CODE>.
+subdirectories of <CODE>source</CODE> alongside <CODE>8086</CODE> and
+<NOBR><CODE>8086-SSE</CODE></NOBR>.
 Specialization is covered later, in <NOBR>section 5.2</NOBR>, <I>Specializing
 Floating-Point Behavior</I>.
 </P>
@@ -213,9 +235,9 @@ Floating-Point Behavior</I>.
 <P>
 The <CODE>build</CODE> directory is intended to contain a subdirectory for each
 target platform for which a build of the SoftFloat library may be created.
-For each build target, the target's subdirectory is where all derived object
-files and the completed SoftFloat library (typically <CODE>softfloat.a</CODE>
-or <CODE>libsoftfloat.a</CODE>) are created.
+For each build target, the target&rsquo;s subdirectory is where all derived
+object files and the completed SoftFloat library (typically
+<CODE>softfloat.a</CODE> or <CODE>libsoftfloat.a</CODE>) are created.
 The two <CODE>template</CODE> subdirectories are not actual build targets but
 contain sample files for creating new target directories.
 (The meaning of <CODE>FAST_INT64</CODE> will be explained later.)
@@ -227,18 +249,21 @@ are intended to follow a naming system of
 <NOBR><CODE>&lt;execution-environment&gt;-&lt;compiler&gt;</CODE></NOBR>.
 For the example targets,
 <NOBR><CODE>&lt;execution-environment&gt;</CODE></NOBR> is
-<NOBR><CODE>Linux-386</CODE></NOBR>, <NOBR><CODE>Linux-x86_64</CODE></NOBR>,
-<CODE>Win32</CODE>, or <CODE>Win64</CODE>, and
+<NOBR><CODE>Linux-386</CODE></NOBR>, <NOBR><CODE>Linux-386-SSE2</CODE></NOBR>,
+<NOBR><CODE>Linux-x86_64</CODE></NOBR>, <CODE>Win32</CODE>,
+<NOBR><CODE>Win32-SSE2</CODE></NOBR>, or <CODE>Win64</CODE>, and
 <NOBR><CODE>&lt;compiler&gt;</CODE></NOBR> is <CODE>GCC</CODE>,
 <CODE>MinGW</CODE>, or <NOBR><CODE>MinGW-w64</CODE></NOBR>.
 </P>
 
 <P>
 As supplied, each target directory contains two files:
+<BLOCKQUOTE>
 <PRE>
-     Makefile
-     platform.h
+Makefile
+platform.h
 </PRE>
+</BLOCKQUOTE>
 The provided <CODE>Makefile</CODE> is written for GNU <CODE>make</CODE>.
 A build of SoftFloat for the specific target is begun by executing the
 <CODE>make</CODE> command with the target directory as the current directory.
@@ -258,10 +283,10 @@ desirable to include in header <CODE>platform.h</CODE> (directly or via
 <CODE>#include</CODE>) declarations for numerous target-specific optimizations.
 Such possibilities are discussed in the next section, <I>Issues for Porting
 SoftFloat to a New Target</I>.
-If the target's compiler or library has bugs or other shortcomings, workarounds
-for these issues may also be possible with target-specific declarations in
-<CODE>platform.h</CODE>, avoiding the need to modify the main SoftFloat
-sources.
+If the target&rsquo;s compiler or library has bugs or other shortcomings,
+workarounds for these issues may also be possible with target-specific
+declarations in <CODE>platform.h</CODE>, avoiding the need to modify the main
+SoftFloat sources.
 </P>
 
 
@@ -280,30 +305,34 @@ For older or nonstandard compilers, substitutes for
 <CODE>&lt;stdbool.h&gt;</CODE> and <CODE>&lt;stdint.h&gt;</CODE> may need to be
 created.
 SoftFloat depends on these names from <CODE>&lt;stdbool.h&gt;</CODE>:
+<BLOCKQUOTE>
 <PRE>
-     bool
-     true
-     false
+bool
+true
+false
 </PRE>
+</BLOCKQUOTE>
 and on these names from <CODE>&lt;stdint.h&gt;</CODE>:
+<BLOCKQUOTE>
 <PRE>
-     uint16_t
-     uint32_t
-     uint64_t
-     int32_t
-     int64_t
-     UINT64_C
-     INT64_C
-     uint_least8_t
-     uint_fast8_t
-     uint_fast16_t
-     uint_fast32_t
-     uint_fast64_t
-     int_fast8_t
-     int_fast16_t
-     int_fast32_t
-     int_fast64_t
+uint16_t
+uint32_t
+uint64_t
+int32_t
+int64_t
+UINT64_C
+INT64_C
+uint_least8_t
+uint_fast8_t
+uint_fast16_t
+uint_fast32_t
+uint_fast64_t
+int_fast8_t
+int_fast16_t
+int_fast32_t
+int_fast64_t
 </PRE>
+</BLOCKQUOTE>
 </P>
 
 
@@ -312,12 +341,12 @@ and on these names from <CODE>&lt;stdint.h&gt;</CODE>:
 <P>
 The IEEE Floating-Point Standard allows for some flexibility in a conforming
 implementation, particularly concerning NaNs.
-The SoftFloat <CODE>source</CODE> directory is supplied with one or more
+The SoftFloat <CODE>source</CODE> directory is supplied with some
 <I>specialization</I> subdirectories containing possible definitions for this
 implementation-specific behavior.
-For example, the <CODE>8086</CODE> subdirectory has source files that
-specialize SoftFloat's behavior to match that of Intel's x86 line of
-processors.
+For example, the <CODE>8086</CODE> and <NOBR><CODE>8086-SSE</CODE></NOBR>
+subdirectories have source files that specialize SoftFloat&rsquo;s behavior to
+match that of Intel&rsquo;s x86 line of processors.
 The files in a specialization subdirectory must determine:
 <UL>
 <LI>
@@ -343,8 +372,9 @@ source files are needed to complete the specialization.
 </P>
 
 <P>
-A new build target may use an existing specialization, such as the one provided
-by the <CODE>8086</CODE> subdirectory.
+A new build target may use an existing specialization, such as the ones
+provided by the <CODE>8086</CODE> and <NOBR><CODE>8086-SSE</CODE></NOBR>
+subdirectories.
 If a build target needs a new specialization, different from any existing ones,
 it is recommended that a new specialization subdirectory be created in the
 <CODE>source</CODE> directory for this purpose.
@@ -367,18 +397,18 @@ Must be defined for little-endian machines; must not be defined for big-endian
 machines.
 <DT><CODE>SOFTFLOAT_FAST_INT64</CODE>
 <DD>
-Can be defined to indicate that the build target's implementation of
-<CODE>64-bit</CODE> arithmetic is efficient.
-For newer <CODE>64-bit</CODE> processors, this macro should usually be defined.
-For very small microprocessors whose buses and registers are <CODE>8-bit</CODE>
-or <CODE>16-bit</CODE> in size, this macro should usually not be defined.
-Whether this macro should be defined for a <CODE>32-bit</CODE> processor may
+Can be defined to indicate that the build target&rsquo;s implementation of
+<NOBR>64-bit</NOBR> arithmetic is efficient.
+For newer <NOBR>64-bit</NOBR> processors, this macro should usually be defined.
+For very small microprocessors whose buses and registers are <NOBR>8-bit</NOBR>
+or <NOBR>16-bit</NOBR> in size, this macro should usually not be defined.
+Whether this macro should be defined for a <NOBR>32-bit</NOBR> processor may
 depend on the target machine and the applications that will use SoftFloat.
 <DT><CODE>SOFTFLOAT_FAST_DIV64TO32</CODE>
 <DD>
-Can be defined to indicate that the target's division operator
+Can be defined to indicate that the target&rsquo;s division operator
 <NOBR>in C</NOBR> (written as <CODE>/</CODE>) is reasonably efficient for
-dividing a <CODE>64-bit</CODE> unsigned integer by a <CODE>32-bit</CODE>
+dividing a <NOBR>64-bit</NOBR> unsigned integer by a <NOBR>32-bit</NOBR>
 unsigned integer.
 Setting this macro may affect the performance of division, remainder, and
 square root operations.
@@ -411,16 +441,16 @@ defined to <CODE>extern</CODE> <CODE>inline</CODE>.
 Following the usual custom <NOBR>for C</NOBR>, for the first three macros (all
 except <CODE>INLINE_LEVEL</CODE> and <CODE>INLINE</CODE>), the content of any
 definition is irrelevant;
-what matters is a macro's effect on <CODE>#ifdef</CODE> directives.
+what matters is a macro&rsquo;s effect on <CODE>#ifdef</CODE> directives.
 </P>
 
 <P>
 It is recommended that any definitions of macros <CODE>LITTLEENDIAN</CODE> and
-<CODE>INLINE</CODE> be made in a build target's <CODE>platform.h</CODE> header
-file, because these macros are expected to be determined inflexibly by the
-target machine and compiler.
+<CODE>INLINE</CODE> be made in a build target&rsquo;s <CODE>platform.h</CODE>
+header file, because these macros are expected to be determined inflexibly by
+the target machine and compiler.
 The other three macros control optimization and might be better located in the
-target's Makefile (or its equivalent).
+target&rsquo;s Makefile (or its equivalent).
 </P>
 
 
@@ -433,8 +463,9 @@ Two different templates exist because different functions are needed in the
 SoftFloat library depending on whether macro <CODE>SOFTFLOAT_FAST_INT64</CODE>
 is defined.
 If macro <CODE>SOFTFLOAT_FAST_INT64</CODE> will be defined,
-<CODE>template-FAST_INT64</CODE> is the template to use;
-otherwise, <CODE>template-not-FAST_INT64</CODE> is the appropriate template.
+<NOBR><CODE>template-FAST_INT64</CODE></NOBR> is the template to use;
+otherwise, <NOBR><CODE>template-not-FAST_INT64</CODE></NOBR> is the appropriate
+template.
 A new target directory can be created by copying the correct template directory
 and editing the files inside.
 To avoid confusion, it would be wise to refrain from editing the files within a
@@ -447,12 +478,12 @@ template directory directly.
 <P>
 Header file <CODE>primitives.h</CODE> (in directory
 <CODE>source/include</CODE>) declares macros and functions for numerous
-underlying arithmetic operations upon which many of SoftFloat's floating-point
-functions are ultimately built.
+underlying arithmetic operations upon which many of SoftFloat&rsquo;s
+floating-point functions are ultimately built.
 The SoftFloat sources include implementations of all of these functions/macros,
 written as standard C code, so a complete and correct SoftFloat library can be
 built using only the supplied code for all functions.
-However, for many targets, SoftFloat's performance can be improved by
+However, for many targets, SoftFloat&rsquo;s performance can be improved by
 substituting target-specific implementations of some of the functions/macros
 declared in <CODE>primitives.h</CODE>.
 </P>
@@ -461,7 +492,7 @@ declared in <CODE>primitives.h</CODE>.
 For example, <CODE>primitives.h</CODE> declares a function called
 <CODE>softfloat_countLeadingZeros32</CODE> that takes an unsigned
 <NOBR>32-bit</NOBR> integer as an argument and returns the maximal number of
-the integer's most-significant bits that are all zeros.
+the integer&rsquo;s most-significant bits that are all zeros.
 While the SoftFloat sources include an implementation of this function written
 in <NOBR>standard C</NOBR>, many processors can perform this same function
 directly in only one or two machine instructions.
@@ -473,19 +504,22 @@ package.
 <P>
 A build target can replace the supplied version of any function or macro of
 <CODE>primitives.h</CODE> by defining a macro with the same name in the
-target's <CODE>platform.h</CODE> header file.
+target&rsquo;s <CODE>platform.h</CODE> header file.
 For this purpose, it may be helpful for <CODE>platform.h</CODE> to
 <CODE>#include</CODE> header file <CODE>primitiveTypes.h</CODE>, which defines
 types used for arguments and results of functions declared in
 <CODE>primitives.h</CODE>.
 When a desired replacement implementation is a function, not a macro, it is
 sufficient for <CODE>platform.h</CODE> to include the line
+<BLOCKQUOTE>
 <PRE>
-     #define &lt;function-name&gt; &lt;function-name&gt;
+#define &lt;function-name&gt; &lt;function-name&gt;
 </PRE>
-where <CODE>&lt;function-name&gt;</CODE> is the name of the function.
-This technically defines <CODE>&lt;function-name&gt;</CODE> as a macro, but one
-that resolves to the same name, which may then be a function.
+</BLOCKQUOTE>
+where <NOBR><CODE>&lt;function-name&gt;</CODE></NOBR> is the name of the
+function.
+This technically defines <NOBR><CODE>&lt;function-name&gt;</CODE></NOBR> as a
+macro, but one that resolves to the same name, which may then be a function.
 (A preprocessor conforming to the C Standard must limit recursive macro
 expansion from being applied more than once.)
 </P>
@@ -500,45 +534,33 @@ This program is part of the Berkeley TestFloat package available at the Web
 page
 <A HREF="http://www.jhauser.us/arithmetic/TestFloat.html"><CODE>http://www.jhauser.us/arithmetic/TestFloat.html</CODE></A>.
 The TestFloat package also has a program called <CODE>timesoftfloat</CODE> that
-measures the speed of SoftFloat's floating-point functions.
+measures the speed of SoftFloat&rsquo;s floating-point functions.
 </P>
 
 
 <H2>7. Providing SoftFloat as a Common Library for Applications</H2>
 
 <P>
-Supplied <CODE>softfloat.h</CODE> depends on <CODE>softfloat_types.h</CODE>.
+Header file <CODE>softfloat.h</CODE> defines the SoftFloat interface as seen by
+clients.
+If the SoftFloat library will be made a common library for programs on a
+particular system, the supplied <CODE>softfloat.h</CODE> has a couple of
+deficiencies for this purpose:
+<UL>
+<LI>
+As supplied, <CODE>softfloat.h</CODE> depends on another header,
+<CODE>softfloat_types.h</CODE>, that is not intended for public use but which
+must also be visible to the programmer&rsquo;s compiler.
+<LI>
+More troubling, at the time <CODE>softfloat.h</CODE> is included in a C
+source file, macro <CODE>SOFTFLOAT_FAST_INT64</CODE> must be defined, or not
+defined, consistent with whether this macro was defined when the SoftFloat
+library was built.
+</UL>
+In the situation that new programs may regularly <CODE>#include</CODE> header
+file <CODE>softfloat.h</CODE>, it is recommended that a custom, self-contained
+version of this header file be created that eliminates these issues.
 </P>
-
-<PRE>
-The target-specific `softfloat.h' header file defines the SoftFloat
-interface as seen by clients.
-
-Unlike the actual function definitions in `softfloat.c', the declarations
-in `softfloat.h' do not use any of the types defined by the `processors'
-header file.  This is done so that clients will not have to include the
-`processors' header file in order to use SoftFloat.  Nevertheless, the
-target-specific declarations in `softfloat.h' must match what `softfloat.c'
-expects.  For example, if `int32' is defined as `int' in the `processors'
-header file, then in `softfloat.h' the output of `float32_to_int32' should
-be stated as `int', although in `softfloat.c' it is given in target-
-independent form as `int32'.
-</PRE>
-
-<PRE>
-*** HERE
-
-Porting and/or compiling SoftFloat involves the following steps:
-
-4. In the target-specific subdirectory, edit the files `softfloat-specialize'
-   and `softfloat.h' to define the desired exception handling functions
-   and mode control values.  In the `softfloat.h' header file, ensure also
-   that all declarations give the proper target-specific type (such as
-   `int' or `long') corresponding to the target-independent type used in
-   `softfloat.c' (such as `int32').  None of the type names declared in the
-   `processors' header file should appear in `softfloat.h'.
-
-</PRE>
 
 
 <H2>8. Contact Information</H2>

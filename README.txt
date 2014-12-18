@@ -2,13 +2,13 @@
 Package Overview for Berkeley SoftFloat Release 3
 
 John R. Hauser
-2014 ________
+2014 Dec 17
 
 Berkeley SoftFloat is a software implementation of binary floating-point
 that conforms to the IEEE Standard for Floating-Point Arithmetic.  SoftFloat
 is distributed in the form of C source code.  Building the SoftFloat sources
-generates a library file (typically "softfloat.a") containing the floating-
-point subroutines.
+generates a library file (typically "softfloat.a" or "libsoftfloat.a")
+containing the floating-point subroutines.
 
 The SoftFloat package is documented in the following files in the "doc"
 subdirectory:
