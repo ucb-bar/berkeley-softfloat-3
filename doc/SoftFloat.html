@@ -157,9 +157,9 @@ The work was officially overseen by Prof. Krste Asanovic, with funding provided
 by these sources:
 <BLOCKQUOTE>
 <TABLE>
-<COL WIDTH=*>
+<COL>
 <COL WIDTH=10>
-<COL WIDTH=*>
+<COL>
 <TR>
 <TD VALIGN=TOP><NOBR>Par Lab:</NOBR></TD>
 <TD></TD>
@@ -715,10 +715,10 @@ The functions have signatures as follows, depending on whether the
 floating-point input is passed by value or via pointers:
 <BLOCKQUOTE>
 <PRE>
-int32_t f64_to_i32( float64_t <I>a</I>, uint_fast8_t <I>roundingMode</I>, bool <I>exact</I> );
+int_fast32_t f64_to_i32( float64_t <I>a</I>, uint_fast8_t <I>roundingMode</I>, bool <I>exact</I> );
 </PRE>
 <PRE>
-int32_t
+int_fast32_t
  f128M_to_i32( const float128_t *<I>aPtr</I>, uint_fast8_t <I>roundingMode</I>, bool <I>exact</I> );
 </PRE>
 </BLOCKQUOTE>
@@ -769,10 +769,10 @@ The signatures for these functions are the same as above without the redundant
 <CODE><I>roundingMode</I></CODE> argument:
 <BLOCKQUOTE>
 <PRE>
-int32_t f64_to_i32_r_minMag( float64_t <I>a</I>, bool <I>exact</I> );
+int_fast32_t f64_to_i32_r_minMag( float64_t <I>a</I>, bool <I>exact</I> );
 </PRE>
 <PRE>
-int32_t f128M_to_i32_r_minMag( const float128_t *<I>aPtr</I>, bool <I>exact</I> );
+int_fast32_t f128M_to_i32_r_minMag( const float128_t *<I>aPtr</I>, bool <I>exact</I> );
 </PRE>
 </BLOCKQUOTE>
 </P>
