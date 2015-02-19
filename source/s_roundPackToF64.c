@@ -4,10 +4,10 @@
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
 Package, Release 3, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California
-(Regents).  All Rights Reserved.  Redistribution and use in source and binary
-forms, with or without modification, are permitted provided that the following
-conditions are met:
+Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+California (Regents).  All Rights Reserved.  Redistribution and use in source
+and binary forms, with or without modification, are permitted provided that
+the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice,
 this list of conditions, and the following two paragraphs of disclaimer.
@@ -83,7 +83,7 @@ float64_t
     }
     if ( roundBits ) softfloat_exceptionFlags |= softfloat_flag_inexact;
     sig = (sig + roundIncrement)>>10;
-    sig &= ~(! (roundBits ^ 0x200) & roundNearEven);
+    sig &= ~(uint_fast64_t) (! (roundBits ^ 0x200) & roundNearEven);
     uiZ = packToF64UI( sign, sig ? exp : 0, sig );
  uiZ:
     uZ.ui = uiZ;

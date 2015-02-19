@@ -4,10 +4,10 @@
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
 Package, Release 3, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California
-(Regents).  All Rights Reserved.  Redistribution and use in source and binary
-forms, with or without modification, are permitted provided that the following
-conditions are met:
+Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+California (Regents).  All Rights Reserved.  Redistribution and use in source
+and binary forms, with or without modification, are permitted provided that
+the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice,
 this list of conditions, and the following two paragraphs of disclaimer.
@@ -127,7 +127,7 @@ extFloat80_t extF80_sqrt( extFloat80_t a )
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( (q & 0xFFFFFF) <= 2 ) {
-        q &= ~0xFFFF;
+        q &= ~(uint_fast64_t) 0xFFFF;
         sigZExtra = (uint64_t) (q<<39);
         term = softfloat_mul64ByShifted32To128( x64 + (q>>27), q );
         x64 = (uint_fast64_t) (uint32_t) (q<<5) * (uint32_t) q;

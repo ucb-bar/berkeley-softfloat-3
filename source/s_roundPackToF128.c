@@ -4,10 +4,10 @@
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
 Package, Release 3, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California
-(Regents).  All Rights Reserved.  Redistribution and use in source and binary
-forms, with or without modification, are permitted provided that the following
-conditions are met:
+Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+California (Regents).  All Rights Reserved.  Redistribution and use in source
+and binary forms, with or without modification, are permitted provided that
+the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice,
 this list of conditions, and the following two paragraphs of disclaimer.
@@ -130,8 +130,9 @@ float128_t
         sig64 = sig128.v64;
         sig0 =
             sig128.v0
-                & ~(! (sigExtra & UINT64_C( 0x7FFFFFFFFFFFFFFF ))
-                        & roundNearEven);
+                & ~(uint64_t)
+                       (! (sigExtra & UINT64_C( 0x7FFFFFFFFFFFFFFF ))
+                            & roundNearEven);
     } else {
         if ( ! (sig64 | sig0) ) exp = 0;
     }
