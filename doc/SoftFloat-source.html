@@ -7,11 +7,11 @@
 
 <BODY>
 
-<H1>Berkeley SoftFloat Release 3: Source Documentation</H1>
+<H1>Berkeley SoftFloat Release 3a: Source Documentation</H1>
 
 <P>
 John R. Hauser<BR>
-2015 February 16<BR>
+2015 October 23<BR>
 </P>
 
 
@@ -65,10 +65,11 @@ SoftFloat has been successfully compiled with the GNU C Compiler
 </P>
 
 <P>
-<NOBR>Release 3</NOBR> of SoftFloat is a complete rewrite relative to
+<NOBR>Release 3</NOBR> of SoftFloat was a complete rewrite relative to
 <NOBR>Release 2</NOBR> or earlier.
 Changes to the interface of SoftFloat functions are documented in
 <A HREF="SoftFloat.html"><CODE>SoftFloat.html</CODE></A>.
+The current version of SoftFloat is <NOBR>Release 3a</NOBR>.
 </P>
 
 
@@ -88,7 +89,7 @@ arithmetic on <NOBR>64-bit</NOBR> integers.
 Earlier releases of SoftFloat included implementations of <NOBR>32-bit</NOBR>
 single-precision and <NOBR>64-bit</NOBR> double-precision floating-point that
 did not require <NOBR>64-bit</NOBR> integers, but this option is not supported
-with <NOBR>Release 3</NOBR>.
+starting with <NOBR>Release 3</NOBR>.
 Since 1999, ISO standards for C have mandated compiler support for
 <NOBR>64-bit</NOBR> integers.
 A compiler conforming to the 1999 C Standard or later is recommended but not
@@ -111,12 +112,12 @@ SoftFloat&rsquo;s dependence on these headers is detailed later in
 
 <P>
 The SoftFloat package was written by me, <NOBR>John R.</NOBR> Hauser.
-<NOBR>Release 3</NOBR> of SoftFloat is a completely new implementation
+<NOBR>Release 3</NOBR> of SoftFloat was a completely new implementation
 supplanting earlier releases.
-This project (<NOBR>Release 3</NOBR> only, not earlier releases) was done in
-the employ of the University of California, Berkeley, within the Department of
-Electrical Engineering and Computer Sciences, first for the Parallel Computing
-Laboratory (Par Lab) and then for the ASPIRE Lab.
+The project to create <NOBR>Release 3</NOBR> (and <NOBR>now 3a</NOBR>) was done
+in the employ of the University of California, Berkeley, within the Department
+of Electrical Engineering and Computer Sciences, first for the Parallel
+Computing Laboratory (Par Lab) and then for the ASPIRE Lab.
 The work was officially overseen by Prof. Krste Asanovic, with funding provided
 by these sources:
 <BLOCKQUOTE>
@@ -147,43 +148,56 @@ Oracle, and Samsung.
 </P>
 
 <P>
-The following applies to the whole of SoftFloat <NOBR>Release 3</NOBR> as well
+The following applies to the whole of SoftFloat <NOBR>Release 3a</NOBR> as well
 as to each source file individually.
 </P>
 
 <P>
 Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
-California (Regents).
-All Rights Reserved.
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+California.
+All rights reserved.
 </P>
 
 <P>
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+<OL>
+
+<LI>
+<P>
 Redistributions of source code must retain the above copyright notice, this
-list of conditions, and the following two paragraphs of disclaimer.
+list of conditions, and the following disclaimer.
+</P>
+
+<LI>
+<P>
 Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions, and the following two paragraphs of disclaimer in the
-documentation and/or other materials provided with the distribution.
-Neither the name of the Regents nor the names of its contributors may be used
-to endorse or promote products derived from this software without specific
+list of conditions, and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+</P>
+
+<LI>
+<P>
+Neither the name of the University nor the names of its contributors may be
+used to endorse or promote products derived from this software without specific
 prior written permission.
 </P>
 
-<P>
-IN NO EVENT SHALL REGENTS BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL,
-INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF
-THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF REGENTS HAS BEEN
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</OL>
 </P>
 
 <P>
-REGENTS SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-THE SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS
-PROVIDED "<NOBR>AS IS</NOBR>".
-REGENTS HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
-ENHANCEMENTS, OR MODIFICATIONS.
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS &ldquo;AS IS&rdquo;,
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ARE
+DISCLAIMED.
+IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </P>
 
 
