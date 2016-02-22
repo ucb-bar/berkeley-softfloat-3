@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 uint_fast32_t
@@ -48,6 +49,8 @@ uint_fast32_t
     uint_fast8_t roundIncrement, roundBits;
     uint_fast32_t z;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     roundNearEven = (roundingMode == softfloat_round_near_even);
     roundIncrement = 0x40;
     if ( ! roundNearEven && (roundingMode != softfloat_round_near_maxMag) ) {
@@ -67,9 +70,11 @@ uint_fast32_t
         softfloat_exceptionFlags |= softfloat_flag_inexact;
     }
     return z;
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
  invalid:
     softfloat_raiseFlags( softfloat_flag_invalid );
-    return 0xFFFFFFFF;
+    return sign ? ui32_fromNegOverflow : ui32_fromPosOverflow;
 
 }
 

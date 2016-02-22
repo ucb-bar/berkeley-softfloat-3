@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 int_fast32_t f128_to_i32_r_minMag( float128_t a, bool exact )
@@ -46,41 +47,50 @@ int_fast32_t f128_to_i32_r_minMag( float128_t a, bool exact )
     uint_fast64_t uiA64, uiA0;
     int_fast32_t exp;
     uint_fast64_t sig64;
-    int_fast32_t shiftCount;
+    int_fast32_t shiftDist;
     bool sign;
     int_fast32_t absZ;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     uA.f = a;
     uiA64 = uA.ui.v64;
     uiA0  = uA.ui.v0;
     exp   = expF128UI64( uiA64 );
     sig64 = fracF128UI64( uiA64 ) | (uiA0 != 0);
-    shiftCount = 0x402F - exp;
-    if ( 49 <= shiftCount ) {
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    shiftDist = 0x402F - exp;
+    if ( 49 <= shiftDist ) {
         if ( exact && (exp | sig64) ) {
             softfloat_exceptionFlags |= softfloat_flag_inexact;
         }
         return 0;
     }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     sign = signF128UI64( uiA64 );
-    if ( shiftCount < 18 ) {
+    if ( shiftDist < 18 ) {
         if (
-            sign && (shiftCount == 17)
+            sign && (shiftDist == 17)
                 && (sig64 < UINT64_C( 0x0000000000020000 ))
         ) {
             if ( exact && sig64 ) {
                 softfloat_exceptionFlags |= softfloat_flag_inexact;
             }
-        } else {
-            softfloat_raiseFlags( softfloat_flag_invalid );
-            if ( ! sign || ((exp == 0x7FFF) && sig64) ) return 0x7FFFFFFF;
+            return -0x7FFFFFFF - 1;
         }
-        return -0x7FFFFFFF - 1;
+        softfloat_raiseFlags( softfloat_flag_invalid );
+        return
+            (exp == 0x7FFF) && sig64 ? i32_fromNaN
+                : sign ? i32_fromNegOverflow : i32_fromPosOverflow;
     }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     sig64 |= UINT64_C( 0x0001000000000000 );
-    absZ = sig64>>shiftCount;
+    absZ = sig64>>shiftDist;
     if (
-        exact && ((uint_fast64_t) (uint_fast32_t) absZ<<shiftCount != sig64)
+        exact && ((uint_fast64_t) (uint_fast32_t) absZ<<shiftDist != sig64)
     ) {
         softfloat_exceptionFlags |= softfloat_flag_inexact;
     }

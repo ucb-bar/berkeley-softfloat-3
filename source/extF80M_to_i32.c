@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 #ifdef SOFTFLOAT_FAST_INT64
@@ -62,7 +63,7 @@ int_fast32_t
     bool sign;
     int32_t exp;
     uint64_t sig;
-    int32_t shiftCount;
+    int32_t shiftDist;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -73,24 +74,25 @@ int_fast32_t
     sig = aSPtr->signif;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    if ( (exp == 0x7FFF) && (sig & UINT64_C( 0x7FFFFFFFFFFFFFFF )) ) sign = 0;
-    shiftCount = 0x4037 - exp;
-    if ( shiftCount <= 0 ) {
+    shiftDist = 0x4037 - exp;
+    if ( shiftDist <= 0 ) {
         if ( sig>>32 ) goto invalid;
-        if ( -32 < shiftCount ) {
-            sig <<= -shiftCount;
+        if ( -32 < shiftDist ) {
+            sig <<= -shiftDist;
         } else {
             if ( (uint32_t) sig ) goto invalid;
         }
     } else {
-        sig = softfloat_shiftRightJam64( sig, shiftCount );
+        sig = softfloat_shiftRightJam64( sig, shiftDist );
     }
     return softfloat_roundPackToI32( sign, sig, roundingMode, exact );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
     softfloat_raiseFlags( softfloat_flag_invalid );
-    return sign ? -0x7FFFFFFF - 1 : 0x7FFFFFFF;
+    return
+        (exp == 0x7FFF) && (sig & UINT64_C( 0x7FFFFFFFFFFFFFFF )) ? i32_fromNaN
+            : sign ? i32_fromNegOverflow : i32_fromPosOverflow;
 
 }
 

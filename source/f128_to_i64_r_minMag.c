@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 int_fast64_t f128_to_i64_r_minMag( float128_t a, bool exact )
@@ -47,10 +48,12 @@ int_fast64_t f128_to_i64_r_minMag( float128_t a, bool exact )
     bool sign;
     int_fast32_t exp;
     uint_fast64_t sig64, sig0;
-    int_fast32_t shiftCount;
-    int_fast16_t negShiftCount;
+    int_fast32_t shiftDist;
+    int_fast8_t negShiftDist;
     int_fast64_t absZ;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     uA.f = a;
     uiA64 = uA.ui.v64;
     uiA0  = uA.ui.v0;
@@ -58,9 +61,13 @@ int_fast64_t f128_to_i64_r_minMag( float128_t a, bool exact )
     exp   = expF128UI64( uiA64 );
     sig64 = fracF128UI64( uiA64 );
     sig0  = uiA0;
-    shiftCount = 0x402F - exp;
-    if ( shiftCount < 0 ) {
-        if ( shiftCount < -14 ) {
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    shiftDist = 0x402F - exp;
+    if ( shiftDist < 0 ) {
+        /*--------------------------------------------------------------------
+        *--------------------------------------------------------------------*/
+        if ( shiftDist < -14 ) {
             if (
                    (uiA64 == UINT64_C( 0xC03E000000000000 ))
                 && (sig0 < UINT64_C( 0x0002000000000000 ))
@@ -68,30 +75,35 @@ int_fast64_t f128_to_i64_r_minMag( float128_t a, bool exact )
                 if ( exact && sig0 ) {
                     softfloat_exceptionFlags |= softfloat_flag_inexact;
                 }
-            } else {
-                softfloat_raiseFlags( softfloat_flag_invalid );
-                if ( ! sign || ((exp == 0x7FFF) && (sig64 | sig0)) ) {
-                    return UINT64_C( 0x7FFFFFFFFFFFFFFF );
-                }
+                return -INT64_C( 0x7FFFFFFFFFFFFFFF ) - 1;
             }
-            return -INT64_C( 0x7FFFFFFFFFFFFFFF ) - 1;
+            softfloat_raiseFlags( softfloat_flag_invalid );
+            return
+                (exp == 0x7FFF) && (sig64 | sig0) ? i64_fromNaN
+                    : sign ? i64_fromNegOverflow : i64_fromPosOverflow;
         }
+        /*--------------------------------------------------------------------
+        *--------------------------------------------------------------------*/
         sig64 |= UINT64_C( 0x0001000000000000 );
-        negShiftCount = -shiftCount;
-        absZ = sig64<<negShiftCount | sig0>>(shiftCount & 63);
-        if ( exact && (uint64_t) (sig0<<negShiftCount) ) {
+        negShiftDist = -shiftDist;
+        absZ = sig64<<negShiftDist | sig0>>(shiftDist & 63);
+        if ( exact && (uint64_t) (sig0<<negShiftDist) ) {
             softfloat_exceptionFlags |= softfloat_flag_inexact;
         }
     } else {
-        if ( 49 <= shiftCount ) {
+        /*--------------------------------------------------------------------
+        *--------------------------------------------------------------------*/
+        if ( 49 <= shiftDist ) {
             if ( exact && (exp | sig64 | sig0) ) {
                 softfloat_exceptionFlags |= softfloat_flag_inexact;
             }
             return 0;
         }
+        /*--------------------------------------------------------------------
+        *--------------------------------------------------------------------*/
         sig64 |= UINT64_C( 0x0001000000000000 );
-        absZ = sig64>>shiftCount;
-        if ( exact && (sig0 || (absZ<<shiftCount != sig64)) ) {
+        absZ = sig64>>shiftDist;
+        if ( exact && (sig0 || (absZ<<shiftDist != sig64)) ) {
             softfloat_exceptionFlags |= softfloat_flag_inexact;
         }
     }

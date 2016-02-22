@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 int_fast64_t
@@ -48,28 +49,37 @@ int_fast64_t
     bool sign;
     int_fast32_t exp;
     uint_fast64_t sig;
-    int_fast32_t shiftCount;
+    int_fast32_t shiftDist;
     uint_fast64_t sigExtra;
     struct uint64_extra sig64Extra;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     uA.f = a;
     uiA64 = uA.s.signExp;
     sign = signExtF80UI64( uiA64 );
     exp  = expExtF80UI64( uiA64 );
     sig = uA.s.signif;
-    shiftCount = 0x403E - exp;
-    if ( shiftCount <= 0 ) {
-        if ( shiftCount ) {
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    shiftDist = 0x403E - exp;
+    if ( shiftDist <= 0 ) {
+        /*--------------------------------------------------------------------
+        *--------------------------------------------------------------------*/
+        if ( shiftDist ) {
             softfloat_raiseFlags( softfloat_flag_invalid );
             return
-                   ! sign
-                || ((exp == 0x7FFF) && (sig & UINT64_C( 0x7FFFFFFFFFFFFFFF )))
-                    ? INT64_C( 0x7FFFFFFFFFFFFFFF )
-                    : -INT64_C( 0x7FFFFFFFFFFFFFFF ) - 1;
+                (exp == 0x7FFF) && (sig & UINT64_C( 0x7FFFFFFFFFFFFFFF ))
+                    ? i64_fromNaN
+                    : sign ? i64_fromNegOverflow : i64_fromPosOverflow;
         }
+        /*--------------------------------------------------------------------
+        *--------------------------------------------------------------------*/
         sigExtra = 0;
     } else {
-        sig64Extra = softfloat_shiftRightJam64Extra( sig, 0, shiftCount );
+        /*--------------------------------------------------------------------
+        *--------------------------------------------------------------------*/
+        sig64Extra = softfloat_shiftRightJam64Extra( sig, 0, shiftDist );
         sig = sig64Extra.v;
         sigExtra = sig64Extra.extra;
     }

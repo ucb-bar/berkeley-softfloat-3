@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 int_fast64_t f32_to_i64( float32_t a, uint_fast8_t roundingMode, bool exact )
@@ -47,7 +48,7 @@ int_fast64_t f32_to_i64( float32_t a, uint_fast8_t roundingMode, bool exact )
     bool sign;
     int_fast16_t exp;
     uint_fast32_t sig;
-    int_fast16_t shiftCount;
+    int_fast16_t shiftDist;
 #ifdef SOFTFLOAT_FAST_INT64
     uint_fast64_t sig64, extra;
     struct uint64_extra sig64Extra;
@@ -55,25 +56,30 @@ int_fast64_t f32_to_i64( float32_t a, uint_fast8_t roundingMode, bool exact )
     uint32_t extSig[3];
 #endif
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     uA.f = a;
     uiA = uA.ui;
     sign = signF32UI( uiA );
     exp  = expF32UI( uiA );
     sig  = fracF32UI( uiA );
-    shiftCount = 0xBE - exp;
-    if ( shiftCount < 0 ) {
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    shiftDist = 0xBE - exp;
+    if ( shiftDist < 0 ) {
         softfloat_raiseFlags( softfloat_flag_invalid );
-        if ( ! sign || ((exp == 0xFF) && sig) ) {
-            return INT64_C( 0x7FFFFFFFFFFFFFFF );
-        }
-        return -INT64_C( 0x7FFFFFFFFFFFFFFF ) - 1;
+        return
+            (exp == 0xFF) && sig ? i64_fromNaN
+                : sign ? i64_fromNegOverflow : i64_fromPosOverflow;
     }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     if ( exp ) sig |= 0x00800000;
 #ifdef SOFTFLOAT_FAST_INT64
     sig64 = (uint_fast64_t) sig<<40;
     extra = 0;
-    if ( shiftCount ) {
-        sig64Extra = softfloat_shiftRightJam64Extra( sig64, 0, shiftCount );
+    if ( shiftDist ) {
+        sig64Extra = softfloat_shiftRightJam64Extra( sig64, 0, shiftDist );
         sig64 = sig64Extra.v;
         extra = sig64Extra.extra;
     }
@@ -82,7 +88,7 @@ int_fast64_t f32_to_i64( float32_t a, uint_fast8_t roundingMode, bool exact )
     extSig[indexWord( 3, 2 )] = sig<<8;
     extSig[indexWord( 3, 1 )] = 0;
     extSig[indexWord( 3, 0 )] = 0;
-    if ( shiftCount ) softfloat_shiftRightJam96M( extSig, shiftCount, extSig );
+    if ( shiftDist ) softfloat_shiftRightJam96M( extSig, shiftDist, extSig );
     return softfloat_roundPackMToI64( sign, extSig, roundingMode, exact );
 #endif
 

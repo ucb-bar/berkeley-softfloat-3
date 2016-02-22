@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 int_fast64_t
@@ -51,6 +52,8 @@ int_fast64_t
     union { uint64_t ui; int64_t i; } uZ;
     int64_t z;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     roundNearEven = (roundingMode == softfloat_round_near_even);
     sigExtra = extSigPtr[indexWordLo( 3 )];
     doIncrement = (0x80000000 <= sigExtra);
@@ -75,11 +78,11 @@ int_fast64_t
         softfloat_exceptionFlags |= softfloat_flag_inexact;
     }
     return z;
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
  invalid:
     softfloat_raiseFlags( softfloat_flag_invalid );
-    return
-        sign ? -INT64_C( 0x7FFFFFFFFFFFFFFF ) - 1
-            : INT64_C( 0x7FFFFFFFFFFFFFFF );
+    return sign ? i64_fromNegOverflow : i64_fromPosOverflow;
 
 }
 

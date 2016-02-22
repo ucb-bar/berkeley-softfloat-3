@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 uint_fast32_t f32_to_ui32_r_minMag( float32_t a, bool exact )
@@ -46,30 +47,42 @@ uint_fast32_t f32_to_ui32_r_minMag( float32_t a, bool exact )
     uint_fast32_t uiA;
     int_fast16_t exp;
     uint_fast32_t sig;
-    int_fast16_t shiftCount;
+    int_fast16_t shiftDist;
+    bool sign;
     uint_fast32_t z;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     uA.f = a;
     uiA = uA.ui;
     exp = expF32UI( uiA );
     sig = fracF32UI( uiA );
-    shiftCount = 0x9E - exp;
-    if ( 32 <= shiftCount ) {
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    shiftDist = 0x9E - exp;
+    if ( 32 <= shiftDist ) {
         if ( exact && (exp | sig) ) {
             softfloat_exceptionFlags |= softfloat_flag_inexact;
         }
         return 0;
     }
-    if ( signF32UI( uiA ) || (shiftCount < 0) ) goto invalid;
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    sign = signF32UI( uiA );
+    if ( sign || (shiftDist < 0) ) {
+        softfloat_raiseFlags( softfloat_flag_invalid );
+        return
+            (exp == 0xFF) && sig ? ui32_fromNaN
+                : sign ? ui32_fromNegOverflow : ui32_fromPosOverflow;
+    }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     sig = (sig | 0x00800000)<<8;
-    z = sig>>shiftCount;
-    if ( exact && (z<<shiftCount != sig) ) {
+    z = sig>>shiftDist;
+    if ( exact && (z<<shiftDist != sig) ) {
         softfloat_exceptionFlags |= softfloat_flag_inexact;
     }
     return z;
- invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
-    return 0xFFFFFFFF;
 
 }
 

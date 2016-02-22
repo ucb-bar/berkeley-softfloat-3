@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 uint_fast32_t
@@ -47,21 +48,37 @@ uint_fast32_t
     uint_fast64_t uiA64, uiA0;
     bool sign;
     int_fast32_t exp;
-    uint_fast64_t sig64, sig0;
-    int_fast32_t shiftCount;
+    uint_fast64_t sig64;
+    int_fast32_t shiftDist;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     uA.f = a;
     uiA64 = uA.ui.v64;
     uiA0  = uA.ui.v0;
     sign  = signF128UI64( uiA64 );
     exp   = expF128UI64( uiA64 );
-    sig64 = fracF128UI64( uiA64 );
-    sig0  = uiA0;
+    sig64 = fracF128UI64( uiA64 ) | (uiA0 != 0);
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+#if (ui32_fromNaN != ui32_fromPosOverflow) || (ui32_fromNaN != ui32_fromNegOverflow)
+    if ( (exp == 0x7FFF) && sig64 ) {
+#if (ui32_fromNaN == ui32_fromPosOverflow)
+        sign = 0;
+#elif (ui32_fromNaN == ui32_fromNegOverflow)
+        sign = 1;
+#else
+        softfloat_raiseFlags( softfloat_flag_invalid );
+        return ui32_fromNaN;
+#endif
+    }
+#endif
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     if ( exp ) sig64 |= UINT64_C( 0x0001000000000000 );
-    sig64 |= (sig0 != 0);
-    shiftCount = 0x4028 - exp;
-    if ( 0 < shiftCount ) {
-        sig64 = softfloat_shiftRightJam64( sig64, shiftCount );
+    shiftDist = 0x4028 - exp;
+    if ( 0 < shiftDist ) {
+        sig64 = softfloat_shiftRightJam64( sig64, shiftDist );
     }
     return softfloat_roundPackToUI32( sign, sig64, roundingMode, exact );
 

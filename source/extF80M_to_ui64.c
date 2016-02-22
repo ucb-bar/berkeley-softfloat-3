@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
+#include "specialize.h"
 #include "softfloat.h"
 
 #ifdef SOFTFLOAT_FAST_INT64
@@ -59,29 +60,35 @@ uint_fast64_t
 {
     const struct extFloat80M *aSPtr;
     uint_fast16_t uiA64;
-    int32_t exp, shiftCount;
     bool sign;
+    int32_t exp;
     uint64_t sig;
+    int32_t shiftDist;
     uint32_t extSig[3];
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     aSPtr = (const struct extFloat80M *) aPtr;
     uiA64 = aSPtr->signExp;
-    exp = expExtF80UI64( uiA64 );
+    sign = signExtF80UI64( uiA64 );
+    exp  = expExtF80UI64( uiA64 );
+    sig = aSPtr->signif;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    shiftCount = 0x403E - exp;
-    if ( shiftCount < 0 ) {
+    shiftDist = 0x403E - exp;
+    if ( shiftDist < 0 ) {
         softfloat_raiseFlags( softfloat_flag_invalid );
-        return UINT64_C( 0xFFFFFFFFFFFFFFFF );
+        return
+            (exp == 0x7FFF) && (sig & UINT64_C( 0x7FFFFFFFFFFFFFFF ))
+                ? ui64_fromNaN
+                : sign ? ui64_fromNegOverflow : ui64_fromPosOverflow;
     }
-    sign = signExtF80UI64( uiA64 );
-    sig = aSPtr->signif;
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     extSig[indexWord( 3, 2 )] = sig>>32;
     extSig[indexWord( 3, 1 )] = sig;
     extSig[indexWord( 3, 0 )] = 0;
-    if ( shiftCount ) softfloat_shiftRightJam96M( extSig, shiftCount, extSig );
+    if ( shiftDist ) softfloat_shiftRightJam96M( extSig, shiftDist, extSig );
     return softfloat_roundPackMToUI64( sign, extSig, roundingMode, exact );
 
 }

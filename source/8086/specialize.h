@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C header file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3a+, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*----------------------------------------------------------------------------
 | Default value for `softfloat_detectTininess'.
 *----------------------------------------------------------------------------*/
-#define init_detectTininess softfloat_tininess_afterRounding;
+#define init_detectTininess softfloat_tininess_afterRounding
+
+/*----------------------------------------------------------------------------
+| The values to return on conversions to 32-bit integer format that raise an
+| invalid exception.
+*----------------------------------------------------------------------------*/
+#define ui32_fromPosOverflow 0xFFFFFFFF
+#define ui32_fromNegOverflow 0
+#define ui32_fromNaN         0xFFFFFFFF
+#define i32_fromPosOverflow  0x7FFFFFFF
+#define i32_fromNegOverflow  (-0x7FFFFFFF - 1)
+#define i32_fromNaN          0x7FFFFFFF
+
+/*----------------------------------------------------------------------------
+| The values to return on conversions to 64-bit integer format that raise an
+| invalid exception.
+*----------------------------------------------------------------------------*/
+#define ui64_fromPosOverflow UINT64_C( 0xFFFFFFFFFFFFFFFF )
+#define ui64_fromNegOverflow 0
+#define ui64_fromNaN         UINT64_C( 0xFFFFFFFFFFFFFFFF )
+#define i64_fromPosOverflow  UINT64_C( 0x7FFFFFFFFFFFFFFF )
+#define i64_fromNegOverflow  (-UINT64_C( 0x7FFFFFFFFFFFFFFF ) - 1)
+#define i64_fromNaN          UINT64_C( 0x7FFFFFFFFFFFFFFF )
 
 /*----------------------------------------------------------------------------
 | "Common NaN" structure, used to transfer NaN representations from one format
