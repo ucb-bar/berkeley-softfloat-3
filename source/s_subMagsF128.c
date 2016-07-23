@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -105,7 +105,7 @@ float128_t
     expZ = expB;
     sigB.v64 |= UINT64_C( 0x0010000000000000 );
  bBigger:
-    signZ ^= 1;
+    signZ = ! signZ;
     sigZ = softfloat_sub128( sigB.v64, sigB.v0, sigA.v64, sigA.v0 );
     goto normRoundPack;
  expABigger:

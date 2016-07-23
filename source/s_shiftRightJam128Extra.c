@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,29 +42,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 struct uint128_extra
  softfloat_shiftRightJam128Extra(
-     uint64_t a64, uint64_t a0, uint64_t extra, uint_fast32_t count )
+     uint64_t a64, uint64_t a0, uint64_t extra, uint_fast32_t dist )
 {
-    int_fast32_t negCount;
+    uint_fast8_t u8NegDist;
     struct uint128_extra z;
 
-    negCount = -count;
-    if ( count < 64 ) {
-        z.v.v64 = a64>>count;
-        z.v.v0 = a64<<(negCount & 63) | a0>>count;
-        z.extra = a0<<(negCount & 63);
+    u8NegDist = -dist;
+    if ( dist < 64 ) {
+        z.v.v64 = a64>>dist;
+        z.v.v0 = a64<<(u8NegDist & 63) | a0>>dist;
+        z.extra = a0<<(u8NegDist & 63);
     } else {
         z.v.v64 = 0;
-        if ( count == 64 ) {
+        if ( dist == 64 ) {
             z.v.v0 = a64;
             z.extra = a0;
         } else {
             extra |= a0;
-            if ( count < 128 ) {
-                z.v.v0 = a64>>(count & 63);
-                z.extra = a64<<(negCount & 63);
+            if ( dist < 128 ) {
+                z.v.v0 = a64>>(dist & 63);
+                z.extra = a64<<(u8NegDist & 63);
             } else {
                 z.v.v0 = 0;
-                z.extra = (count == 128) ? a64 : (a64 != 0);
+                z.extra = (dist == 128) ? a64 : (a64 != 0);
             }
         }
     }

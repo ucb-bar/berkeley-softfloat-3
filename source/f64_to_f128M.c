@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
 All rights reserved.
@@ -59,7 +59,7 @@ void f64_to_f128M( float64_t a, float128_t *zPtr )
     uint64_t uiA;
     bool sign;
     int_fast16_t exp;
-    uint64_t sig;
+    uint64_t frac;
     struct commonNaN commonNaN;
     uint32_t uiZ96;
     struct exp16_sig64 normExpSig;
@@ -73,12 +73,12 @@ void f64_to_f128M( float64_t a, float128_t *zPtr )
     uiA = uA.ui;
     sign = signF64UI( uiA );
     exp  = expF64UI( uiA );
-    sig  = fracF64UI( uiA );
+    frac = fracF64UI( uiA );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     zWPtr[indexWord( 4, 0 )] = 0;
     if ( exp == 0x7FF ) {
-        if ( sig ) {
+        if ( frac ) {
             softfloat_f64UIToCommonNaN( uiA, &commonNaN );
             softfloat_commonNaNToF128M( &commonNaN, zWPtr );
             return;
@@ -89,20 +89,20 @@ void f64_to_f128M( float64_t a, float128_t *zPtr )
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( ! exp ) {
-        if ( ! sig ) {
+        if ( ! frac ) {
             uiZ96 = packToF128UI96( sign, 0, 0 );
             goto uiZ;
         }
-        normExpSig = softfloat_normSubnormalF64Sig( sig );
+        normExpSig = softfloat_normSubnormalF64Sig( frac );
         exp = normExpSig.exp - 1;
-        sig = normExpSig.sig;
+        frac = normExpSig.sig;
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    zWPtr[indexWord( 4, 1 )] = (uint32_t) sig<<28;
-    sig >>= 4;
-    zWPtr[indexWordHi( 4 )] = packToF128UI96( sign, exp + 0x3C00, sig>>32 );
-    zWPtr[indexWord( 4, 2 )] = sig;
+    zWPtr[indexWord( 4, 1 )] = (uint32_t) frac<<28;
+    frac >>= 4;
+    zWPtr[indexWordHi( 4 )] = packToF128UI96( sign, exp + 0x3C00, frac>>32 );
+    zWPtr[indexWord( 4, 2 )] = frac;
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

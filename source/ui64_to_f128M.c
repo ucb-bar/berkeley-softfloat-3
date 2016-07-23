@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All Rights Reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ void ui64_to_f128M( uint64_t a, float128_t *zPtr )
 void ui64_to_f128M( uint64_t a, float128_t *zPtr )
 {
     uint32_t *zWPtr, uiZ96, uiZ64;
-    uint_fast8_t shiftCount;
+    uint_fast8_t shiftDist;
     uint32_t *ptr;
 
     zWPtr = (uint32_t *) zPtr;
@@ -62,20 +62,19 @@ void ui64_to_f128M( uint64_t a, float128_t *zPtr )
     zWPtr[indexWord( 4, 1 )] = 0;
     zWPtr[indexWord( 4, 0 )] = 0;
     if ( a ) {
-        shiftCount = softfloat_countLeadingZeros64( a ) + 17;
-        if ( shiftCount < 32 ) {
+        shiftDist = softfloat_countLeadingZeros64( a ) + 17;
+        if ( shiftDist < 32 ) {
             ptr = zWPtr + indexMultiwordHi( 4, 3 );
             ptr[indexWord( 3, 2 )] = 0;
             ptr[indexWord( 3, 1 )] = a>>32;
             ptr[indexWord( 3, 0 )] = a;
-            softfloat_shortShiftLeft96M( ptr, shiftCount, ptr );
+            softfloat_shortShiftLeft96M( ptr, shiftDist, ptr );
             ptr[indexWordHi( 3 )] =
-                packToF128UI96(
-                    0, 0x404E - shiftCount, ptr[indexWordHi( 3 )] );
+                packToF128UI96( 0, 0x404E - shiftDist, ptr[indexWordHi( 3 )] );
             return;
         }
-        a <<= shiftCount - 32;
-        uiZ96 = packToF128UI96( 0, 0x404E - shiftCount, a>>32 );
+        a <<= shiftDist - 32;
+        uiZ96 = packToF128UI96( 0, 0x404E - shiftDist, a>>32 );
         uiZ64 = a;
     }
     zWPtr[indexWord( 4, 3 )] = uiZ96;

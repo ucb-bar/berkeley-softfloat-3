@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,12 +41,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef softfloat_shortShiftLeft128
 
 struct uint128
- softfloat_shortShiftLeft128( uint64_t a64, uint64_t a0, uint_fast8_t count )
+ softfloat_shortShiftLeft128( uint64_t a64, uint64_t a0, uint_fast8_t dist )
 {
     struct uint128 z;
 
-    z.v64 = a64<<count | a0>>(-count & 63);
-    z.v0 = a0<<count;
+    z.v64 = a64<<dist | a0>>(-dist & 63);
+    z.v0 = a0<<dist;
     return z;
 
 }

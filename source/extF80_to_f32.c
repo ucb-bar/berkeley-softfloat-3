@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -53,12 +53,16 @@ float32_t extF80_to_f32( extFloat80_t a )
     uint_fast32_t uiZ, sig32;
     union ui32_f32 uZ;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     uA.f = a;
     uiA64 = uA.s.signExp;
     uiA0  = uA.s.signif;
     sign = signExtF80UI64( uiA64 );
     exp  = expExtF80UI64( uiA64 );
     sig  = uiA0;
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     if ( exp == 0x7FFF ) {
         if ( sig & UINT64_C( 0x7FFFFFFFFFFFFFFF ) ) {
             softfloat_extF80UIToCommonNaN( uiA64, uiA0, &commonNaN );
@@ -68,16 +72,22 @@ float32_t extF80_to_f32( extFloat80_t a )
         }
         goto uiZ;
     }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     sig32 = softfloat_shortShiftRightJam64( sig, 33 );
     if ( ! (exp | sig32) ) {
         uiZ = packToF32UI( sign, 0, 0 );
         goto uiZ;
     }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     exp -= 0x3F81;
     if ( sizeof (int_fast16_t) < sizeof (int_fast32_t) ) {
         if ( exp < -0x1000 ) exp = -0x1000;
     }
     return softfloat_roundPackToF32( sign, exp, sig32 );
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
  uiZ:
     uZ.ui = uiZ;
     return uZ.f;

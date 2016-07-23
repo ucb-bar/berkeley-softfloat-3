@@ -7,12 +7,39 @@
 
 <BODY>
 
-<H1>History of Berkeley SoftFloat, to Release 3a</H1>
+<H1>History of Berkeley SoftFloat, to Release 3b</H1>
 
 <P>
 John R. Hauser<BR>
-2015 October 23<BR>
+2016 July 22<BR>
 </P>
+
+
+<H3>Release 3b (2016 July)</H3>
+
+<UL>
+
+<LI>
+Implemented the common <NOBR>16-bit</NOBR> &ldquo;half-precision&rdquo;
+floating-point format (<CODE>float16_t</CODE>).
+
+<LI>
+Made the integer values returned on invalid conversions to integer formats
+be determined by the port-specific specialization instead of being the same for
+all ports.
+
+<LI>
+Added preprocessor macro <CODE>THREAD_LOCAL</CODE> to allow the floating-point
+state (modes and exception flags) to be made per-thread.
+
+<LI>
+Modified the provided Makefiles to allow some options to be overridden from the
+<CODE>make</CODE> command.
+
+<LI>
+Made other minor improvements.
+
+</UL>
 
 
 <H3>Release 3a (2015 October)</H3>

@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ void
     int32_t expC;
     bool signProd, prodIsInfinite;
     uint32_t *ptr, uiZ96, sigA[4];
-    uint_fast8_t shiftCount;
+    uint_fast8_t shiftDist;
     uint32_t sigX[5];
     int32_t expProd;
     uint32_t sigProd[8], wordSig;
@@ -242,9 +242,9 @@ void
         } else {
             /*----------------------------------------------------------------
             *----------------------------------------------------------------*/
-            shiftCount = expDiff & 31;
-            if ( shiftCount ) {
-                softfloat_shortShiftRight160M( sigX, shiftCount, sigX );
+            shiftDist = expDiff & 31;
+            if ( shiftDist ) {
+                softfloat_shortShiftRight160M( sigX, shiftDist, sigX );
             }
             expDiff >>= 5;
             extSigPtr =

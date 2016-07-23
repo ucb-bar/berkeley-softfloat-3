@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
 California.  All rights reserved.
@@ -61,13 +61,11 @@ float32_t
                 : 0;
     }
     roundBits = sig & 0x7F;
-    if ( 0xFD <= (uint16_t) exp ) {
+    if ( 0xFD <= (unsigned int) exp ) {
         if ( exp < 0 ) {
             isTiny =
-                   (softfloat_detectTininess
-                        == softfloat_tininess_beforeRounding)
-                || (exp < -1)
-                || (sig + roundIncrement < 0x80000000);
+                (softfloat_detectTininess == softfloat_tininess_beforeRounding)
+                    || (exp < -1) || (sig + roundIncrement < 0x80000000);
             sig = softfloat_shiftRightJam32( sig, -exp );
             exp = 0;
             roundBits = sig & 0x7F;

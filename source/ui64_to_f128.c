@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All Rights Reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 float128_t ui64_to_f128( uint64_t a )
 {
     uint_fast64_t uiZ64, uiZ0;
-    int_fast8_t shiftCount;
+    int_fast8_t shiftDist;
     struct uint128 zSig;
     union ui128_f128 uZ;
 
@@ -50,14 +50,14 @@ float128_t ui64_to_f128( uint64_t a )
         uiZ64 = 0;
         uiZ0  = 0;
     } else {
-        shiftCount = softfloat_countLeadingZeros64( a ) + 49;
-        if ( 64 <= shiftCount ) {
-            zSig.v64 = a<<(shiftCount - 64);
+        shiftDist = softfloat_countLeadingZeros64( a ) + 49;
+        if ( 64 <= shiftDist ) {
+            zSig.v64 = a<<(shiftDist - 64);
             zSig.v0  = 0;
         } else {
-            zSig = softfloat_shortShiftLeft128( 0, a, shiftCount );
+            zSig = softfloat_shortShiftLeft128( 0, a, shiftDist );
         }
-        uiZ64 = packToF128UI64( 0, 0x406E - shiftCount, zSig.v64 );
+        uiZ64 = packToF128UI64( 0, 0x406E - shiftDist, zSig.v64 );
         uiZ0  = zSig.v0;
     }
     uZ.ui.v64 = uiZ64;

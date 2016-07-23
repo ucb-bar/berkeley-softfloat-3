@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ float128_t
     int_fast32_t expZ;
     uint64_t sig256Z[4];
     struct uint128 sigZ;
-    int_fast32_t shiftCount, expDiff;
+    int_fast32_t shiftDist, expDiff;
     struct uint128 x128;
     uint64_t sig256C[4];
     static uint64_t zero256[4] = INIT_UINTM4( 0, 0, 0, 0 );
@@ -140,14 +140,14 @@ float128_t
     softfloat_mul128To256M( sigA.v64, sigA.v0, sigB.v64, sigB.v0, sig256Z );
     sigZ.v64 = sig256Z[indexWord( 4, 3 )];
     sigZ.v0  = sig256Z[indexWord( 4, 2 )];
-    shiftCount = 0;
+    shiftDist = 0;
     if ( ! (sigZ.v64 & UINT64_C( 0x0100000000000000 )) ) {
         --expZ;
-        shiftCount = -1;
+        shiftDist = -1;
     }
     if ( ! expC ) {
         if ( ! (sigC.v64 | sigC.v0) ) {
-            shiftCount += 8;
+            shiftDist += 8;
             goto sigZ;
         }
         normExpSig = softfloat_normSubnormalF128Sig( sigC.v64, sigC.v0 );
@@ -162,14 +162,13 @@ float128_t
     if ( expDiff < 0 ) {
         expZ = expC;
         if ( (signZ == signC) || (expDiff < -1) ) {
-            shiftCount -= expDiff;
-            if ( shiftCount ) {
+            shiftDist -= expDiff;
+            if ( shiftDist ) {
                 sigZ =
-                    softfloat_shiftRightJam128(
-                        sigZ.v64, sigZ.v0, shiftCount );
+                    softfloat_shiftRightJam128( sigZ.v64, sigZ.v0, shiftDist );
             }
         } else {
-            if ( ! shiftCount ) {
+            if ( ! shiftDist ) {
                 x128 =
                     softfloat_shortShiftRight128(
                         sig256Z[indexWord( 4, 1 )], sig256Z[indexWord( 4, 0 )],
@@ -183,7 +182,7 @@ float128_t
             }
         }
     } else {
-        if ( shiftCount ) softfloat_add256M( sig256Z, sig256Z, sig256Z );
+        if ( shiftDist ) softfloat_add256M( sig256Z, sig256Z, sig256Z );
         if ( ! expDiff ) {
             sigZ.v64 = sig256Z[indexWord( 4, 3 )];
             sigZ.v0  = sig256Z[indexWord( 4, 2 )];
@@ -197,7 +196,7 @@ float128_t
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    shiftCount = 8;
+    shiftDist = 8;
     if ( signZ == signC ) {
         /*--------------------------------------------------------------------
         *--------------------------------------------------------------------*/
@@ -210,7 +209,7 @@ float128_t
         }
         if ( sigZ.v64 & UINT64_C( 0x0200000000000000 ) ) {
             ++expZ;
-            shiftCount = 9;
+            shiftDist = 9;
         }
     } else {
         /*--------------------------------------------------------------------
@@ -227,7 +226,7 @@ float128_t
                 }
                 if ( ! (sigZ.v64 & UINT64_C( 0x0100000000000000 )) ) {
                     --expZ;
-                    shiftCount = 7;
+                    shiftDist = 7;
                 }
                 goto shiftRightRoundPack;
             } else {
@@ -248,7 +247,7 @@ float128_t
             sig256Z[indexWord( 4, 3 )] = sigZ.v64;
             sig256Z[indexWord( 4, 2 )] = sigZ.v0;
             if ( sigZ.v64 & UINT64_C( 0x8000000000000000 ) ) {
-                signZ ^= 1;
+                signZ = ! signZ;
                 softfloat_sub256M( zero256, sig256Z, sig256Z );
             }
         } else {
@@ -258,7 +257,7 @@ float128_t
                 sigZ.v0  = sig256Z[indexWord( 4, 2 )];
                 if ( ! (sigZ.v64 & UINT64_C( 0x0100000000000000 )) ) {
                     --expZ;
-                    shiftCount = 7;
+                    shiftDist = 7;
                 }
                 goto sigZ;
             }
@@ -288,15 +287,14 @@ float128_t
                 }
             }
         }
-        shiftCount = softfloat_countLeadingZeros64( sigZ.v64 );
-        expZ += 7 - shiftCount;
-        shiftCount = 15 - shiftCount;
-        if ( 0 < shiftCount ) goto shiftRightRoundPack;
-        if ( shiftCount ) {
-            shiftCount = -shiftCount;
-            sigZ =
-                softfloat_shortShiftLeft128( sigZ.v64, sigZ.v0, shiftCount );
-            x128 = softfloat_shortShiftLeft128( 0, sigZExtra, shiftCount );
+        shiftDist = softfloat_countLeadingZeros64( sigZ.v64 );
+        expZ += 7 - shiftDist;
+        shiftDist = 15 - shiftDist;
+        if ( 0 < shiftDist ) goto shiftRightRoundPack;
+        if ( shiftDist ) {
+            shiftDist = -shiftDist;
+            sigZ = softfloat_shortShiftLeft128( sigZ.v64, sigZ.v0, shiftDist );
+            x128 = softfloat_shortShiftLeft128( 0, sigZExtra, shiftDist );
             sigZ.v0 |= x128.v64;
             sigZExtra = x128.v0;
         }
@@ -305,8 +303,8 @@ float128_t
  sigZ:
     sigZExtra = sig256Z[indexWord( 4, 1 )] | sig256Z[indexWord( 4, 0 )];
  shiftRightRoundPack:
-    sigZExtra = (uint64_t) (sigZ.v0<<(64 - shiftCount)) | (sigZExtra != 0);
-    sigZ = softfloat_shortShiftRight128( sigZ.v64, sigZ.v0, shiftCount );
+    sigZExtra = (uint64_t) (sigZ.v0<<(64 - shiftDist)) | (sigZExtra != 0);
+    sigZ = softfloat_shortShiftRight128( sigZ.v64, sigZ.v0, shiftDist );
  roundPack:
     return
         softfloat_roundPackToF128(
@@ -326,7 +324,6 @@ float128_t
         if ( sigC.v64 | sigC.v0 ) goto propagateNaN_ZC;
         if ( signZ == signC ) goto uiZ;
     }
- invalid:
     softfloat_raiseFlags( softfloat_flag_invalid );
     uiZ.v64 = defaultNaNF128UI64;
     uiZ.v0  = defaultNaNF128UI0;
@@ -342,7 +339,7 @@ float128_t
  completeCancellation:
         uiZ.v64 =
             packToF128UI64(
-                softfloat_roundingMode == softfloat_round_min, 0, 0 );
+                (softfloat_roundingMode == softfloat_round_min), 0, 0 );
         uiZ.v0 = 0;
     }
  uiZ:

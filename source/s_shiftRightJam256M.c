@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,25 +45,25 @@ static
   softfloat_shortShiftRightJamM(
       uint_fast8_t size_words,
       const uint64_t *aPtr,
-      uint_fast8_t count,
+      uint_fast8_t dist,
       uint64_t *zPtr
   )
 {
-    uint_fast8_t negCount;
+    uint_fast8_t uNegDist;
     unsigned int index, lastIndex;
     uint64_t partWordZ, wordA;
 
-    negCount = -count;
+    uNegDist = -dist;
     index = indexWordLo( size_words );
     lastIndex = indexWordHi( size_words );
     wordA = aPtr[index];
-    partWordZ = wordA>>count;
-    if ( partWordZ<<count != wordA ) partWordZ |= 1;
+    partWordZ = wordA>>dist;
+    if ( partWordZ<<dist != wordA ) partWordZ |= 1;
     while ( index != lastIndex ) {
         wordA = aPtr[index + wordIncr];
-        zPtr[index] = wordA<<(negCount & 63) | partWordZ;
+        zPtr[index] = wordA<<(uNegDist & 63) | partWordZ;
         index += wordIncr;
-        partWordZ = wordA>>count;
+        partWordZ = wordA>>dist;
     }
     zPtr[index] = partWordZ;
 
@@ -71,19 +71,19 @@ static
 
 void
  softfloat_shiftRightJam256M(
-     const uint64_t *aPtr, uint_fast32_t count, uint64_t *zPtr )
+     const uint64_t *aPtr, uint_fast32_t dist, uint64_t *zPtr )
 {
     uint64_t wordJam;
-    uint_fast32_t wordCount;
+    uint_fast32_t wordDist;
     uint64_t *ptr;
-    uint_fast8_t i, innerCount;
+    uint_fast8_t i, innerDist;
 
     wordJam = 0;
-    wordCount = count>>6;
-    if ( wordCount ) {
-        if ( 4 < wordCount ) wordCount = 4;
-        ptr = (uint64_t *) (aPtr + indexMultiwordLo( 4, wordCount ));
-        i = wordCount;
+    wordDist = dist>>6;
+    if ( wordDist ) {
+        if ( 4 < wordDist ) wordDist = 4;
+        ptr = (uint64_t *) (aPtr + indexMultiwordLo( 4, wordDist ));
+        i = wordDist;
         do {
             wordJam = *ptr++;
             if ( wordJam ) break;
@@ -91,32 +91,32 @@ void
         } while ( i );
         ptr = zPtr;
     }
-    if ( wordCount < 4 ) {
-        aPtr += indexMultiwordHiBut( 4, wordCount );
-        innerCount = count & 63;
-        if ( innerCount ) {
+    if ( wordDist < 4 ) {
+        aPtr += indexMultiwordHiBut( 4, wordDist );
+        innerDist = dist & 63;
+        if ( innerDist ) {
             softfloat_shortShiftRightJamM(
-                4 - wordCount,
+                4 - wordDist,
                 aPtr,
-                innerCount,
-                zPtr + indexMultiwordLoBut( 4, wordCount )
+                innerDist,
+                zPtr + indexMultiwordLoBut( 4, wordDist )
             );
-            if ( ! wordCount ) goto wordJam;
+            if ( ! wordDist ) goto wordJam;
         } else {
-            aPtr += indexWordLo( 4 - wordCount );
+            aPtr += indexWordLo( 4 - wordDist );
             ptr = zPtr + indexWordLo( 4 );
-            for ( i = 4 - wordCount; i; --i ) {
+            for ( i = 4 - wordDist; i; --i ) {
                 *ptr = *aPtr;
                 aPtr += wordIncr;
                 ptr += wordIncr;
             }
         }
-        ptr = zPtr + indexMultiwordHi( 4, wordCount );
+        ptr = zPtr + indexMultiwordHi( 4, wordDist );
     }
     do {
         *ptr++ = 0;
-        --wordCount;
-    } while ( wordCount );
+        --wordDist;
+    } while ( wordDist );
  wordJam:
     if ( wordJam ) zPtr[indexWordLo( 4 )] |= 1;
 

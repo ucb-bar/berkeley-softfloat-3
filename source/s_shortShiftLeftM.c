@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,23 +44,23 @@ void
  softfloat_shortShiftLeftM(
      uint_fast8_t size_words,
      const uint32_t *aPtr,
-     uint_fast8_t count,
+     uint_fast8_t dist,
      uint32_t *zPtr
  )
 {
-    uint_fast8_t negCount;
+    uint_fast8_t uNegDist;
     unsigned int index, lastIndex;
     uint32_t partWordZ, wordA;
 
-    negCount = -count;
+    uNegDist = -dist;
     index = indexWordHi( size_words );
     lastIndex = indexWordLo( size_words );
-    partWordZ = aPtr[index]<<count;
+    partWordZ = aPtr[index]<<dist;
     while ( index != lastIndex ) {
         wordA = aPtr[index - wordIncr];
-        zPtr[index] = partWordZ | wordA>>(negCount & 31);
+        zPtr[index] = partWordZ | wordA>>(uNegDist & 31);
         index -= wordIncr;
-        partWordZ = wordA<<count;
+        partWordZ = wordA<<dist;
     }
     zPtr[index] = partWordZ;
 

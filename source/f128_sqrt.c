@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -114,7 +114,7 @@ float128_t f128_sqrt( float128_t a )
     rem.v64 -= (uint_fast64_t) sig32Z * sig32Z;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    q = ((uint_fast64_t) (uint32_t) (rem.v64>>2) * recipSqrt32)>>32;
+    q = ((uint32_t) (rem.v64>>2) * (uint_fast64_t) recipSqrt32)>>32;
     qs[1] = q;
     x64 = (uint_fast64_t) sig32Z<<32;
     sig64Z = x64 + ((uint_fast64_t) q<<3);
@@ -124,7 +124,7 @@ float128_t f128_sqrt( float128_t a )
     rem = softfloat_sub128( rem.v64, rem.v0, term.v64, term.v0 );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    q = ((uint_fast64_t) (uint32_t) (rem.v64>>2) * recipSqrt32)>>32;
+    q = ((uint32_t) (rem.v64>>2) * (uint_fast64_t) recipSqrt32)>>32;
     y = softfloat_shortShiftLeft128( rem.v64, rem.v0, 29 );
     sig64Z <<= 1;
     /*------------------------------------------------------------------------
@@ -141,7 +141,7 @@ float128_t f128_sqrt( float128_t a )
     qs[0] = q;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    q = (((uint_fast64_t) (uint32_t) (rem.v64>>2) * recipSqrt32)>>32) + 2;
+    q = (((uint32_t) (rem.v64>>2) * (uint_fast64_t) recipSqrt32)>>32) + 2;
     sigZExtra = (uint64_t) ((uint_fast64_t) q<<59);
     term = softfloat_shortShiftLeft128( 0, qs[1], 53 );
     sigZ =

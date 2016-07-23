@@ -7,11 +7,11 @@
 
 <BODY>
 
-<H1>Berkeley SoftFloat Release 3a: Library Interface</H1>
+<H1>Berkeley SoftFloat Release 3b: Library Interface</H1>
 
 <P>
 John R. Hauser<BR>
-2015 October 23<BR>
+2016 July 22<BR>
 </P>
 
 
@@ -71,9 +71,10 @@ John R. Hauser<BR>
 <P>
 Berkeley SoftFloat is a software implementation of binary floating-point that
 conforms to the IEEE Standard for Floating-Point Arithmetic.
-The current release supports four binary formats:  <NOBR>32-bit</NOBR>
-single-precision, <NOBR>64-bit</NOBR> double-precision, <NOBR>80-bit</NOBR>
-double-extended-precision, and <NOBR>128-bit</NOBR> quadruple-precision.
+The current release supports five binary formats:  <NOBR>16-bit</NOBR>
+half-precision, <NOBR>32-bit</NOBR> single-precision, <NOBR>64-bit</NOBR>
+double-precision, <NOBR>80-bit</NOBR> double-extended-precision, and
+<NOBR>128-bit</NOBR> quadruple-precision.
 The following functions are supported for each format:
 <UL>
 <LI>
@@ -105,15 +106,19 @@ Information about the standard is available elsewhere.
 </P>
 
 <P>
-The current version of SoftFloat is <NOBR>Release 3a</NOBR>.
-The only difference between this version and the previous
-<NOBR>Release 3</NOBR> is the replacement of the license text supplied by the
-University of California.
+The current version of SoftFloat is <NOBR>Release 3b</NOBR>.
+This release differs from the previous <NOBR>Release 3a</NOBR> mainly in the
+addition of support for the <NOBR>16-bit</NOBR> half-precision format.
+Depending on the specific port of SoftFloat, this release may also change the
+result obtained when conversion of a floating-point number to an integer format
+overflows or is otherwise invalid.
+For more about the evolution of SoftFloat releases, see
+<A HREF="SoftFloat-history.html"><NOBR><CODE>SoftFloat-history.html</CODE></NOBR></A>.
 </P>
 
 <P>
-The functional interface of SoftFloat <NOBR>Release 3</NOBR> and afterward
-differs in many details from that of earlier releases.
+The functional interface of SoftFloat <NOBR>Release 3</NOBR> and later differs
+in many details from that of earlier releases.
 For specifics of these differences, see <NOBR>section 9</NOBR> below,
 <I>Changes from SoftFloat <NOBR>Release 2</NOBR></I>.
 </P>
@@ -145,7 +150,7 @@ strictly required.
 <P>
 Most operations not required by the original 1985 version of the IEEE
 Floating-Point Standard but added in the 2008 version are not yet supported in
-SoftFloat <NOBR>Release 3a</NOBR>.
+SoftFloat <NOBR>Release 3b</NOBR>.
 </P>
 
 
@@ -155,10 +160,10 @@ SoftFloat <NOBR>Release 3a</NOBR>.
 The SoftFloat package was written by me, <NOBR>John R.</NOBR> Hauser.
 <NOBR>Release 3</NOBR> of SoftFloat was a completely new implementation
 supplanting earlier releases.
-The project to create <NOBR>Release 3</NOBR> (and <NOBR>now 3a</NOBR>) was done
-in the employ of the University of California, Berkeley, within the Department
-of Electrical Engineering and Computer Sciences, first for the Parallel
-Computing Laboratory (Par Lab) and then for the ASPIRE Lab.
+The project to create <NOBR>Release 3</NOBR> (now <NOBR>through 3b</NOBR>) was
+done in the employ of the University of California, Berkeley, within the
+Department of Electrical Engineering and Computer Sciences, first for the
+Parallel Computing Laboratory (Par Lab) and then for the ASPIRE Lab.
 The work was officially overseen by Prof. Krste Asanovic, with funding provided
 by these sources:
 <BLOCKQUOTE>
@@ -189,12 +194,12 @@ Oracle, and Samsung.
 </P>
 
 <P>
-The following applies to the whole of SoftFloat <NOBR>Release 3a</NOBR> as well
+The following applies to the whole of SoftFloat <NOBR>Release 3b</NOBR> as well
 as to each source file individually.
 </P>
 
 <P>
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.
 All rights reserved.
 </P>
@@ -257,7 +262,7 @@ Header file <CODE>softfloat.h</CODE> depends on standard headers
 <CODE>bool</CODE> and several integer types.
 These standard headers have been part of the ISO C Standard Library since 1999.
 With any recent compiler, they are likely to be supported, even if the compiler
-does not claim complete conformance to the ISO C Standard.
+does not claim complete conformance to the latest ISO C Standard.
 For older or nonstandard compilers, a port of SoftFloat may have substitutes
 for these headers.
 Header <CODE>softfloat.h</CODE> depends only on the name <CODE>bool</CODE> from
@@ -273,6 +278,8 @@ int64_t
 uint_fast8_t
 uint_fast32_t
 uint_fast64_t
+int_fast32_t
+int_fast64_t
 </PRE>
 </BLOCKQUOTE>
 </P>
@@ -281,9 +288,13 @@ uint_fast64_t
 <H3>4.2. Floating-Point Types</H3>
 
 <P>
-The <CODE>softfloat.h</CODE> header defines four floating-point types:
+The <CODE>softfloat.h</CODE> header defines five floating-point types:
 <BLOCKQUOTE>
 <TABLE CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD><CODE>float16_t</CODE></TD>
+<TD><NOBR>16-bit</NOBR> half-precision binary format</TD>
+</TR>
 <TR>
 <TD><CODE>float32_t</CODE></TD>
 <TD><NOBR>32-bit</NOBR> single-precision binary format</TD>
@@ -304,8 +315,9 @@ Motorola format)</TD>
 </TABLE>
 </BLOCKQUOTE>
 The non-extended types are each exactly the size specified:
-<NOBR>32 bits</NOBR> for <CODE>float32_t</CODE>, <NOBR>64 bits</NOBR> for
-<CODE>float64_t</CODE>, and <NOBR>128 bits</NOBR> for <CODE>float128_t</CODE>.
+<NOBR>16 bits</NOBR> for <CODE>float16_t</CODE>, <NOBR>32 bits</NOBR> for
+<CODE>float32_t</CODE>, <NOBR>64 bits</NOBR> for <CODE>float64_t</CODE>, and
+<NOBR>128 bits</NOBR> for <CODE>float128_t</CODE>.
 Aside from these size requirements, the definitions of all these types may
 differ for different ports of SoftFloat to specific systems.
 A given port of SoftFloat may or may not define some of the floating-point
@@ -364,7 +376,7 @@ comparisons between two values in the same floating-point format.
 
 <P>
 The following operations required by the 2008 IEEE Floating-Point Standard are
-not supported in SoftFloat <NOBR>Release 3a</NOBR>:
+not supported in SoftFloat <NOBR>Release 3b</NOBR>:
 <UL>
 <LI>
 <B>nextUp</B>, <B>nextDown</B>, <B>minNum</B>, <B>maxNum</B>, <B>minNumMag</B>,
@@ -492,14 +504,17 @@ prefix, and should reference only such names as are documented.
 <H2>6. Mode Variables</H2>
 
 <P>
-The following variables control rounding mode, underflow detection, and the
-<NOBR>80-bit</NOBR> extended format&rsquo;s rounding precision:
+The following global variables control rounding mode, underflow detection, and
+the <NOBR>80-bit</NOBR> extended format&rsquo;s rounding precision:
 <BLOCKQUOTE>
 <CODE>softfloat_roundingMode</CODE><BR>
 <CODE>softfloat_detectTininess</CODE><BR>
 <CODE>extF80_roundingPrecision</CODE>
 </BLOCKQUOTE>
 These mode variables are covered in the next several subsections.
+For some SoftFloat ports, these variables may be <I>per-thread</I> (declared
+<CODE>thread_local</CODE>), meaning that different execution threads have their
+own separate copies of the variables.
 </P>
 
 <H3>6.1. Rounding Mode</H3>
@@ -616,30 +631,36 @@ meaning no exceptions.
 </P>
 
 <P>
+For some SoftFloat ports, <CODE>softfloat_exceptionFlags</CODE> may be
+<I>per-thread</I> (declared <CODE>thread_local</CODE>), meaning that different
+execution threads have their own separate instances of it.
+</P>
+
+<P>
 An individual exception flag can be cleared with the statement
 <BLOCKQUOTE>
 <CODE>softfloat_exceptionFlags &= ~softfloat_flag_&lt;<I>exception</I>&gt;;</CODE>
 </BLOCKQUOTE>
 where <CODE>&lt;<I>exception</I>&gt;</CODE> is the appropriate name.
-To raise a floating-point exception, function <CODE>softfloat_raise</CODE>
+To raise a floating-point exception, function <CODE>softfloat_raiseFlags</CODE>
 should normally be used.
 </P>
 
 <P>
 When SoftFloat detects an exception other than <I>inexact</I>, it calls
-<CODE>softfloat_raise</CODE>.
+<CODE>softfloat_raiseFlags</CODE>.
 The default version of this function simply raises the corresponding exception
 flags.
 Particular ports of SoftFloat may support alternate behavior, such as exception
-traps, by modifying the default <CODE>softfloat_raise</CODE>.
-A program may also supply its own <CODE>softfloat_raise</CODE> function to
+traps, by modifying the default <CODE>softfloat_raiseFlags</CODE>.
+A program may also supply its own <CODE>softfloat_raiseFlags</CODE> function to
 override the one from the SoftFloat library.
 </P>
 
 <P>
 Because inexact results occur frequently under most circumstances (and thus are
 hardly exceptional), SoftFloat does not ordinarily call
-<CODE>softfloat_raise</CODE> for <I>inexact</I> exceptions.
+<CODE>softfloat_raiseFlags</CODE> for <I>inexact</I> exceptions.
 It does always raise the <I>inexact</I> exception flag as required.
 </P>
 
@@ -651,6 +672,10 @@ In this section, <CODE>&lt;<I>float</I>&gt;</CODE> appears in function names as
 a substitute for one of these abbreviations:
 <BLOCKQUOTE>
 <TABLE CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD><CODE>f16</CODE></TD>
+<TD>indicates <CODE>float16_t</CODE>, passed by value</TD>
+</TR>
 <TR>
 <TD><CODE>f32</CODE></TD>
 <TD>indicates <CODE>float32_t</CODE>, passed by value</TD>
@@ -752,24 +777,14 @@ otherwise, it will not be, even if the conversion is inexact.
 </P>
 
 <P>
-Conversions from floating-point to integer raise the <I>invalid</I> exception
-if the source value cannot be rounded to a representable integer of the desired
-size (32 or 64 bits).
-In such a circumstance, if the floating-point input is a NaN or if the
-conversion is to an unsigned integer type, the largest positive integer is
-returned;
-otherwise, the largest integer with the same sign as the input is returned.
-The functions that convert to integer types never raise the <I>overflow</I>
-exception.
-</P>
-
-<P>
-Note that, when converting to an unsigned integer type, if the <I>invalid</I>
-exception is raised because the input floating-point value would round to a
-negative integer, the value returned is the <EM>maximum positive unsigned
-integer</EM>.
-Zero is not returned when the <I>invalid</I> exception is raised, even when
-zero is the closest integer to the original floating-point value.
+A conversion from floating-point to integer format raises the <I>invalid</I>
+exception if the source value cannot be rounded to a representable integer of
+the desired size (32 or 64 bits).
+In such circumstances, the integer result returned is determined by the
+particular port of SoftFloat, although typically this value will be either the
+maximum or minimum value of the integer format.
+The functions that convert to integer types never raise the floating-point
+<I>overflow</I> exception.
 </P>
 
 <P>
@@ -884,11 +899,9 @@ SoftFloat implements fused multiply-add with functions
 <BLOCKQUOTE>
 <CODE>&lt;<I>float</I>&gt;_mulAdd</CODE>
 </BLOCKQUOTE>
-Unlike other operations, fused multiple-add is supported only for the
-non-extended formats, <CODE>float32_t</CODE>, <CODE>float64_t</CODE>, and
-<CODE>float128_t</CODE>.
-No fused multiple-add function is currently provided for the
-<NOBR>80-bit</NOBR> double-extended-precision type, <CODE>extFloat80_t</CODE>.
+Unlike other operations, fused multiple-add is not supported for the
+<NOBR>80-bit</NOBR> double-extended-precision format,
+<CODE>extFloat80_t</CODE>.
 </P>
 
 <P>
@@ -971,8 +984,8 @@ no rounding.
 Depending on the relative magnitudes of the operands, the remainder
 functions can take considerably longer to execute than the other SoftFloat
 functions.
-This is inherent in the remainder operation itself and is not a flaw in the
-SoftFloat implementation.
+This is an inherent characteristic of the remainder operation itself and is not
+a flaw in the SoftFloat implementation.
 </P>
 
 <H3>8.7. Round-to-Integer Functions</H3>
@@ -1103,14 +1116,14 @@ bool f128M_isSignalingNaN( const float128_t *<I>aPtr</I> );
 SoftFloat provides a single function for raising floating-point exceptions:
 <BLOCKQUOTE>
 <PRE>
-void softfloat_raise( uint_fast8_t <I>exceptions</I> );
+void softfloat_raiseFlags( uint_fast8_t <I>exceptions</I> );
 </PRE>
 </BLOCKQUOTE>
 The <CODE><I>exceptions</I></CODE> argument is a mask indicating the set of
 exceptions to raise.
 (See earlier section 7, <I>Exceptions and Exception Flags</I>.)
 In addition to setting the specified exception flags in variable
-<CODE>softfloat_exceptionFlags</CODE>, the <CODE>softfloat_raise</CODE>
+<CODE>softfloat_exceptionFlags</CODE>, the <CODE>softfloat_raiseFlags</CODE>
 function may cause a trap or abort appropriate for the current system.
 </P>
 
@@ -1216,7 +1229,7 @@ have been renamed as follows:
 </TR>
 <TR>
 <TD><CODE>float_raise</CODE></TD>
-<TD><CODE>softfloat_raise</CODE></TD>
+<TD><CODE>softfloat_raiseFlags</CODE></TD>
 </TR>
 </TABLE>
 </BLOCKQUOTE>
@@ -1367,8 +1380,15 @@ all cases involving rounding.
 
 <P>
 <LI>
-Fused multiply-add functions have been added for the non-extended formats,
-<CODE>float32_t</CODE>, <CODE>float64_t</CODE>, and <CODE>float128_t</CODE>.
+Fused multiply-add functions have been added for all floating-point formats
+except <NOBR>80-bit</NOBR> double-extended-precision,
+<CODE>extFloat80_t</CODE>.
+</P>
+
+<P>
+<LI>
+As of <NOBR>Release 3b</NOBR>, <NOBR>16-bit</NOBR> half-precision,
+<CODE>float16_t</CODE>, is supported.
 </P>
 
 </UL>
@@ -1427,9 +1447,6 @@ Some loss of speed has been observed due to this change.
 The following improvements are anticipated for future releases of SoftFloat:
 <UL>
 <LI>
-support for the common <NOBR>16-bit</NOBR> &ldquo;half-precision&rdquo;
-floating-point format;
-<LI>
 more functions from the 2008 version of the IEEE Floating-Point Standard;
 <LI>
 consistent, defined behavior for non-canonical representations of extended
@@ -1445,7 +1462,7 @@ format <CODE>extFloat80_t</CODE> (discussed in <NOBR>section 4.4</NOBR>,
 <P>
 At the time of this writing, the most up-to-date information about SoftFloat
 and the latest release can be found at the Web page
-<A HREF="http://www.jhauser.us/arithmetic/SoftFloat.html"><CODE>http://www.jhauser.us/arithmetic/SoftFloat.html</CODE></A>.
+<A HREF="http://www.jhauser.us/arithmetic/SoftFloat.html"><NOBR><CODE>http://www.jhauser.us/arithmetic/SoftFloat.html</CODE></NOBR></A>.
 </P>
 
 

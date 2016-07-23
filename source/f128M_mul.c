@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ void
     bool signZ;
     const uint32_t *ptr;
     uint32_t uiZ96, sigA[4];
-    uint_fast8_t shiftCount;
+    uint_fast8_t shiftDist;
     uint32_t sigB[4];
     int32_t expZ;
     uint32_t sigProd[8], *extSigZPtr;
@@ -134,12 +134,12 @@ void
         sigProd[indexWord( 8, 3 )] |= 1;
     }
     extSigZPtr = &sigProd[indexMultiwordHi( 8, 5 )];
-    shiftCount = 16;
+    shiftDist = 16;
     if ( extSigZPtr[indexWordHi( 5 )] & 2 ) {
         ++expZ;
-        shiftCount = 15;
+        shiftDist = 15;
     }
-    softfloat_shortShiftLeft160M( extSigZPtr, shiftCount, extSigZPtr );
+    softfloat_shortShiftLeft160M( extSigZPtr, shiftDist, extSigZPtr );
     softfloat_roundPackMToF128M( signZ, expZ, extSigZPtr, zWPtr );
     return;
     /*------------------------------------------------------------------------

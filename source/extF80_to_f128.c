@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
 All rights reserved.
@@ -47,26 +47,26 @@ float128_t extF80_to_f128( extFloat80_t a )
     uint_fast16_t uiA64;
     uint_fast64_t uiA0;
     uint_fast16_t exp;
-    uint_fast64_t sig;
+    uint_fast64_t frac;
     struct commonNaN commonNaN;
     struct uint128 uiZ;
     bool sign;
-    struct uint128 sig128;
+    struct uint128 frac128;
     union ui128_f128 uZ;
 
     uA.f = a;
     uiA64 = uA.s.signExp;
     uiA0  = uA.s.signif;
     exp = expExtF80UI64( uiA64 );
-    sig = uiA0 & UINT64_C( 0x7FFFFFFFFFFFFFFF );
-    if ( (exp == 0x7FFF) && sig ) {
+    frac = uiA0 & UINT64_C( 0x7FFFFFFFFFFFFFFF );
+    if ( (exp == 0x7FFF) && frac ) {
         softfloat_extF80UIToCommonNaN( uiA64, uiA0, &commonNaN );
         uiZ = softfloat_commonNaNToF128UI( &commonNaN );
     } else {
         sign = signExtF80UI64( uiA64 );
-        sig128 = softfloat_shortShiftLeft128( 0, sig, 49 );
-        uiZ.v64 = packToF128UI64( sign, exp, sig128.v64 );
-        uiZ.v0  = sig128.v0;
+        frac128 = softfloat_shortShiftLeft128( 0, frac, 49 );
+        uiZ.v64 = packToF128UI64( sign, exp, frac128.v64 );
+        uiZ.v0  = frac128.v0;
     }
     uZ.ui = uiZ;
     return uZ.f;

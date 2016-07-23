@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a+, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
@@ -46,25 +46,25 @@ uint_fast32_t
      bool sign, uint_fast64_t sig, uint_fast8_t roundingMode, bool exact )
 {
     bool roundNearEven;
-    uint_fast8_t roundIncrement, roundBits;
+    uint_fast16_t roundIncrement, roundBits;
     uint_fast32_t z;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     roundNearEven = (roundingMode == softfloat_round_near_even);
-    roundIncrement = 0x40;
+    roundIncrement = 0x800;
     if ( ! roundNearEven && (roundingMode != softfloat_round_near_maxMag) ) {
         roundIncrement =
             (roundingMode
                  == (sign ? softfloat_round_min : softfloat_round_max))
-                ? 0x7F
+                ? 0xFFF
                 : 0;
     }
-    roundBits = sig & 0x7F;
+    roundBits = sig & 0xFFF;
     sig += roundIncrement;
-    if ( sig & UINT64_C( 0xFFFFFF8000000000 ) ) goto invalid;
-    z = sig>>7;
-    z &= ~(uint_fast32_t) (! (roundBits ^ 0x40) & roundNearEven);
+    if ( sig & UINT64_C( 0xFFFFF00000000000 ) ) goto invalid;
+    z = sig>>12;
+    z &= ~(uint_fast32_t) (! (roundBits ^ 0x800) & roundNearEven);
     if ( sign && z ) goto invalid;
     if ( exact && roundBits ) {
         softfloat_exceptionFlags |= softfloat_flag_inexact;

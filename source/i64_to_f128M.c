@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ void i64_to_f128M( int64_t a, float128_t *zPtr )
     uint32_t uiZ96, uiZ64;
     bool sign;
     uint64_t absA;
-    uint_fast8_t shiftCount;
+    uint_fast8_t shiftDist;
     uint32_t *ptr;
 
     zWPtr = (uint32_t *) zPtr;
@@ -67,20 +67,20 @@ void i64_to_f128M( int64_t a, float128_t *zPtr )
     if ( a ) {
         sign = (a < 0);
         absA = sign ? -(uint64_t) a : (uint64_t) a;
-        shiftCount = softfloat_countLeadingZeros64( absA ) + 17;
-        if ( shiftCount < 32 ) {
+        shiftDist = softfloat_countLeadingZeros64( absA ) + 17;
+        if ( shiftDist < 32 ) {
             ptr = zWPtr + indexMultiwordHi( 4, 3 );
             ptr[indexWord( 3, 2 )] = 0;
             ptr[indexWord( 3, 1 )] = absA>>32;
             ptr[indexWord( 3, 0 )] = absA;
-            softfloat_shortShiftLeft96M( ptr, shiftCount, ptr );
+            softfloat_shortShiftLeft96M( ptr, shiftDist, ptr );
             ptr[indexWordHi( 3 )] =
                 packToF128UI96(
-                    sign, 0x404E - shiftCount, ptr[indexWordHi( 3 )] );
+                    sign, 0x404E - shiftDist, ptr[indexWordHi( 3 )] );
             return;
         }
-        absA <<= shiftCount - 32;
-        uiZ96 = packToF128UI96( sign, 0x404E - shiftCount, absA>>32 );
+        absA <<= shiftDist - 32;
+        uiZ96 = packToF128UI96( sign, 0x404E - shiftDist, absA>>32 );
         uiZ64 = absA;
     }
     zWPtr[indexWord( 4, 3 )] = uiZ96;

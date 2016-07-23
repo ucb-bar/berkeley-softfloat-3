@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int
  softfloat_shiftNormSigF128M(
-     const uint32_t *wPtr, uint_fast8_t shiftCount, uint32_t *sigPtr )
+     const uint32_t *wPtr, uint_fast8_t shiftDist, uint32_t *sigPtr )
 {
     uint32_t wordSig;
     int32_t exp;
@@ -49,8 +49,8 @@ int
     wordSig = wPtr[indexWordHi( 4 )];
     exp = expF128UI96( wordSig );
     if ( exp ) {
-        softfloat_shortShiftLeft128M( wPtr, shiftCount, sigPtr );
-        leadingBit = 0x00010000<<shiftCount;
+        softfloat_shortShiftLeft128M( wPtr, shiftDist, sigPtr );
+        leadingBit = 0x00010000<<shiftDist;
         sigPtr[indexWordHi( 4 )] =
             (sigPtr[indexWordHi( 4 )] & (leadingBit - 1)) | leadingBit;
     } else {
@@ -70,7 +70,7 @@ int
             }
         }
         exp -= softfloat_countLeadingZeros32( wordSig );
-        softfloat_shiftLeft128M( wPtr, 1 - exp + shiftCount, sigPtr );
+        softfloat_shiftLeft128M( wPtr, 1 - exp + shiftDist, sigPtr );
     }
     return exp;
 

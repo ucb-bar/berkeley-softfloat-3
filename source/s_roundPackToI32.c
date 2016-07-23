@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a+, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
@@ -46,7 +46,7 @@ int_fast32_t
      bool sign, uint_fast64_t sig, uint_fast8_t roundingMode, bool exact )
 {
     bool roundNearEven;
-    uint_fast8_t roundIncrement, roundBits;
+    uint_fast16_t roundIncrement, roundBits;
     uint_fast32_t sig32;
     union { uint32_t ui; int32_t i; } uZ;
     int_fast32_t z;
@@ -54,19 +54,19 @@ int_fast32_t
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     roundNearEven = (roundingMode == softfloat_round_near_even);
-    roundIncrement = 0x40;
+    roundIncrement = 0x800;
     if ( ! roundNearEven && (roundingMode != softfloat_round_near_maxMag) ) {
         roundIncrement =
             (roundingMode
                  == (sign ? softfloat_round_min : softfloat_round_max))
-                ? 0x7F
+                ? 0xFFF
                 : 0;
     }
-    roundBits = sig & 0x7F;
+    roundBits = sig & 0xFFF;
     sig += roundIncrement;
-    if ( sig & UINT64_C( 0xFFFFFF8000000000 ) ) goto invalid;
-    sig32 = sig>>7;
-    sig32 &= ~(uint_fast32_t) (! (roundBits ^ 0x40) & roundNearEven);
+    if ( sig & UINT64_C( 0xFFFFF00000000000 ) ) goto invalid;
+    sig32 = sig>>12;
+    sig32 &= ~(uint_fast32_t) (! (roundBits ^ 0x800) & roundNearEven);
     uZ.ui = sign ? -sig32 : sig32;
     z = uZ.i;
     if ( z && ((z < 0) ^ sign) ) goto invalid;

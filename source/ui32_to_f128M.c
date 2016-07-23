@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All Rights Reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -53,16 +53,16 @@ void ui32_to_f128M( uint32_t a, float128_t *zPtr )
 void ui32_to_f128M( uint32_t a, float128_t *zPtr )
 {
     uint32_t *zWPtr, uiZ96, uiZ64;
-    int_fast8_t shiftCount;
+    int_fast8_t shiftDist;
     uint64_t normA;
 
     zWPtr = (uint32_t *) zPtr;
     uiZ96 = 0;
     uiZ64 = 0;
     if ( a ) {
-        shiftCount = softfloat_countLeadingZeros32( a ) + 17;
-        normA = (uint64_t) a<<shiftCount;
-        uiZ96 = packToF128UI96( 0, 0x402E - shiftCount, normA>>32 );
+        shiftDist = softfloat_countLeadingZeros32( a ) + 17;
+        normA = (uint64_t) a<<shiftDist;
+        uiZ96 = packToF128UI96( 0, 0x402E - shiftDist, normA>>32 );
         uiZ64 = normA;
     }
     zWPtr[indexWord( 4, 3 )] = uiZ96;

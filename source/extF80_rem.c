@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,6 @@ extFloat80_t extF80_rem( extFloat80_t a, extFloat80_t b )
     union { struct extFloat80M s; extFloat80_t f; } uB;
     uint_fast16_t uiB64;
     uint_fast64_t uiB0;
-    bool signB;
     int_fast32_t expB;
     uint_fast64_t sigB;
     struct exp32_sig64 normExpSig;
@@ -78,7 +77,6 @@ extFloat80_t extF80_rem( extFloat80_t a, extFloat80_t b )
     uB.f = b;
     uiB64 = uB.s.signExp;
     uiB0  = uB.s.signif;
-    signB = signExtF80UI64( uiB64 );
     expB  = expExtF80UI64( uiB64 );
     sigB  = uiB0;
     /*------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a+, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
@@ -76,7 +76,7 @@ uint_fast32_t f32_to_ui32( float32_t a, uint_fast8_t roundingMode, bool exact )
     *------------------------------------------------------------------------*/
     if ( exp ) sig |= 0x00800000;
     sig64 = (uint_fast64_t) sig<<32;
-    shiftDist = 0xAF - exp;
+    shiftDist = 0xAA - exp;
     if ( 0 < shiftDist ) sig64 = softfloat_shiftRightJam64( sig64, shiftDist );
     return softfloat_roundPackToUI32( sign, sig64, roundingMode, exact );
 

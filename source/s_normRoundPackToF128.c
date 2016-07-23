@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ float128_t
  softfloat_normRoundPackToF128(
      bool sign, int_fast32_t exp, uint_fast64_t sig64, uint_fast64_t sig0 )
 {
-    int_fast8_t shiftCount;
+    int_fast8_t shiftDist;
     struct uint128 sig128;
     union ui128_f128 uZ;
     uint_fast64_t sigExtra;
@@ -54,11 +54,11 @@ float128_t
         sig64 = sig0;
         sig0 = 0;
     }
-    shiftCount = softfloat_countLeadingZeros64( sig64 ) - 15;
-    exp -= shiftCount;
-    if ( 0 <= shiftCount ) {
-        if ( shiftCount ) {
-            sig128 = softfloat_shortShiftLeft128( sig64, sig0, shiftCount );
+    shiftDist = softfloat_countLeadingZeros64( sig64 ) - 15;
+    exp -= shiftDist;
+    if ( 0 <= shiftDist ) {
+        if ( shiftDist ) {
+            sig128 = softfloat_shortShiftLeft128( sig64, sig0, shiftDist );
             sig64 = sig128.v64;
             sig0  = sig128.v0;
         }
@@ -70,8 +70,7 @@ float128_t
         sigExtra = 0;
     } else {
         sig128Extra =
-            softfloat_shortShiftRightJam128Extra(
-                sig64, sig0, 0, -shiftCount );
+            softfloat_shortShiftRightJam128Extra( sig64, sig0, 0, -shiftDist );
         sig64 = sig128Extra.v.v64;
         sig0  = sig128Extra.v.v0;
         sigExtra = sig128Extra.extra;

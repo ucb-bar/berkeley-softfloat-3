@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -48,16 +48,16 @@ void
      struct extFloat80M *zSPtr
  )
 {
-    int_fast16_t shiftCount;
+    int_fast16_t shiftDist;
     uint32_t wordSig;
 
-    shiftCount = 0;
+    shiftDist = 0;
     wordSig = extSigPtr[indexWord( 3, 2 )];
     if ( ! wordSig ) {
-        shiftCount = 32;
+        shiftDist = 32;
         wordSig = extSigPtr[indexWord( 3, 1 )];
         if ( ! wordSig ) {
-            shiftCount = 64;
+            shiftDist = 64;
             wordSig = extSigPtr[indexWord( 3, 0 )];
             if ( ! wordSig ) {
                 zSPtr->signExp = packToExtF80UI64( sign, 0 );
@@ -66,10 +66,10 @@ void
             }
         }
     }
-    shiftCount += softfloat_countLeadingZeros32( wordSig );
-    if ( shiftCount ) {
-        exp -= shiftCount;
-        softfloat_shiftLeft96M( extSigPtr, shiftCount, extSigPtr );
+    shiftDist += softfloat_countLeadingZeros32( wordSig );
+    if ( shiftDist ) {
+        exp -= shiftDist;
+        softfloat_shiftLeft96M( extSigPtr, shiftDist, extSigPtr );
     }
     softfloat_roundPackMToExtF80M(
         sign, exp, extSigPtr, roundingPrecision, zSPtr );

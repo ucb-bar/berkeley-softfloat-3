@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -74,23 +74,23 @@ void
             (uint64_t) aPtr[indexWord( 4, 1 )] * wordB + (dwordProd>>32);
         wordZ = zPtr[indexWord( 5, 1 )] + (uint32_t) dwordProd + carry;
         zPtr[indexWord( 5, 1 )] = wordZ;
-        carry =
-            carry ? (wordZ <= (uint32_t) dwordProd)
-                : (wordZ < (uint32_t) dwordProd);
+        if ( wordZ != (uint32_t) dwordProd ) {
+            carry = (wordZ < (uint32_t) dwordProd);
+        }
         dwordProd =
             (uint64_t) aPtr[indexWord( 4, 2 )] * wordB + (dwordProd>>32);
         wordZ = zPtr[indexWord( 5, 2 )] + (uint32_t) dwordProd + carry;
         zPtr[indexWord( 5, 2 )] = wordZ;
-        carry =
-            carry ? (wordZ <= (uint32_t) dwordProd)
-                : (wordZ < (uint32_t) dwordProd);
+        if ( wordZ != (uint32_t) dwordProd ) {
+            carry = (wordZ < (uint32_t) dwordProd);
+        }
         dwordProd =
             (uint64_t) aPtr[indexWord( 4, 3 )] * wordB + (dwordProd>>32);
         wordZ = zPtr[indexWord( 5, 3 )] + (uint32_t) dwordProd + carry;
         zPtr[indexWord( 5, 3 )] = wordZ;
-        carry =
-            carry ? (wordZ <= (uint32_t) dwordProd)
-                : (wordZ < (uint32_t) dwordProd);
+        if ( wordZ != (uint32_t) dwordProd ) {
+            carry = (wordZ < (uint32_t) dwordProd);
+        }
         zPtr[indexWord( 5, 4 )] = (dwordProd>>32) + carry;
     } while ( zPtr != lastZPtr );
 

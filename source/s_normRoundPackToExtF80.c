@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ extFloat80_t
      uint_fast8_t roundingPrecision
  )
 {
-    int_fast8_t shiftCount;
+    int_fast8_t shiftDist;
     struct uint128 sig128;
 
     if ( ! sig ) {
@@ -56,10 +56,10 @@ extFloat80_t
         sig = sigExtra;
         sigExtra = 0;
     }
-    shiftCount = softfloat_countLeadingZeros64( sig );
-    exp -= shiftCount;
-    if ( shiftCount ) {
-        sig128 = softfloat_shortShiftLeft128( sig, sigExtra, shiftCount );
+    shiftDist = softfloat_countLeadingZeros64( sig );
+    exp -= shiftDist;
+    if ( shiftDist ) {
+        sig128 = softfloat_shortShiftLeft128( sig, sigExtra, shiftDist );
         sig = sig128.v64;
         sigExtra = sig128.v0;
     }

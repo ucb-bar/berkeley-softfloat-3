@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C header file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a+, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define init_detectTininess softfloat_tininess_afterRounding
 
 /*----------------------------------------------------------------------------
-| The values to return on conversions to 32-bit integer format that raise an
+| The values to return on conversions to 32-bit integer formats that raise an
 | invalid exception.
 *----------------------------------------------------------------------------*/
 #define ui32_fromPosOverflow 0xFFFFFFFF
@@ -58,7 +58,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define i32_fromNaN          0x7FFFFFFF
 
 /*----------------------------------------------------------------------------
-| The values to return on conversions to 64-bit integer format that raise an
+| The values to return on conversions to 64-bit integer formats that raise an
 | invalid exception.
 *----------------------------------------------------------------------------*/
 #define ui64_fromPosOverflow UINT64_C( 0xFFFFFFFFFFFFFFFF )
@@ -80,6 +80,41 @@ struct commonNaN {
     uint64_t v64, v0;
 #endif
 };
+
+/*----------------------------------------------------------------------------
+| The bit pattern for a default generated 16-bit floating-point NaN.
+*----------------------------------------------------------------------------*/
+#define defaultNaNF16UI 0xFE00
+
+/*----------------------------------------------------------------------------
+| Returns true when 16-bit unsigned integer `uiA' has the bit pattern of a
+| 16-bit floating-point signaling NaN.
+| Note:  This macro evaluates its argument more than once.
+*----------------------------------------------------------------------------*/
+#define softfloat_isSigNaNF16UI( uiA ) ((((uiA) & 0x7E00) == 0x7C00) && ((uiA) & 0x01FF))
+
+/*----------------------------------------------------------------------------
+| Assuming `uiA' has the bit pattern of a 16-bit floating-point NaN, converts
+| this NaN to the common NaN form, and stores the resulting common NaN at the
+| location pointed to by `zPtr'.  If the NaN is a signaling NaN, the invalid
+| exception is raised.
+*----------------------------------------------------------------------------*/
+void softfloat_f16UIToCommonNaN( uint_fast16_t uiA, struct commonNaN *zPtr );
+
+/*----------------------------------------------------------------------------
+| Converts the common NaN pointed to by `aPtr' into a 16-bit floating-point
+| NaN, and returns the bit pattern of this value as an unsigned integer.
+*----------------------------------------------------------------------------*/
+uint_fast16_t softfloat_commonNaNToF16UI( const struct commonNaN *aPtr );
+
+/*----------------------------------------------------------------------------
+| Interpreting `uiA' and `uiB' as the bit patterns of two 16-bit floating-
+| point values, at least one of which is a NaN, returns the bit pattern of
+| the combined NaN result.  If either `uiA' or `uiB' has the pattern of a
+| signaling NaN, the invalid exception is raised.
+*----------------------------------------------------------------------------*/
+uint_fast16_t
+ softfloat_propagateNaNF16UI( uint_fast16_t uiA, uint_fast16_t uiB );
 
 /*----------------------------------------------------------------------------
 | The bit pattern for a default generated 32-bit floating-point NaN.

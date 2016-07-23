@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ bool softfloat_isNaNF128M( const uint32_t *aWPtr )
     uint32_t uiA96;
 
     uiA96 = aWPtr[indexWordHi( 4 )];
-    if ( (uiA96 & 0x7FFF0000) != 0x7FFF0000 ) return false;
+    if ( (~uiA96 & 0x7FFF0000) != 0 ) return false;
     return
         ((uiA96 & 0x0000FFFF) != 0)
             || ((aWPtr[indexWord( 4, 2 )] | aWPtr[indexWord( 4, 1 )]

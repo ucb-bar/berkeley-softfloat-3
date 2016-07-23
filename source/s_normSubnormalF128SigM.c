@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -41,21 +41,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int softfloat_normSubnormalF128SigM( uint32_t *sigPtr )
 {
     const uint32_t *ptr;
-    int_fast16_t shiftCount;
+    int_fast16_t shiftDist;
     uint32_t wordSig;
 
     ptr = sigPtr + indexWordHi( 4 );
-    shiftCount = 0;
+    shiftDist = 0;
     for (;;) {
         wordSig = *ptr;
         if ( wordSig ) break;
-        shiftCount += 32;
-        if ( 128 <= shiftCount ) return 1;
+        shiftDist += 32;
+        if ( 128 <= shiftDist ) return 1;
         ptr -= wordIncr;
     }
-    shiftCount += softfloat_countLeadingZeros32( wordSig ) - 15;
-    if ( shiftCount ) softfloat_shiftLeft128M( sigPtr, shiftCount, sigPtr );
-    return 1 - shiftCount;
+    shiftDist += softfloat_countLeadingZeros32( wordSig ) - 15;
+    if ( shiftDist ) softfloat_shiftLeft128M( sigPtr, shiftDist, sigPtr );
+    return 1 - shiftDist;
 
 }
 

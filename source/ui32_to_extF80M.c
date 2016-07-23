@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All Rights Reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -55,15 +55,15 @@ void ui32_to_extF80M( uint32_t a, extFloat80_t *zPtr )
     struct extFloat80M *zSPtr;
     uint_fast16_t uiZ64;
     uint64_t sigZ;
-    int_fast8_t shiftCount;
+    int_fast8_t shiftDist;
 
     zSPtr = (struct extFloat80M *) zPtr;
     uiZ64 = 0;
     sigZ = 0;
     if ( a ) {
-        shiftCount = softfloat_countLeadingZeros32( a );
-        uiZ64 = packToExtF80UI64( 0, 0x401E - shiftCount );
-        sigZ = (uint64_t) (a<<shiftCount)<<32;
+        shiftDist = softfloat_countLeadingZeros32( a );
+        uiZ64 = packToExtF80UI64( 0, 0x401E - shiftDist );
+        sigZ = (uint64_t) (a<<shiftDist)<<32;
     }
     zSPtr->signExp = uiZ64;
     zSPtr->signif = sigZ;

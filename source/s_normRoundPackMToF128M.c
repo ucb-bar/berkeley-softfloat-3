@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -44,16 +44,16 @@ void
      bool sign, int32_t exp, uint32_t *extSigPtr, uint32_t *zWPtr )
 {
     const uint32_t *ptr;
-    int_fast16_t shiftCount;
+    int_fast16_t shiftDist;
     uint32_t wordSig;
 
     ptr = extSigPtr + indexWordHi( 5 );
-    shiftCount = 0;
+    shiftDist = 0;
     for (;;) {
         wordSig = *ptr;
         if ( wordSig ) break;
-        shiftCount += 32;
-        if ( 160 <= shiftCount ) {
+        shiftDist += 32;
+        if ( 160 <= shiftDist ) {
             zWPtr[indexWordHi( 4 )] = packToF128UI96( sign, 0, 0 );
             zWPtr[indexWord( 4, 2 )] = 0;
             zWPtr[indexWord( 4, 1 )] = 0;
@@ -62,10 +62,10 @@ void
         }
         ptr -= wordIncr;
     }
-    shiftCount += softfloat_countLeadingZeros32( wordSig ) - 15;
-    if ( shiftCount ) {
-        exp -= shiftCount;
-        softfloat_shiftLeft160M( extSigPtr, shiftCount, extSigPtr );
+    shiftDist += softfloat_countLeadingZeros32( wordSig ) - 15;
+    if ( shiftDist ) {
+        exp -= shiftDist;
+        softfloat_shiftLeft160M( extSigPtr, shiftDist, extSigPtr );
     }
     softfloat_roundPackMToF128M( sign, exp, extSigPtr, zWPtr );
 

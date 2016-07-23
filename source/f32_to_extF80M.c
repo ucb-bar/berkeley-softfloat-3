@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -59,43 +59,51 @@ void f32_to_extF80M( float32_t a, extFloat80_t *zPtr )
     uint32_t uiA;
     bool sign;
     int_fast16_t exp;
-    uint32_t sig;
+    uint32_t frac;
     struct commonNaN commonNaN;
     uint_fast16_t uiZ64;
-    uint64_t uiZ0;
+    uint32_t uiZ32;
     struct exp16_sig32 normExpSig;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     zSPtr = (struct extFloat80M *) zPtr;
     uA.f = a;
     uiA = uA.ui;
     sign = signF32UI( uiA );
     exp  = expF32UI( uiA );
-    sig  = fracF32UI( uiA );
+    frac = fracF32UI( uiA );
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     if ( exp == 0xFF ) {
-        if ( sig ) {
+        if ( frac ) {
             softfloat_f32UIToCommonNaN( uiA, &commonNaN );
             softfloat_commonNaNToExtF80M( &commonNaN, zSPtr );
             return;
         }
         uiZ64 = packToExtF80UI64( sign, 0x7FFF );
-        uiZ0  = UINT64_C( 0x8000000000000000 );
+        uiZ32 = 0x80000000;
         goto uiZ;
     }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     if ( ! exp ) {
-        if ( ! sig ) {
+        if ( ! frac ) {
             uiZ64 = packToExtF80UI64( sign, 0 );
-            uiZ0  = 0;
+            uiZ32 = 0;
             goto uiZ;
         }
-        normExpSig = softfloat_normSubnormalF32Sig( sig );
+        normExpSig = softfloat_normSubnormalF32Sig( frac );
         exp = normExpSig.exp;
-        sig = normExpSig.sig;
+        frac = normExpSig.sig;
     }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     uiZ64 = packToExtF80UI64( sign, exp + 0x3F80 );
-    uiZ0  = UINT64_C( 0x8000000000000000 ) | (uint64_t) sig<<40;
+    uiZ32 = 0x80000000 | (uint32_t) frac<<8;
  uiZ:
     zSPtr->signExp = uiZ64;
-    zSPtr->signif  = uiZ0;
+    zSPtr->signif = (uint64_t) uiZ32<<32;
 
 }
 

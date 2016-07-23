@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3a, by John R. Hauser.
+Package, Release 3b, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -41,23 +41,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 struct exp32_sig128
  softfloat_normSubnormalF128Sig( uint_fast64_t sig64, uint_fast64_t sig0 )
 {
-    int_fast8_t shiftCount;
+    int_fast8_t shiftDist;
     struct exp32_sig128 z;
 
     if ( ! sig64 ) {
-        shiftCount = softfloat_countLeadingZeros64( sig0 ) - 15;
-        z.exp = -63 - shiftCount;
-        if ( shiftCount < 0 ) {
-            z.sig.v64 = sig0>>-shiftCount;
-            z.sig.v0  = sig0<<(shiftCount & 63);
+        shiftDist = softfloat_countLeadingZeros64( sig0 ) - 15;
+        z.exp = -63 - shiftDist;
+        if ( shiftDist < 0 ) {
+            z.sig.v64 = sig0>>-shiftDist;
+            z.sig.v0  = sig0<<(shiftDist & 63);
         } else {
-            z.sig.v64 = sig0<<shiftCount;
+            z.sig.v64 = sig0<<shiftDist;
             z.sig.v0  = 0;
         }
     } else {
-        shiftCount = softfloat_countLeadingZeros64( sig64 ) - 15;
-        z.exp = 1 - shiftCount;
-        z.sig = softfloat_shortShiftLeft128( sig64, sig0, shiftCount );
+        shiftDist = softfloat_countLeadingZeros64( sig64 ) - 15;
+        z.exp = 1 - shiftDist;
+        z.sig = softfloat_shortShiftLeft128( sig64, sig0, shiftDist );
     }
     return z;
 
