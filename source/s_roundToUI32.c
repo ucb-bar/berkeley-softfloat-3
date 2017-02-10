@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.  All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -41,15 +41,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-int_fast32_t
- softfloat_roundPackToI32(
+uint_fast32_t
+ softfloat_roundToUI32(
      bool sign, uint_fast64_t sig, uint_fast8_t roundingMode, bool exact )
 {
     bool roundNearEven;
     uint_fast16_t roundIncrement, roundBits;
-    uint_fast32_t sig32;
-    union { uint32_t ui; int32_t i; } uZ;
-    int_fast32_t z;
+    uint_fast32_t z;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -65,11 +63,9 @@ int_fast32_t
     roundBits = sig & 0xFFF;
     sig += roundIncrement;
     if ( sig & UINT64_C( 0xFFFFF00000000000 ) ) goto invalid;
-    sig32 = sig>>12;
-    sig32 &= ~(uint_fast32_t) (! (roundBits ^ 0x800) & roundNearEven);
-    uZ.ui = sign ? -sig32 : sig32;
-    z = uZ.i;
-    if ( z && ((z < 0) ^ sign) ) goto invalid;
+    z = sig>>12;
+    z &= ~(uint_fast32_t) (! (roundBits ^ 0x800) & roundNearEven);
+    if ( sign && z ) goto invalid;
     if ( exact && roundBits ) {
         softfloat_exceptionFlags |= softfloat_flag_inexact;
     }
@@ -78,7 +74,7 @@ int_fast32_t
     *------------------------------------------------------------------------*/
  invalid:
     softfloat_raiseFlags( softfloat_flag_invalid );
-    return sign ? i32_fromNegOverflow : i32_fromPosOverflow;
+    return sign ? ui32_fromNegOverflow : ui32_fromPosOverflow;
 
 }
 

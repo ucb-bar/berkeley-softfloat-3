@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2017 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -94,10 +94,11 @@ float16_t f16_roundToInt( float16_t a, uint_fast8_t roundingMode, bool exact )
     } else if ( roundingMode == softfloat_round_near_even ) {
         uiZ += lastBitMask>>1;
         if ( ! (uiZ & roundBitsMask) ) uiZ &= ~lastBitMask;
-    } else if ( roundingMode != softfloat_round_minMag ) {
-        if ( signF16UI( uiZ ) ^ (roundingMode == softfloat_round_max) ) {
-            uiZ += roundBitsMask;
-        }
+    } else if (
+        roundingMode
+            == (signF16UI( uiZ ) ? softfloat_round_min : softfloat_round_max)
+    ) {
+        uiZ += roundBitsMask;
     }
     uiZ &= ~roundBitsMask;
     if ( exact && (uiZ != uiA) ) {

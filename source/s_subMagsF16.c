@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.  All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -167,6 +167,11 @@ float16_t softfloat_subMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
         ) {
             --uiZ;
         }
+#ifdef SOFTFLOAT_ROUND_ODD
+        else if ( roundingMode == softfloat_round_odd ) {
+            uiZ = (uiZ - 1) | 1;
+        }
+#endif
     }
     softfloat_exceptionFlags |= softfloat_flag_inexact;
     goto uiZ;

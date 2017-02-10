@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2017 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,8 @@ float128_t
     struct uint128 sig128;
     union ui128_f128 uZ;
 
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     roundingMode = softfloat_roundingMode;
     roundNearEven = (roundingMode == softfloat_round_near_even);
     doIncrement = (UINT64_C( 0x8000000000000000 ) <= sigExtra);
@@ -65,8 +67,12 @@ float128_t
                  == (sign ? softfloat_round_min : softfloat_round_max))
                 && sigExtra;
     }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
     if ( 0x7FFD <= (uint32_t) exp ) {
         if ( exp < 0 ) {
+            /*----------------------------------------------------------------
+            *----------------------------------------------------------------*/
             isTiny =
                    (softfloat_detectTininess
                         == softfloat_tininess_beforeRounding)
@@ -108,6 +114,8 @@ float128_t
                        )
                     && doIncrement)
         ) {
+            /*----------------------------------------------------------------
+            *----------------------------------------------------------------*/
             softfloat_raiseFlags(
                 softfloat_flag_overflow | softfloat_flag_inexact );
             if (
@@ -127,7 +135,17 @@ float128_t
             goto uiZ;
         }
     }
-    if ( sigExtra ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    if ( sigExtra ) {
+        softfloat_exceptionFlags |= softfloat_flag_inexact;
+#ifdef SOFTFLOAT_ROUND_ODD
+        if ( roundingMode == softfloat_round_odd ) {
+            sig0 |= 1;
+            goto packReturn;
+        }
+#endif
+    }
     if ( doIncrement ) {
         sig128 = softfloat_add128( sig64, sig0, 0, 1 );
         sig64 = sig128.v64;
@@ -139,6 +157,9 @@ float128_t
     } else {
         if ( ! (sig64 | sig0) ) exp = 0;
     }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+ packReturn:
     uiZ64 = packToF128UI64( sign, exp, sig64 );
     uiZ0  = sig0;
  uiZ:

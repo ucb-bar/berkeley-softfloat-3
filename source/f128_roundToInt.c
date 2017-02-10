@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2017 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -94,12 +94,12 @@ float128_t
                     uiZ.v0 &= ~lastBitMask;
                 }
             }
-        } else if ( roundingMode != softfloat_round_minMag ) {
-            if (
-                signF128UI64( uiZ.v64 ) ^ (roundingMode == softfloat_round_max)
-            ) {
-                uiZ = softfloat_add128( uiZ.v64, uiZ.v0, 0, roundBitsMask );
-            }
+        } else if (
+            roundingMode
+                == (signF128UI64( uiZ.v64 ) ? softfloat_round_min
+                        : softfloat_round_max)
+        ) {
+            uiZ = softfloat_add128( uiZ.v64, uiZ.v0, 0, roundBitsMask );
         }
         uiZ.v0 &= ~roundBitsMask;
     } else {
@@ -140,12 +140,12 @@ float128_t
             if ( ! ((uiZ.v64 & roundBitsMask) | uiA0) ) {
                 uiZ.v64 &= ~lastBitMask;
             }
-        } else if ( roundingMode != softfloat_round_minMag ) {
-            if (
-                signF128UI64( uiZ.v64 ) ^ (roundingMode == softfloat_round_max)
-            ) {
-                uiZ.v64 = (uiZ.v64 | (uiA0 != 0)) + roundBitsMask;
-            }
+        } else if (
+            roundingMode
+                == (signF128UI64( uiZ.v64 ) ? softfloat_round_min
+                        : softfloat_round_max)
+        ) {
+            uiZ.v64 = (uiZ.v64 | (uiA0 != 0)) + roundBitsMask;
         }
         uiZ.v64 &= ~roundBitsMask;
     }

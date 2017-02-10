@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C header file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.  All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -58,27 +58,24 @@ enum {
 
 /*----------------------------------------------------------------------------
 *----------------------------------------------------------------------------*/
-uint_fast32_t
- softfloat_roundPackToUI32( bool, uint_fast64_t, uint_fast8_t, bool );
+uint_fast32_t softfloat_roundToUI32( bool, uint_fast64_t, uint_fast8_t, bool );
 
 #ifdef SOFTFLOAT_FAST_INT64
 uint_fast64_t
- softfloat_roundPackToUI64(
+ softfloat_roundToUI64(
      bool, uint_fast64_t, uint_fast64_t, uint_fast8_t, bool );
 #else
-uint_fast64_t
- softfloat_roundPackMToUI64( bool, uint32_t *, uint_fast8_t, bool );
+uint_fast64_t softfloat_roundMToUI64( bool, uint32_t *, uint_fast8_t, bool );
 #endif
 
-int_fast32_t
- softfloat_roundPackToI32( bool, uint_fast64_t, uint_fast8_t, bool );
+int_fast32_t softfloat_roundToI32( bool, uint_fast64_t, uint_fast8_t, bool );
 
 #ifdef SOFTFLOAT_FAST_INT64
 int_fast64_t
- softfloat_roundPackToI64(
+ softfloat_roundToI64(
      bool, uint_fast64_t, uint_fast64_t, uint_fast8_t, bool );
 #else
-int_fast64_t softfloat_roundPackMToI64( bool, uint32_t *, uint_fast8_t, bool );
+int_fast64_t softfloat_roundMToI64( bool, uint32_t *, uint_fast8_t, bool );
 #endif
 
 /*----------------------------------------------------------------------------

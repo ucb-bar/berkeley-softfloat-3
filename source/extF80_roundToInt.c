@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2017 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -125,10 +125,10 @@ extFloat80_t
     } else if ( roundingMode == softfloat_round_near_even ) {
         sigZ += lastBitMask>>1;
         if ( ! (sigZ & roundBitsMask) ) sigZ &= ~lastBitMask;
-    } else if ( roundingMode != softfloat_round_minMag ) {
-        if ( (signUI64 != 0) ^ (roundingMode == softfloat_round_max) ) {
-            sigZ += roundBitsMask;
-        }
+    } else if (
+        roundingMode == (signUI64 ? softfloat_round_min : softfloat_round_max)
+    ) {
+        sigZ += roundBitsMask;
     }
     sigZ &= ~roundBitsMask;
     if ( ! sigZ ) {

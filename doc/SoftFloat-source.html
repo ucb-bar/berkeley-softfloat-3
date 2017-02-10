@@ -7,11 +7,11 @@
 
 <BODY>
 
-<H1>Berkeley SoftFloat Release 3b: Source Documentation</H1>
+<H1>Berkeley SoftFloat Release 3c: Source Documentation</H1>
 
 <P>
 John R. Hauser<BR>
-2016 July 22<BR>
+2017 February 10<BR>
 </P>
 
 
@@ -69,7 +69,7 @@ SoftFloat has been successfully compiled with the GNU C Compiler
 <NOBR>Release 2</NOBR> or earlier.
 Changes to the interface of SoftFloat functions are documented in
 <A HREF="SoftFloat.html"><NOBR><CODE>SoftFloat.html</CODE></NOBR></A>.
-The current version of SoftFloat is <NOBR>Release 3b</NOBR>.
+The current version of SoftFloat is <NOBR>Release 3c</NOBR>.
 </P>
 
 
@@ -103,8 +103,8 @@ integer types.
 If these headers are not supplied with the C compiler, minimal substitutes must
 be provided.
 SoftFloat&rsquo;s dependence on these headers is detailed later in
-<NOBR>section 5.1</NOBR>, <I>Standard Headers &lt;stdbool.h&gt; and
-&lt;stdint.h&gt;</I>.
+<NOBR>section 5.1</NOBR>, <I>Standard Headers <CODE>&lt;stdbool.h&gt;</CODE>
+and <CODE>&lt;stdint.h&gt;</CODE></I>.
 </P>
 
 
@@ -114,7 +114,7 @@ SoftFloat&rsquo;s dependence on these headers is detailed later in
 The SoftFloat package was written by me, <NOBR>John R.</NOBR> Hauser.
 <NOBR>Release 3</NOBR> of SoftFloat was a completely new implementation
 supplanting earlier releases.
-The project to create <NOBR>Release 3</NOBR> (now <NOBR>through 3b</NOBR>) was
+The project to create <NOBR>Release 3</NOBR> (now <NOBR>through 3c</NOBR>) was
 done in the employ of the University of California, Berkeley, within the
 Department of Electrical Engineering and Computer Sciences, first for the
 Parallel Computing Laboratory (Par Lab) and then for the ASPIRE Lab.
@@ -148,13 +148,13 @@ Oracle, and Samsung.
 </P>
 
 <P>
-The following applies to the whole of SoftFloat <NOBR>Release 3b</NOBR> as well
+The following applies to the whole of SoftFloat <NOBR>Release 3c</NOBR> as well
 as to each source file individually.
 </P>
 
 <P>
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.
 All rights reserved.
 </P>
 
@@ -260,13 +260,13 @@ contain sample files for creating new target directories.
 <P>
 Ignoring the <CODE>template</CODE> directories, the supplied target directories
 are intended to follow a naming system of
-<NOBR><CODE>&lt;execution-environment&gt;-&lt;compiler&gt;</CODE></NOBR>.
+<NOBR><CODE>&lt;<I>execution-environment</I>&gt;-&lt;<I>compiler</I>&gt;</CODE></NOBR>.
 For the example targets,
-<NOBR><CODE>&lt;execution-environment&gt;</CODE></NOBR> is
+<NOBR><CODE>&lt;<I>execution-environment</I>&gt;</CODE></NOBR> is
 <NOBR><CODE>Linux-386</CODE></NOBR>, <NOBR><CODE>Linux-386-SSE2</CODE></NOBR>,
 <NOBR><CODE>Linux-x86_64</CODE></NOBR>, <CODE>Win32</CODE>,
 <NOBR><CODE>Win32-SSE2</CODE></NOBR>, or <CODE>Win64</CODE>, and
-<NOBR><CODE>&lt;compiler&gt;</CODE></NOBR> is <CODE>GCC</CODE>,
+<NOBR><CODE>&lt;<I>compiler</I>&gt;</CODE></NOBR> is <CODE>GCC</CODE>,
 <CODE>MinGW</CODE>, or <NOBR><CODE>MinGW-w64</CODE></NOBR>.
 </P>
 
@@ -366,9 +366,9 @@ The files in a specialization subdirectory must determine:
 <LI>
 whether tininess for underflow is detected before or after rounding by default;
 <LI>
-what (if anything) special happens when exceptions are raised;
-<LI>
 how signaling NaNs are distinguished from quiet NaNs;
+<LI>
+what (if anything) special happens when exceptions are raised;
 <LI>
 the default generated quiet NaNs;
 <LI>
@@ -405,47 +405,13 @@ needed.
 
 <P>
 The SoftFloat source files adapt the floating-point implementation according to
-a few C preprocessor macros:
+several C preprocessor macros:
 <BLOCKQUOTE>
 <DL>
 <DT><CODE>LITTLEENDIAN</CODE>
 <DD>
 Must be defined for little-endian machines; must not be defined for big-endian
 machines.
-<DT><CODE>SOFTFLOAT_FAST_INT64</CODE>
-<DD>
-Can be defined to indicate that the build target&rsquo;s implementation of
-<NOBR>64-bit</NOBR> arithmetic is efficient.
-For newer <NOBR>64-bit</NOBR> processors, this macro should usually be defined.
-For very small microprocessors whose buses and registers are <NOBR>8-bit</NOBR>
-or <NOBR>16-bit</NOBR> in size, this macro should usually not be defined.
-Whether this macro should be defined for a <NOBR>32-bit</NOBR> processor may
-depend on the target machine and the applications that will use SoftFloat.
-<DT><CODE>SOFTFLOAT_FAST_DIV32TO16</CODE>
-<DD>
-Can be defined to indicate that the target&rsquo;s division operator
-<NOBR>in C</NOBR> (written as <CODE>/</CODE>) is reasonably efficient for
-dividing a <NOBR>32-bit</NOBR> unsigned integer by a <NOBR>16-bit</NOBR>
-unsigned integer.
-Setting this macro may affect the performance of function <CODE>f16_div</CODE>.
-<DT><CODE>SOFTFLOAT_FAST_DIV64TO32</CODE>
-<DD>
-Can be defined to indicate that the target&rsquo;s division operator
-<NOBR>in C</NOBR> (written as <CODE>/</CODE>) is reasonably efficient for
-dividing a <NOBR>64-bit</NOBR> unsigned integer by a <NOBR>32-bit</NOBR>
-unsigned integer.
-Setting this macro may affect the performance of division, remainder, and
-square root operations other than <CODE>f16_div</CODE>.
-<DT><CODE>INLINE_LEVEL</CODE>
-<DD>
-Can be defined to an integer to determine the degree of inlining requested of
-the compiler.
-Larger numbers request that more inlining be done.
-If this macro is not defined or is defined to a value less <NOBR>than 1</NOBR>
-(zero or negative), no inlining is requested.
-The maximum effective value is no higher <NOBR>than 5</NOBR>.
-Defining this macro to a value greater than 5 is the same as defining it
-<NOBR>to 5</NOBR>.
 <DT><CODE>INLINE</CODE>
 <DD>
 Specifies the sequence of tokens used to indicate that a C function should be
@@ -473,13 +439,55 @@ default to being ordinary global variables.
 Depending on the compiler, possible valid definitions of this macro include
 <CODE>_Thread_local</CODE> and <CODE>__thread</CODE>.
 </DL>
+<DL>
+<DT><CODE>SOFTFLOAT_ROUND_ODD</CODE>
+<DD>
+Can be defined to enable support for optional rounding mode
+<CODE>softfloat_round_odd</CODE>.
+</DL>
+<DL>
+<DT><CODE>INLINE_LEVEL</CODE>
+<DD>
+Can be defined to an integer to determine the degree of inlining requested of
+the compiler.
+Larger numbers request that more inlining be done.
+If this macro is not defined or is defined to a value less <NOBR>than 1</NOBR>
+(zero or negative), no inlining is requested.
+The maximum effective value is no higher <NOBR>than 5</NOBR>.
+Defining this macro to a value greater than 5 is the same as defining it
+<NOBR>to 5</NOBR>.
+<DT><CODE>SOFTFLOAT_FAST_INT64</CODE>
+<DD>
+Can be defined to indicate that the build target&rsquo;s implementation of
+<NOBR>64-bit</NOBR> arithmetic is efficient.
+For newer <NOBR>64-bit</NOBR> processors, this macro should usually be defined.
+For very small microprocessors whose buses and registers are <NOBR>8-bit</NOBR>
+or <NOBR>16-bit</NOBR> in size, this macro should usually not be defined.
+Whether this macro should be defined for a <NOBR>32-bit</NOBR> processor may
+depend on the target machine and the applications that will use SoftFloat.
+<DT><CODE>SOFTFLOAT_FAST_DIV32TO16</CODE>
+<DD>
+Can be defined to indicate that the target&rsquo;s division operator
+<NOBR>in C</NOBR> (written as <CODE>/</CODE>) is reasonably efficient for
+dividing a <NOBR>32-bit</NOBR> unsigned integer by a <NOBR>16-bit</NOBR>
+unsigned integer.
+Setting this macro may affect the performance of function <CODE>f16_div</CODE>.
+<DT><CODE>SOFTFLOAT_FAST_DIV64TO32</CODE>
+<DD>
+Can be defined to indicate that the target&rsquo;s division operator
+<NOBR>in C</NOBR> (written as <CODE>/</CODE>) is reasonably efficient for
+dividing a <NOBR>64-bit</NOBR> unsigned integer by a <NOBR>32-bit</NOBR>
+unsigned integer.
+Setting this macro may affect the performance of division, remainder, and
+square root operations other than <CODE>f16_div</CODE>.
+</DL>
 </BLOCKQUOTE>
 </P>
 
 <P>
-Following the usual custom <NOBR>for C</NOBR>, for the first four macros (all
-except <CODE>INLINE_LEVEL</CODE>, <CODE>INLINE</CODE>, and
-<CODE>THREAD_LOCAL</CODE>), the content of any definition is irrelevant;
+Following the usual custom <NOBR>for C</NOBR>, for most of these macros (all
+except <CODE>INLINE</CODE>, <CODE>THREAD_LOCAL</CODE>, and
+<CODE>INLINE_LEVEL</CODE>), the content of any definition is irrelevant;
 what matters is a macro&rsquo;s effect on <CODE>#ifdef</CODE> directives.
 </P>
 
@@ -488,8 +496,8 @@ It is recommended that any definitions of macros <CODE>LITTLEENDIAN</CODE>,
 <CODE>INLINE</CODE>, and <CODE>THREAD_LOCAL</CODE> be made in a build
 target&rsquo;s <CODE>platform.h</CODE> header file, because these macros are
 expected to be determined inflexibly by the target machine and compiler.
-The other three macros control optimization and might be better located in the
-target&rsquo;s Makefile (or its equivalent).
+The other five macros select options and control optimization, and thus might
+be better located in the target&rsquo;s Makefile (or its equivalent).
 </P>
 
 
@@ -552,13 +560,14 @@ When a desired replacement implementation is a function, not a macro, it is
 sufficient for <CODE>platform.h</CODE> to include the line
 <BLOCKQUOTE>
 <PRE>
-#define &lt;function-name&gt; &lt;function-name&gt;
+#define &lt;<I>function-name</I>&gt; &lt;<I>function-name</I>&gt;
 </PRE>
 </BLOCKQUOTE>
-where <NOBR><CODE>&lt;function-name&gt;</CODE></NOBR> is the name of the
+where <NOBR><CODE>&lt;<I>function-name</I>&gt;</CODE></NOBR> is the name of the
 function.
-This technically defines <NOBR><CODE>&lt;function-name&gt;</CODE></NOBR> as a
-macro, but one that resolves to the same name, which may then be a function.
+This technically defines <NOBR><CODE>&lt;<I>function-name</I>&gt;</CODE></NOBR>
+as a macro, but one that resolves to the same name, which may then be a
+function.
 (A preprocessor that conforms to the C Standard must limit recursive macro
 expansion from being applied more than once.)
 </P>
@@ -583,8 +592,8 @@ measures the speed of SoftFloat&rsquo;s floating-point functions.
 Header file <CODE>softfloat.h</CODE> defines the SoftFloat interface as seen by
 clients.
 If the SoftFloat library will be made a common library for programs on a
-particular system, the supplied <CODE>softfloat.h</CODE> has a couple of
-deficiencies for this purpose:
+system, the supplied <CODE>softfloat.h</CODE> has a couple of deficiencies for
+this purpose:
 <UL>
 <LI>
 As supplied, <CODE>softfloat.h</CODE> depends on another header,

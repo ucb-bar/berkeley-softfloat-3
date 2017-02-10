@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2017 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -88,6 +88,8 @@ void
     *------------------------------------------------------------------------*/
     if ( 0x7FFD <= (uint32_t) (exp - 1) ) {
         if ( exp <= 0 ) {
+            /*----------------------------------------------------------------
+            *----------------------------------------------------------------*/
             isTiny =
                    (softfloat_detectTininess
                         == softfloat_tininess_beforeRounding)
@@ -98,6 +100,11 @@ void
             if ( roundBits ) {
                 if ( isTiny ) softfloat_raiseFlags( softfloat_flag_underflow );
                 softfloat_exceptionFlags |= softfloat_flag_inexact;
+#ifdef SOFTFLOAT_ROUND_ODD
+                if ( roundingMode == softfloat_round_odd ) {
+                    sig |= roundMask + 1;
+                }
+#endif
             }
             sig += roundIncrement;
             exp = ((sig & UINT64_C( 0x8000000000000000 )) != 0);
@@ -117,7 +124,15 @@ void
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    if ( roundBits ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+    if ( roundBits ) {
+        softfloat_exceptionFlags |= softfloat_flag_inexact;
+#ifdef SOFTFLOAT_ROUND_ODD
+        if ( roundingMode == softfloat_round_odd ) {
+            sig = (sig & ~roundMask) | (roundMask + 1);
+            goto packReturn;
+        }
+#endif
+    }
     sig += roundIncrement;
     if ( sig < roundIncrement ) {
         ++exp;
@@ -143,9 +158,9 @@ void
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( 0x7FFD <= (uint32_t) (exp - 1) ) {
-        /*--------------------------------------------------------------------
-        *--------------------------------------------------------------------*/
         if ( exp <= 0 ) {
+            /*----------------------------------------------------------------
+            *----------------------------------------------------------------*/
             isTiny =
                    (softfloat_detectTininess
                         == softfloat_tininess_beforeRounding)
@@ -153,25 +168,31 @@ void
                 || ! doIncrement
                 || (sig < UINT64_C( 0xFFFFFFFFFFFFFFFF ));
             softfloat_shiftRightJam96M( extSigPtr, 1 - exp, extSigPtr );
+            exp = 0;
+            sig =
+                (uint64_t) extSigPtr[indexWord( 3, 2 )]<<32
+                    | extSigPtr[indexWord( 3, 1 )];
             sigExtra = extSigPtr[indexWordLo( 3 )];
             if ( sigExtra ) {
                 if ( isTiny ) softfloat_raiseFlags( softfloat_flag_underflow );
                 softfloat_exceptionFlags |= softfloat_flag_inexact;
+#ifdef SOFTFLOAT_ROUND_ODD
+                if ( roundingMode == softfloat_round_odd ) {
+                    sig |= 1;
+                    goto packReturn;
+                }
+#endif
             }
             doIncrement = (0x80000000 <= sigExtra);
             if (
-                   ! roundNearEven
-                && (roundingMode != softfloat_round_near_maxMag)
+                ! roundNearEven
+                    && (roundingMode != softfloat_round_near_maxMag)
             ) {
                 doIncrement =
                     (roundingMode
                          == (sign ? softfloat_round_min : softfloat_round_max))
                         && sigExtra;
             }
-            exp = 0;
-            sig =
-                (uint64_t) extSigPtr[indexWord( 3, 2 )]<<32
-                    | extSigPtr[indexWord( 3, 1 )];
             if ( doIncrement ) {
                 ++sig;
                 sig &= ~(uint64_t) (! (sigExtra & 0x7FFFFFFF) & roundNearEven);
@@ -179,13 +200,13 @@ void
             }
             goto packReturn;
         }
-        /*--------------------------------------------------------------------
-        *--------------------------------------------------------------------*/
         if (
                (0x7FFE < exp)
             || ((exp == 0x7FFE) && (sig == UINT64_C( 0xFFFFFFFFFFFFFFFF ))
                     && doIncrement)
         ) {
+            /*----------------------------------------------------------------
+            *----------------------------------------------------------------*/
             roundMask = 0;
  overflow:
             softfloat_raiseFlags(
@@ -207,7 +228,15 @@ void
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    if ( sigExtra ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+    if ( sigExtra ) {
+        softfloat_exceptionFlags |= softfloat_flag_inexact;
+#ifdef SOFTFLOAT_ROUND_ODD
+        if ( roundingMode == softfloat_round_odd ) {
+            sig |= 1;
+            goto packReturn;
+        }
+#endif
+    }
     if ( doIncrement ) {
         ++sig;
         if ( ! sig ) {

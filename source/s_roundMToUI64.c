@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.  All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -42,33 +42,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "softfloat.h"
 
 uint_fast64_t
- softfloat_roundPackToUI64(
-     bool sign,
-     uint_fast64_t sig,
-     uint_fast64_t sigExtra,
-     uint_fast8_t roundingMode,
-     bool exact
- )
+ softfloat_roundMToUI64(
+     bool sign, uint32_t *extSigPtr, uint_fast8_t roundingMode, bool exact )
 {
-    bool roundNearEven, doIncrement;
+    bool roundNearEven;
+    uint32_t sigExtra;
+    bool doIncrement;
+    uint64_t sig;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     roundNearEven = (roundingMode == softfloat_round_near_even);
-    doIncrement = (UINT64_C( 0x8000000000000000 ) <= sigExtra);
+    sigExtra = extSigPtr[indexWordLo( 3 )];
+    doIncrement = (0x80000000 <= sigExtra);
     if ( ! roundNearEven && (roundingMode != softfloat_round_near_maxMag) ) {
         doIncrement =
             (roundingMode
                  == (sign ? softfloat_round_min : softfloat_round_max))
                 && sigExtra;
     }
+    sig =
+        (uint64_t) extSigPtr[indexWord( 3, 2 )]<<32
+            | extSigPtr[indexWord( 3, 1 )];
     if ( doIncrement ) {
         ++sig;
         if ( ! sig ) goto invalid;
-        sig &=
-            ~(uint_fast64_t)
-                 (! (sigExtra & UINT64_C( 0x7FFFFFFFFFFFFFFF ))
-                      & roundNearEven);
+        if ( ! (sigExtra & 0x7FFFFFFF) && roundNearEven ) sig &= ~1;
     }
     if ( sign && sig ) goto invalid;
     if ( exact && sigExtra ) {

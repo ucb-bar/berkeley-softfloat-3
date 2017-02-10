@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.  All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -41,41 +41,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-int_fast64_t
- softfloat_roundPackToI64(
-     bool sign,
-     uint_fast64_t sig,
-     uint_fast64_t sigExtra,
-     uint_fast8_t roundingMode,
-     bool exact
- )
+int_fast32_t
+ softfloat_roundToI32(
+     bool sign, uint_fast64_t sig, uint_fast8_t roundingMode, bool exact )
 {
-    bool roundNearEven, doIncrement;
-    union { uint64_t ui; int64_t i; } uZ;
-    int_fast64_t z;
+    bool roundNearEven;
+    uint_fast16_t roundIncrement, roundBits;
+    uint_fast32_t sig32;
+    union { uint32_t ui; int32_t i; } uZ;
+    int_fast32_t z;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     roundNearEven = (roundingMode == softfloat_round_near_even);
-    doIncrement = (UINT64_C( 0x8000000000000000 ) <= sigExtra);
+    roundIncrement = 0x800;
     if ( ! roundNearEven && (roundingMode != softfloat_round_near_maxMag) ) {
-        doIncrement =
+        roundIncrement =
             (roundingMode
                  == (sign ? softfloat_round_min : softfloat_round_max))
-                && sigExtra;
+                ? 0xFFF
+                : 0;
     }
-    if ( doIncrement ) {
-        ++sig;
-        if ( ! sig ) goto invalid;
-        sig &=
-            ~(uint_fast64_t)
-                 (! (sigExtra & UINT64_C( 0x7FFFFFFFFFFFFFFF ))
-                      & roundNearEven);
-    }
-    uZ.ui = sign ? -sig : sig;
+    roundBits = sig & 0xFFF;
+    sig += roundIncrement;
+    if ( sig & UINT64_C( 0xFFFFF00000000000 ) ) goto invalid;
+    sig32 = sig>>12;
+    sig32 &= ~(uint_fast32_t) (! (roundBits ^ 0x800) & roundNearEven);
+    uZ.ui = sign ? -sig32 : sig32;
     z = uZ.i;
     if ( z && ((z < 0) ^ sign) ) goto invalid;
-    if ( exact && sigExtra ) {
+    if ( exact && roundBits ) {
         softfloat_exceptionFlags |= softfloat_flag_inexact;
     }
     return z;
@@ -83,7 +78,7 @@ int_fast64_t
     *------------------------------------------------------------------------*/
  invalid:
     softfloat_raiseFlags( softfloat_flag_invalid );
-    return sign ? i64_fromNegOverflow : i64_fromPosOverflow;
+    return sign ? i32_fromNegOverflow : i32_fromPosOverflow;
 
 }
 

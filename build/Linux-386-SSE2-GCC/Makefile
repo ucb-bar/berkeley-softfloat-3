@@ -2,10 +2,10 @@
 #=============================================================================
 #
 # This Makefile is part of the SoftFloat IEEE Floating-Point Arithmetic
-# Package, Release 3b, by John R. Hauser.
+# Package, Release 3c, by John R. Hauser.
 #
-# Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University
-# of California.  All rights reserved.
+# Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+# University of California.  All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,8 @@ SOURCE_DIR ?= ../../source
 SPECIALIZE_TYPE ?= 8086-SSE
 
 SOFTFLOAT_OPTS ?= \
-  -DINLINE_LEVEL=5 -DSOFTFLOAT_FAST_DIV32TO16 -DSOFTFLOAT_FAST_DIV64TO32
+  -DSOFTFLOAT_ROUND_ODD -DINLINE_LEVEL=5 -DSOFTFLOAT_FAST_DIV32TO16 \
+  -DSOFTFLOAT_FAST_DIV64TO32
 
 DELETE = rm -f
 C_INCLUDES = -I. -I$(SOURCE_DIR)/$(SPECIALIZE_TYPE) -I$(SOURCE_DIR)/include
@@ -105,10 +106,10 @@ OBJS_SPECIALIZE = \
   s_propagateNaNF128M$(OBJ) \
 
 OBJS_OTHERS = \
-  s_roundPackToUI32$(OBJ) \
-  s_roundPackMToUI64$(OBJ) \
-  s_roundPackToI32$(OBJ) \
-  s_roundPackMToI64$(OBJ) \
+  s_roundToUI32$(OBJ) \
+  s_roundMToUI64$(OBJ) \
+  s_roundToI32$(OBJ) \
+  s_roundMToI64$(OBJ) \
   s_normSubnormalF16Sig$(OBJ) \
   s_roundPackToF16$(OBJ) \
   s_normRoundPackToF16$(OBJ) \

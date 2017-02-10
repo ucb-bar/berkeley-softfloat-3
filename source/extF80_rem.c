@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.  All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -192,7 +192,7 @@ extFloat80_t extF80_rem( extFloat80_t a, extFloat80_t b )
     }
     return
         softfloat_normRoundPackToExtF80(
-            signRem, expB + 32, rem.v64, rem.v0, 80 );
+            signRem, rem.v64 | rem.v0 ? expB + 32 : 0, rem.v64, rem.v0, 80 );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN:

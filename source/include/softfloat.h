@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C header file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.  All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -64,7 +64,8 @@ enum {
 };
 
 /*----------------------------------------------------------------------------
-| Software floating-point rounding mode.
+| Software floating-point rounding mode.  (Mode "odd" is supported only if
+| SoftFloat is compiled with macro 'SOFTFLOAT_ROUND_ODD' defined.)
 *----------------------------------------------------------------------------*/
 extern THREAD_LOCAL uint_fast8_t softfloat_roundingMode;
 enum {
@@ -72,7 +73,8 @@ enum {
     softfloat_round_minMag      = 1,
     softfloat_round_min         = 2,
     softfloat_round_max         = 3,
-    softfloat_round_near_maxMag = 4
+    softfloat_round_near_maxMag = 4,
+    softfloat_round_odd         = 5
 };
 
 /*----------------------------------------------------------------------------

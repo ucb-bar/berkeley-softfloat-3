@@ -7,11 +7,11 @@
 
 <BODY>
 
-<H1>Berkeley SoftFloat Release 3b: Library Interface</H1>
+<H1>Berkeley SoftFloat Release 3c: Library Interface</H1>
 
 <P>
 John R. Hauser<BR>
-2016 July 22<BR>
+2017 February 10<BR>
 </P>
 
 
@@ -106,12 +106,19 @@ Information about the standard is available elsewhere.
 </P>
 
 <P>
-The current version of SoftFloat is <NOBR>Release 3b</NOBR>.
-This release differs from the previous <NOBR>Release 3a</NOBR> mainly in the
-addition of support for the <NOBR>16-bit</NOBR> half-precision format.
-Depending on the specific port of SoftFloat, this release may also change the
-result obtained when conversion of a floating-point number to an integer format
-overflows or is otherwise invalid.
+The current version of SoftFloat is <NOBR>Release 3c</NOBR>.
+The only significant difference between this release and the previous
+<NOBR>Release 3b</NOBR> is optional support for a rarely used rounding mode,
+<I>round to odd</I>, also known as <I>jamming</I>.
+</P>
+
+<P>
+<NOBR>Release 3b</NOBR> differed from the earlier <NOBR>Release 3a</NOBR>
+mainly in the addition of support for the <NOBR>16-bit</NOBR> half-precision
+format.
+Depending on the specific port of SoftFloat, <NOBR>Release 3b</NOBR> may also
+have changed the result obtained when conversion of a floating-point number to
+an integer format overflows or is otherwise invalid.
 For more about the evolution of SoftFloat releases, see
 <A HREF="SoftFloat-history.html"><NOBR><CODE>SoftFloat-history.html</CODE></NOBR></A>.
 </P>
@@ -150,7 +157,7 @@ strictly required.
 <P>
 Most operations not required by the original 1985 version of the IEEE
 Floating-Point Standard but added in the 2008 version are not yet supported in
-SoftFloat <NOBR>Release 3b</NOBR>.
+SoftFloat <NOBR>Release 3c</NOBR>.
 </P>
 
 
@@ -160,7 +167,7 @@ SoftFloat <NOBR>Release 3b</NOBR>.
 The SoftFloat package was written by me, <NOBR>John R.</NOBR> Hauser.
 <NOBR>Release 3</NOBR> of SoftFloat was a completely new implementation
 supplanting earlier releases.
-The project to create <NOBR>Release 3</NOBR> (now <NOBR>through 3b</NOBR>) was
+The project to create <NOBR>Release 3</NOBR> (now <NOBR>through 3c</NOBR>) was
 done in the employ of the University of California, Berkeley, within the
 Department of Electrical Engineering and Computer Sciences, first for the
 Parallel Computing Laboratory (Par Lab) and then for the ASPIRE Lab.
@@ -194,13 +201,13 @@ Oracle, and Samsung.
 </P>
 
 <P>
-The following applies to the whole of SoftFloat <NOBR>Release 3b</NOBR> as well
+The following applies to the whole of SoftFloat <NOBR>Release 3c</NOBR> as well
 as to each source file individually.
 </P>
 
 <P>
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.
 All rights reserved.
 </P>
 
@@ -376,7 +383,7 @@ comparisons between two values in the same floating-point format.
 
 <P>
 The following operations required by the 2008 IEEE Floating-Point Standard are
-not supported in SoftFloat <NOBR>Release 3b</NOBR>:
+not supported in SoftFloat <NOBR>Release 3c</NOBR>:
 <UL>
 <LI>
 <B>nextUp</B>, <B>nextDown</B>, <B>minNum</B>, <B>maxNum</B>, <B>minNumMag</B>,
@@ -399,27 +406,35 @@ all &ldquo;non-computational&rdquo; operations other than <B>isSignaling</B>
 <P>
 Because the <NOBR>80-bit</NOBR> double-extended-precision format,
 <CODE>extFloat80_t</CODE>, stores an explicit leading significand bit, many
-floating-point numbers are encodable in this type in equivalent normalized and
-denormalized forms.
-Zeros and values in the subnormal range have each only a single possible
-encoding, for which the leading significand bit must <NOBR>be 0</NOBR>.
-For other finite values (outside the subnormal range), a unique normalized
-representation, with leading significand bit set <NOBR>to 1</NOBR>, always
-exists, and is considered the <I>canonical</I> representation of the value.
-Any equivalent denormalized representations (having leading significand bit
-<NOBR>of 0</NOBR>) are <I>non-canonical</I>.
-Similarly, the leading significand bit is expected to <NOBR>be 1</NOBR> for
-infinities and NaNs as well;
-any infinity or NaN with a leading significand bit <NOBR>of 0</NOBR> is again
-considered non-canonical.
-In short, for an <CODE>extFloat80_t</CODE> representation to be canonical, the
-leading significand bit must <NOBR>be 1</NOBR> unless it is required to
-<NOBR>be 0</NOBR> because the encoded value is zero or a subnormal.
+finite floating-point numbers are encodable in this type in multiple equivalent
+forms.
+Of these multiple encodings, there is always a unique one with the least
+encoded exponent value, and this encoding is considered the <I>canonical</I>
+representation of the floating-point number.
+Any other equivalent representations (having a higher encoded exponent value)
+are <I>non-canonical</I>.
+For a value in the subnormal range (including zero), the canonical
+representation always has an encoded exponent of zero and a leading significand
+bit <NOBR>of 0</NOBR>.
+For finite values outside the subnormal range, the canonical representation
+always has an encoded exponent that is nonzero and a leading significand bit
+<NOBR>of 1</NOBR>.
 </P>
 
 <P>
-Functions are not guaranteed to operate as expected when inputs of type
-<CODE>extFloat80_t</CODE> are non-canonical.
+For an infinity or NaN, the leading significand bit is similarly expected to
+<NOBR>be 1</NOBR>.
+An infinity or NaN with a leading significand bit <NOBR>of 0</NOBR> is again
+considered non-canonical.
+Hence, altogether, to be canonical, a value of type <CODE>extFloat80_t</CODE>
+must have a leading significand bit <NOBR>of 1</NOBR>, unless the value is
+subnormal or zero, in which case the leading significand bit and the encoded
+exponent must both be zero.
+</P>
+
+<P>
+SoftFloat's functions are not guaranteed to operate as expected when inputs of
+type <CODE>extFloat80_t</CODE> are non-canonical.
 Assuming all of a function&rsquo;s <CODE>extFloat80_t</CODE> inputs (if any)
 are canonical, function outputs of type <CODE>extFloat80_t</CODE> will always
 be canonical.
@@ -522,6 +537,10 @@ own separate copies of the variables.
 <P>
 All five rounding modes defined by the 2008 IEEE Floating-Point Standard are
 implemented for all operations that require rounding.
+Some ports of SoftFloat may also implement the <I>round-to-odd</I> mode.
+</P>
+
+<P>
 The rounding mode is selected by the global variable
 <BLOCKQUOTE>
 <CODE>uint_fast8_t softfloat_roundingMode;</CODE>
@@ -549,10 +568,27 @@ This variable may be set to one of the values
 <TD><CODE>softfloat_round_max</CODE></TD>
 <TD>round to maximum (up)</TD>
 </TR>
+<TR>
+<TD><CODE>softfloat_round_odd</CODE></TD>
+<TD>round to odd (jamming), if supported by the SoftFloat port</TD>
+</TR>
 </TABLE>
 </BLOCKQUOTE>
 Variable <CODE>softfloat_roundingMode</CODE> is initialized to
 <CODE>softfloat_round_near_even</CODE>.
+</P>
+
+<P>
+If supported, mode <CODE>softfloat_round_odd</CODE> first rounds a
+floating-point result to minimum magnitude, the same as
+<CODE>softfloat_round_minMag</CODE>, and then, if the result is inexact, the
+least-significant bit of the result is set <NOBR>to 1</NOBR>.
+This rounding mode is also known as <EM>jamming</EM>.
+As a special case, when <CODE>softfloat_round_odd</CODE> is the rounding mode
+for a function that rounds to an integer value (either conversion to an integer
+format or a &lsquo;<CODE>roundToInt</CODE>&rsquo; function), rounding is the
+same as <CODE>softfloat_round_minMag</CODE>, without any change to the
+least-significant integer bit.
 </P>
 
 <H3>6.2. Underflow Detection</H3>
@@ -569,7 +605,7 @@ which can be set to either
 <CODE>softfloat_tininess_beforeRounding</CODE><BR>
 <CODE>softfloat_tininess_afterRounding</CODE>
 </BLOCKQUOTE>
-Detecting tininess after rounding is better because it results in fewer
+Detecting tininess after rounding is usually better because it results in fewer
 spurious underflow signals.
 The other option is provided for compatibility with some systems.
 Like most systems (and as required by the newer 2008 IEEE Standard), SoftFloat
@@ -765,10 +801,19 @@ int_fast32_t
  f128M_to_i32( const float128_t *<I>aPtr</I>, uint_fast8_t <I>roundingMode</I>, bool <I>exact</I> );
 </PRE>
 </BLOCKQUOTE>
+</P>
+
+<P>
 The <CODE><I>roundingMode</I></CODE> argument specifies the rounding mode for
 the conversion.
 The variable that usually indicates rounding mode,
 <CODE>softfloat_roundingMode</CODE>, is ignored.
+If <CODE><I>roundingMode</I></CODE> is <CODE>softfloat_round_odd</CODE>,
+rounding is to minimum magnitude, the same as
+<CODE>softfloat_round_minMag</CODE>, rather than to an odd integer.
+</P>
+
+<P>
 Argument <CODE><I>exact</I></CODE> determines whether the <I>inexact</I>
 exception flag is raised if the conversion is not exact.
 If <CODE><I>exact</I></CODE> is <CODE>true</CODE>, the <I>inexact</I> flag may
@@ -1020,18 +1065,27 @@ void
  );
 </PRE>
 </BLOCKQUOTE>
+When floating-point values are passed indirectly through pointers,
+<CODE><I>aPtr</I></CODE> points to the input operand and
+<CODE><I>destPtr</I></CODE> points to the location where the result is stored.
+</P>
+
+<P>
 The <CODE><I>roundingMode</I></CODE> argument specifies the rounding mode to
 apply.
 The variable that usually indicates rounding mode,
 <CODE>softfloat_roundingMode</CODE>, is ignored.
+If <CODE><I>roundingMode</I></CODE> is <CODE>softfloat_round_odd</CODE>,
+rounding is to minimum magnitude, the same as
+<CODE>softfloat_round_minMag</CODE>, rather than to an odd integer value.
+</P>
+
+<P>
 Argument <CODE><I>exact</I></CODE> determines whether the <I>inexact</I>
 exception flag is raised if the conversion is not exact.
 If <CODE><I>exact</I></CODE> is <CODE>true</CODE>, the <I>inexact</I> flag may
 be raised;
 otherwise, it will not be, even if the conversion is inexact.
-When floating-point values are passed indirectly through pointers,
-<CODE><I>aPtr</I></CODE> points to the input operand and
-<CODE><I>destPtr</I></CODE> points to the location where the result is stored.
 </P>
 
 <H3>8.8. Comparison Functions</H3>
@@ -1366,16 +1420,15 @@ speed.)
 
 <P>
 <LI>
-Functions have been added for converting between the floating-point types and
-unsigned integers.
-<NOBR>Release 2</NOBR> supported only signed integers, not unsigned.
+As of <NOBR>Release 3b</NOBR>, <NOBR>16-bit</NOBR> half-precision,
+<CODE>float16_t</CODE>, is supported.
 </P>
 
 <P>
 <LI>
-A new, fifth rounding mode, <CODE>softfloat_round_near_maxMag</CODE> (round to
-nearest, with ties to maximum magnitude, away from zero) is now supported for
-all cases involving rounding.
+Functions have been added for converting between the floating-point types and
+unsigned integers.
+<NOBR>Release 2</NOBR> supported only signed integers, not unsigned.
 </P>
 
 <P>
@@ -1387,8 +1440,11 @@ except <NOBR>80-bit</NOBR> double-extended-precision,
 
 <P>
 <LI>
-As of <NOBR>Release 3b</NOBR>, <NOBR>16-bit</NOBR> half-precision,
-<CODE>float16_t</CODE>, is supported.
+New rounding modes are supported:
+<CODE>softfloat_round_near_maxMag</CODE> (round to nearest, with ties to
+maximum magnitude, away from zero), and, as of <NOBR>Release 3c</NOBR>,
+optional <CODE>softfloat_round_odd</CODE> (round to odd, also known as
+jamming).
 </P>
 
 </UL>

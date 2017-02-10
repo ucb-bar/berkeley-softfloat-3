@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C header file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3b, by John R. Hauser.
+Package, Release 3c, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2017 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 | 16 bits, 32 bits, 64 bits, and 128 bits in size, respectively.  Where a
 | platform has "native" support for IEEE-Standard floating-point formats,
 | the types below may, if desired, be defined as aliases for the native types
-| (typically `float' and `double', and possibly `long double').
+| (typically 'float' and 'double', and possibly 'long double').
 *----------------------------------------------------------------------------*/
 typedef struct { uint16_t v; } float16_t;
 typedef struct { uint32_t v; } float32_t;
@@ -54,8 +54,8 @@ typedef struct { uint64_t v[2]; } float128_t;
 
 /*----------------------------------------------------------------------------
 | The format of an 80-bit extended floating-point number in memory.  This
-| structure must contain a 16-bit field named `signExp' and a 64-bit field
-| named `signif'.
+| structure must contain a 16-bit field named 'signExp' and a 64-bit field
+| named 'signif'.
 *----------------------------------------------------------------------------*/
 #ifdef LITTLEENDIAN
 struct extFloat80M { uint64_t signif; uint16_t signExp; };
@@ -66,12 +66,12 @@ struct extFloat80M { uint16_t signExp; uint64_t signif; };
 /*----------------------------------------------------------------------------
 | The type used to pass 80-bit extended floating-point arguments and
 | results to/from functions.  This type must have size identical to
-| `struct extFloat80M'.  Type `extFloat80_t' can be defined as an alias for
-| `struct extFloat80M'.  Alternatively, if a platform has "native" support
+| 'struct extFloat80M'.  Type 'extFloat80_t' can be defined as an alias for
+| 'struct extFloat80M'.  Alternatively, if a platform has "native" support
 | for IEEE-Standard 80-bit extended floating-point, it may be possible,
-| if desired, to define `extFloat80_t' as an alias for the native type
-| (presumably either `long double' or a nonstandard compiler-intrinsic type).
-| In that case, the `signif' and `signExp' fields of `struct extFloat80M'
+| if desired, to define 'extFloat80_t' as an alias for the native type
+| (presumably either 'long double' or a nonstandard compiler-intrinsic type).
+| In that case, the 'signif' and 'signExp' fields of 'struct extFloat80M'
 | must align exactly with the locations in memory of the sign, exponent, and
 | significand of the native type.
 *----------------------------------------------------------------------------*/
