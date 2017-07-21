@@ -63,7 +63,6 @@ void f16_to_f128M( float16_t a, float128_t *zPtr )
     struct commonNaN commonNaN;
     uint32_t uiZ96;
     struct exp8_sig16 normExpSig;
-    uint64_t frac64;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
