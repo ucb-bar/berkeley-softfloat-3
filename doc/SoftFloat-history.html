@@ -7,12 +7,30 @@
 
 <BODY>
 
-<H1>History of Berkeley SoftFloat, to Release 3c</H1>
+<H1>History of Berkeley SoftFloat, to Release 3d</H1>
 
 <P>
 John R. Hauser<BR>
-2017 February 10<BR>
+2017 August 10<BR>
 </P>
+
+
+<H3>Release 3d (2017 August)</H3>
+
+<UL>
+
+<LI>
+Fixed bugs in the square root functions for <NOBR>64-bit</NOBR>
+double-precision, <NOBR>80-bit</NOBR> double-extended-precision, and
+<NOBR>128-bit</NOBR> quadruple-precision.
+For <NOBR>64-bit</NOBR> double-precision (<CODE>f64_sqrt</CODE>), the result
+could sometimes be off by <NOBR>1 unit</NOBR> in the last place
+(<NOBR>1 ulp</NOBR>) from what it should be.
+For the larger formats, the square root could be wrong in a large portion of
+the less-significant bits.
+(A bug in <CODE>f128_sqrt</CODE> was first reported by Alexei Sibidanov.)
+
+</UL>
 
 
 <H3>Release 3c (2017 February)</H3>

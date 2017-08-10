@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3c, by John R. Hauser.
+Package, Release 3d, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2017 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,6 @@ void f16_to_f128M( float16_t a, float128_t *zPtr )
     struct commonNaN commonNaN;
     uint32_t uiZ96;
     struct exp8_sig16 normExpSig;
-    uint64_t frac64;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

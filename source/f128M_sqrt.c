@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3c, by John R. Hauser.
+Package, Release 3d, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014 The Regents of the University of California.
-All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2017 The Regents of the University of
+California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -63,8 +63,10 @@ void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
     int32_t expA, expZ;
     uint64_t rem64;
     uint32_t sig32A, recipSqrt32, sig32Z, qs[3], q;
-    uint64_t sig64Z, x64;
-    uint32_t term[5], y[5], rem32;
+    uint64_t sig64Z;
+    uint32_t term[5];
+    uint64_t x64;
+    uint32_t y[5], rem32;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -121,18 +123,28 @@ void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     q = ((uint32_t) (rem64>>2) * (uint64_t) recipSqrt32)>>32;
-    qs[1] = q;
     sig64Z = ((uint64_t) sig32Z<<32) + ((uint64_t) q<<3);
-    x64 = ((uint64_t) sig32Z<<32) + sig64Z;
     term[indexWord( 4, 3 )] = 0;
-    term[indexWord( 4, 2 )] = x64>>32;
-    term[indexWord( 4, 1 )] = x64;
     term[indexWord( 4, 0 )] = 0;
-    softfloat_remStep128MBy32( rem, 29, term, q, y );
-    rem64 = (uint64_t) y[indexWord( 4, 3 )]<<32 | y[indexWord( 4, 2 )];
+    /*------------------------------------------------------------------------
+    | (Repeating this loop is a rare occurrence.)
+    *------------------------------------------------------------------------*/
+    for (;;) {
+        x64 = ((uint64_t) sig32Z<<32) + sig64Z;
+        term[indexWord( 4, 2 )] = x64>>32;
+        term[indexWord( 4, 1 )] = x64;
+        softfloat_remStep128MBy32( rem, 29, term, q, y );
+        rem32 = y[indexWord( 4, 3 )];
+        if ( ! (rem32 & 0x80000000) ) break;
+        --q;
+        sig64Z -= 1<<3;
+    }
+    qs[1] = q;
+    rem64 = (uint64_t) rem32<<32 | y[indexWord( 4, 2 )];
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     q = ((uint32_t) (rem64>>2) * (uint64_t) recipSqrt32)>>32;
+    if ( rem64>>34 ) q += recipSqrt32;
     sig64Z <<= 1;
     /*------------------------------------------------------------------------
     | (Repeating this loop is a rare occurrence.)
@@ -142,7 +154,6 @@ void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
         term[indexWord( 4, 2 )] = x64>>32;
         term[indexWord( 4, 1 )] = x64;
         term[indexWord( 4, 0 )] = q<<6;
-        term[indexWord( 4, 3 )] = 0;
         softfloat_remStep128MBy32(
             y, 29, term, q, &rem[indexMultiwordHi( 6, 4 )] );
         rem32 = rem[indexWordHi( 6 )];
@@ -154,6 +165,7 @@ void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     q = (((uint32_t) (rem64>>2) * (uint64_t) recipSqrt32)>>32) + 2;
+    if ( rem64>>34 ) q += recipSqrt32;
     x64 = (uint64_t) q<<27;
     y[indexWord( 5, 0 )] = x64;
     x64 = ((uint64_t) qs[0]<<24) + (x64>>32);

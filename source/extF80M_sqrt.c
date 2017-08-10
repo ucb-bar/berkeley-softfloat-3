@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3c, by John R. Hauser.
+Package, Release 3d, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2017 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -60,9 +60,9 @@ void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr )
     int32_t expA;
     uint64_t rem64;
     int32_t expZ;
-    uint32_t rem[4], sig32A, recipSqrt32, sig32Z, q;
+    uint32_t rem96[3], sig32A, recipSqrt32, sig32Z, q;
     uint64_t sig64Z, x64;
-    uint32_t term[4], extSigZ[3];
+    uint32_t rem32, term[4], rem[4], extSigZ[3];
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -100,36 +100,40 @@ void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr )
     *------------------------------------------------------------------------*/
     expZ = ((expA - 0x3FFF)>>1) + 0x3FFF;
     expA &= 1;
-    softfloat_shortShiftLeft64To96M(
-        rem64, 30 - expA, &rem[indexMultiwordHi( 4, 3 )] );
+    softfloat_shortShiftLeft64To96M( rem64, 30 - expA, rem96 );
     sig32A = rem64>>32;
     recipSqrt32 = softfloat_approxRecipSqrt32_1( expA, sig32A );
     sig32Z = ((uint64_t) sig32A * recipSqrt32)>>32;
     if ( expA ) sig32Z >>= 1;
     rem64 =
-        ((uint64_t) rem[indexWord( 4, 3 )]<<32 | rem[indexWord( 4, 2 )])
+        ((uint64_t) rem96[indexWord( 3, 2 )]<<32 | rem96[indexWord( 3, 1 )])
             - (uint64_t) sig32Z * sig32Z;
-    rem[indexWord( 4, 3 )] = rem64>>32;
-    rem[indexWord( 4, 2 )] = rem64;
+    rem96[indexWord( 3, 2 )] = rem64>>32;
+    rem96[indexWord( 3, 1 )] = rem64;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     q = ((uint32_t) (rem64>>2) * (uint64_t) recipSqrt32)>>32;
     sig64Z = ((uint64_t) sig32Z<<32) + ((uint64_t) q<<3);
-    x64 = ((uint64_t) sig32Z<<32) + sig64Z;
     term[indexWord( 3, 2 )] = 0;
-    term[indexWord( 3, 1 )] = x64>>32;
-    term[indexWord( 3, 0 )] = x64;
-    softfloat_remStep96MBy32(
-        &rem[indexMultiwordHi( 4, 3 )],
-        29,
-        term,
-        q,
-        &rem[indexMultiwordHi( 4, 3 )]
-    );
-    rem64 = (uint64_t) rem[indexWord( 4, 3 )]<<32 | rem[indexWord( 4, 2 )];
+    /*------------------------------------------------------------------------
+    | (Repeating this loop is a rare occurrence.)
+    *------------------------------------------------------------------------*/
+    for (;;) {
+        x64 = ((uint64_t) sig32Z<<32) + sig64Z;
+        term[indexWord( 3, 1 )] = x64>>32;
+        term[indexWord( 3, 0 )] = x64;
+        softfloat_remStep96MBy32(
+            rem96, 29, term, q, &rem[indexMultiwordHi( 4, 3 )] );
+        rem32 = rem[indexWord( 4, 3 )];
+        if ( ! (rem32 & 0x80000000) ) break;
+        --q;
+        sig64Z -= 1<<3;
+    }
+    rem64 = (uint64_t) rem32<<32 | rem[indexWord( 4, 2 )];
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     q = (((uint32_t) (rem64>>2) * (uint64_t) recipSqrt32)>>32) + 2;
+    if ( rem64>>34 ) q += recipSqrt32;
     x64 = (uint64_t) q<<7;
     extSigZ[indexWord( 3, 0 )] = x64;
     x64 = (sig64Z<<1) + (x64>>32);

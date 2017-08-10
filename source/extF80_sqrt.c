@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3c, by John R. Hauser.
+Package, Release 3d, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.  All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -56,8 +56,8 @@ extFloat80_t extF80_sqrt( extFloat80_t a )
     int_fast32_t expZ;
     uint_fast32_t sig32A, recipSqrt32, sig32Z;
     struct uint128 rem;
-    uint_fast64_t q, sigZ, x64;
-    struct uint128 term;
+    uint_fast64_t q, x64, sigZ;
+    struct uint128 y, term;
     uint_fast64_t sigZExtra;
     union { struct extFloat80M s; extFloat80_t f; } uZ;
 
@@ -116,14 +116,22 @@ extFloat80_t extF80_sqrt( extFloat80_t a )
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     q = ((uint32_t) (rem.v64>>2) * (uint_fast64_t) recipSqrt32)>>32;
-    sigZ = ((uint_fast64_t) sig32Z<<32) + (q<<3);
-    x64 = ((uint_fast64_t) sig32Z<<32) + sigZ;
-    term = softfloat_mul64ByShifted32To128( x64, q );
-    rem = softfloat_shortShiftLeft128( rem.v64, rem.v0, 29 );
-    rem = softfloat_sub128( rem.v64, rem.v0, term.v64, term.v0 );
+    x64 = (uint_fast64_t) sig32Z<<32;
+    sigZ = x64 + (q<<3);
+    y = softfloat_shortShiftLeft128( rem.v64, rem.v0, 29 );
+    /*------------------------------------------------------------------------
+    | (Repeating this loop is a rare occurrence.)
+    *------------------------------------------------------------------------*/
+    for (;;) {
+        term = softfloat_mul64ByShifted32To128( x64 + sigZ, q );
+        rem = softfloat_sub128( y.v64, y.v0, term.v64, term.v0 );
+        if ( ! (rem.v64 & UINT64_C( 0x8000000000000000 )) ) break;
+        --q;
+        sigZ -= 1<<3;
+    }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    q = (((uint32_t) (rem.v64>>2) * (uint_fast64_t) recipSqrt32)>>32) + 2;
+    q = (((rem.v64>>2) * recipSqrt32)>>32) + 2;
     x64 = sigZ;
     sigZ = (sigZ<<1) + (q>>25);
     sigZExtra = (uint64_t) (q<<39);

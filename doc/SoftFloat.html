@@ -7,11 +7,11 @@
 
 <BODY>
 
-<H1>Berkeley SoftFloat Release 3c: Library Interface</H1>
+<H1>Berkeley SoftFloat Release 3d: Library Interface</H1>
 
 <P>
 John R. Hauser<BR>
-2017 February 10<BR>
+2017 August 10<BR>
 </P>
 
 
@@ -106,26 +106,38 @@ Information about the standard is available elsewhere.
 </P>
 
 <P>
-The current version of SoftFloat is <NOBR>Release 3c</NOBR>.
-The only significant difference between this release and the previous
-<NOBR>Release 3b</NOBR> is optional support for a rarely used rounding mode,
-<I>round to odd</I>, also known as <I>jamming</I>.
+The current version of SoftFloat is <NOBR>Release 3d</NOBR>.
+This release fixes bugs that were found in the square root functions for the
+<NOBR>64-bit</NOBR>, <NOBR>80-bit</NOBR>, and <NOBR>128-bit</NOBR>
+floating-point formats.
+(Thanks to Alexei Sibidanov at the University of Victoria for reporting an
+incorrect result.)
+The bugs affected all prior <NOBR>Release-3</NOBR> versions of SoftFloat.
+The flaw in the <NOBR>64-bit</NOBR> floating-point square root function was of
+very minor impact, causing a <NOBR>1-ulp</NOBR> error (<NOBR>1 unit</NOBR> in
+the last place) a few times out of a billion.
+The bugs in the <NOBR>80-bit</NOBR> and <NOBR>128-bit</NOBR> square root
+functions were more serious.
+Although incorrect results again occurred only a few times out of a billion,
+when they did occur a large portion of the less-significant bits could be
+wrong.
 </P>
 
 <P>
-<NOBR>Release 3b</NOBR> differed from the earlier <NOBR>Release 3a</NOBR>
-mainly in the addition of support for the <NOBR>16-bit</NOBR> half-precision
-format.
-Depending on the specific port of SoftFloat, <NOBR>Release 3b</NOBR> may also
-have changed the result obtained when conversion of a floating-point number to
-an integer format overflows or is otherwise invalid.
+<NOBR>Release 3d</NOBR> makes no changes to the SoftFloat library interface
+compared to the previous <NOBR>Release 3c</NOBR>.
+Since the original <NOBR>Release 3</NOBR>, the main changes to the interface
+have been that <NOBR>Release 3b</NOBR> added support for the
+<NOBR>16-bit</NOBR> half-precision format, and <NOBR>Release 3c</NOBR> added
+optional support for a rarely used rounding mode, <I>round to odd</I>, also
+known as <I>jamming</I>.
 For more about the evolution of SoftFloat releases, see
 <A HREF="SoftFloat-history.html"><NOBR><CODE>SoftFloat-history.html</CODE></NOBR></A>.
 </P>
 
 <P>
 The functional interface of SoftFloat <NOBR>Release 3</NOBR> and later differs
-in many details from that of earlier releases.
+in many details from the releases that came before.
 For specifics of these differences, see <NOBR>section 9</NOBR> below,
 <I>Changes from SoftFloat <NOBR>Release 2</NOBR></I>.
 </P>
@@ -157,7 +169,7 @@ strictly required.
 <P>
 Most operations not required by the original 1985 version of the IEEE
 Floating-Point Standard but added in the 2008 version are not yet supported in
-SoftFloat <NOBR>Release 3c</NOBR>.
+SoftFloat <NOBR>Release 3d</NOBR>.
 </P>
 
 
@@ -167,7 +179,7 @@ SoftFloat <NOBR>Release 3c</NOBR>.
 The SoftFloat package was written by me, <NOBR>John R.</NOBR> Hauser.
 <NOBR>Release 3</NOBR> of SoftFloat was a completely new implementation
 supplanting earlier releases.
-The project to create <NOBR>Release 3</NOBR> (now <NOBR>through 3c</NOBR>) was
+The project to create <NOBR>Release 3</NOBR> (now <NOBR>through 3d</NOBR>) was
 done in the employ of the University of California, Berkeley, within the
 Department of Electrical Engineering and Computer Sciences, first for the
 Parallel Computing Laboratory (Par Lab) and then for the ASPIRE Lab.
@@ -201,7 +213,7 @@ Oracle, and Samsung.
 </P>
 
 <P>
-The following applies to the whole of SoftFloat <NOBR>Release 3c</NOBR> as well
+The following applies to the whole of SoftFloat <NOBR>Release 3d</NOBR> as well
 as to each source file individually.
 </P>
 
@@ -383,7 +395,7 @@ comparisons between two values in the same floating-point format.
 
 <P>
 The following operations required by the 2008 IEEE Floating-Point Standard are
-not supported in SoftFloat <NOBR>Release 3c</NOBR>:
+not supported in SoftFloat <NOBR>Release 3d</NOBR>:
 <UL>
 <LI>
 <B>nextUp</B>, <B>nextDown</B>, <B>minNum</B>, <B>maxNum</B>, <B>minNumMag</B>,
