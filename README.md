@@ -1,9 +1,9 @@
 
-Package Overview for Berkeley SoftFloat Release 3c
+Package Overview for Berkeley SoftFloat Release 3d
 ==================================================
 
 John R. Hauser<br>
-2017 February 10
+2017 August 10
 
 
 Berkeley SoftFloat is a software implementation of binary floating-point
@@ -16,9 +16,9 @@ containing the floating-point subroutines.
 The SoftFloat package is documented in the following files in the `doc`
 subdirectory:
 
-* [SoftFloat.html](http://www.jhauser.us/arithmetic/SoftFloat-3c/doc/SoftFloat.html) Documentation for using the SoftFloat functions.
-* [SoftFloat-source.html](http://www.jhauser.us/arithmetic/SoftFloat-3c/doc/SoftFloat-source.html) Documentation for building SoftFloat.
-* [SoftFloat-history.html](http://www.jhauser.us/arithmetic/SoftFloat-3c/doc/SoftFloat-history.html) History of the major changes to SoftFloat.
+* [SoftFloat.html](http://www.jhauser.us/arithmetic/SoftFloat-3d/doc/SoftFloat.html) Documentation for using the SoftFloat functions.
+* [SoftFloat-source.html](http://www.jhauser.us/arithmetic/SoftFloat-3d/doc/SoftFloat-source.html) Documentation for building SoftFloat.
+* [SoftFloat-history.html](http://www.jhauser.us/arithmetic/SoftFloat-3d/doc/SoftFloat-history.html) History of the major changes to SoftFloat.
 
 Other files in the package comprise the source code for SoftFloat.
 
