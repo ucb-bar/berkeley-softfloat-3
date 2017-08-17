@@ -88,10 +88,10 @@ void
         }
         ptr = zPtr + indexMultiwordHi( size_words, wordDist );
     }
-    do {
+    while ( wordDist ) {
         *ptr++ = 0;
         --wordDist;
-    } while ( wordDist );
+    };
  wordJam:
     if ( wordJam ) zPtr[indexWordLo( size_words )] |= 1;
 
