@@ -16,9 +16,9 @@ containing the floating-point subroutines.
 The SoftFloat package is documented in the following files in the `doc`
 subdirectory:
 
-* [SoftFloat.html](http://www.jhauser.us/arithmetic/SoftFloat-3d/doc/SoftFloat.html) Documentation for using the SoftFloat functions.
-* [SoftFloat-source.html](http://www.jhauser.us/arithmetic/SoftFloat-3d/doc/SoftFloat-source.html) Documentation for building SoftFloat.
-* [SoftFloat-history.html](http://www.jhauser.us/arithmetic/SoftFloat-3d/doc/SoftFloat-history.html) History of the major changes to SoftFloat.
+* [SoftFloat.html](http://www.jhauser.us/arithmetic/SoftFloat-3/doc/SoftFloat.html) Documentation for using the SoftFloat functions.
+* [SoftFloat-source.html](http://www.jhauser.us/arithmetic/SoftFloat-3/doc/SoftFloat-source.html) Documentation for building SoftFloat.
+* [SoftFloat-history.html](http://www.jhauser.us/arithmetic/SoftFloat-3/doc/SoftFloat-history.html) History of the major changes to SoftFloat.
 
 Other files in the package comprise the source code for SoftFloat.
 
