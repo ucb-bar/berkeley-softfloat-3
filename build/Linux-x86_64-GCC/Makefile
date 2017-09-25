@@ -199,6 +199,8 @@ OBJS_OTHERS = \
   f16_roundToInt$(OBJ) \
   f16_add$(OBJ) \
   f16_classify$(OBJ) \
+  f32_classify$(OBJ) \
+  f64_classify$(OBJ) \
   f16_sub$(OBJ) \
   f16_mul$(OBJ) \
   f16_mulAdd$(OBJ) \
