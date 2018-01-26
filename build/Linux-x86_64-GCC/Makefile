@@ -2,7 +2,7 @@
 #=============================================================================
 #
 # This Makefile is part of the SoftFloat IEEE Floating-Point Arithmetic
-# Package, Release 3d, by John R. Hauser.
+# Package, Release 3e, by John R. Hauser.
 #
 # Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
 # University of California.  All rights reserved.
@@ -50,6 +50,8 @@ MAKELIB = ar crs $@
 
 OBJ = .o
 LIB = .a
+
+OTHER_HEADERS = $(SOURCE_DIR)/include/opts-GCC.h
 
 .PHONY: all
 all: softfloat$(LIB)
@@ -365,7 +367,7 @@ OBJS_OTHERS = \
 OBJS_ALL = $(OBJS_PRIMITIVES) $(OBJS_SPECIALIZE) $(OBJS_OTHERS)
 
 $(OBJS_ALL): \
-  platform.h $(SOURCE_DIR)/include/primitiveTypes.h \
+  $(OTHER_HEADERS) platform.h $(SOURCE_DIR)/include/primitiveTypes.h \
   $(SOURCE_DIR)/include/primitives.h
 $(OBJS_SPECIALIZE) $(OBJS_OTHERS): \
   $(SOURCE_DIR)/include/softfloat_types.h $(SOURCE_DIR)/include/internals.h \

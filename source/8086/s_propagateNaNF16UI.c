@@ -2,10 +2,10 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3d, by John R. Hauser.
+Package, Release 3e, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
-California.  All rights reserved.
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2018 The Regents of the
+University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -42,9 +42,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "softfloat.h"
 
 /*----------------------------------------------------------------------------
-| Interpreting `uiA' and `uiB' as the bit patterns of two 16-bit floating-
+| Interpreting 'uiA' and 'uiB' as the bit patterns of two 16-bit floating-
 | point values, at least one of which is a NaN, returns the bit pattern of
-| the combined NaN result.  If either `uiA' or `uiB' has the pattern of a
+| the combined NaN result.  If either 'uiA' or 'uiB' has the pattern of a
 | signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 uint_fast16_t
@@ -74,8 +74,8 @@ uint_fast16_t
         }
     }
  returnLargerMag:
-    uiMagA = uiNonsigA & 0x7FFF;
-    uiMagB = uiNonsigB & 0x7FFF;
+    uiMagA = uiA & 0x7FFF;
+    uiMagB = uiB & 0x7FFF;
     if ( uiMagA < uiMagB ) return uiNonsigB;
     if ( uiMagB < uiMagA ) return uiNonsigA;
     return (uiNonsigA < uiNonsigB) ? uiNonsigA : uiNonsigB;

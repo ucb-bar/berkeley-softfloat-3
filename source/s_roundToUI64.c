@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3d, by John R. Hauser.
+Package, Release 3e, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
 University of California.  All rights reserved.
@@ -50,29 +50,41 @@ uint_fast64_t
      bool exact
  )
 {
-    bool roundNearEven, doIncrement;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    roundNearEven = (roundingMode == softfloat_round_near_even);
-    doIncrement = (UINT64_C( 0x8000000000000000 ) <= sigExtra);
-    if ( ! roundNearEven && (roundingMode != softfloat_round_near_maxMag) ) {
-        doIncrement =
-            (roundingMode
-                 == (sign ? softfloat_round_min : softfloat_round_max))
-                && sigExtra;
-    }
-    if ( doIncrement ) {
-        ++sig;
-        if ( ! sig ) goto invalid;
-        sig &=
-            ~(uint_fast64_t)
-                 (! (sigExtra & UINT64_C( 0x7FFFFFFFFFFFFFFF ))
-                      & roundNearEven);
+    if (
+        (roundingMode == softfloat_round_near_maxMag)
+            || (roundingMode == softfloat_round_near_even)
+    ) {
+        if ( UINT64_C( 0x8000000000000000 ) <= sigExtra ) goto increment;
+    } else {
+        if ( sign ) {
+            if ( !(sig | sigExtra) ) return 0;
+            if ( roundingMode == softfloat_round_min ) goto invalid;
+#ifdef SOFTFLOAT_ROUND_ODD
+            if ( roundingMode == softfloat_round_odd ) goto invalid;
+#endif
+        } else {
+            if ( (roundingMode == softfloat_round_max) && sigExtra ) {
+ increment:
+                ++sig;
+                if ( !sig ) goto invalid;
+                if ( 
+                    (sigExtra == UINT64_C( 0x8000000000000000 ))
+                        && (roundingMode == softfloat_round_near_even)
+                ) {
+                    sig &= ~(uint_fast64_t) 1;
+                }
+            }
+        }
     }
     if ( sign && sig ) goto invalid;
-    if ( exact && sigExtra ) {
-        softfloat_exceptionFlags |= softfloat_flag_inexact;
+    if ( sigExtra ) {
+#ifdef SOFTFLOAT_ROUND_ODD
+        if ( roundingMode == softfloat_round_odd ) sig |= 1;
+#endif
+        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
     }
     return sig;
     /*------------------------------------------------------------------------

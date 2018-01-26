@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3d, by John R. Hauser.
+Package, Release 3e, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
 University of California.  All rights reserved.
@@ -45,29 +45,42 @@ uint_fast32_t
  softfloat_roundToUI32(
      bool sign, uint_fast64_t sig, uint_fast8_t roundingMode, bool exact )
 {
-    bool roundNearEven;
     uint_fast16_t roundIncrement, roundBits;
     uint_fast32_t z;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    roundNearEven = (roundingMode == softfloat_round_near_even);
     roundIncrement = 0x800;
-    if ( ! roundNearEven && (roundingMode != softfloat_round_near_maxMag) ) {
-        roundIncrement =
-            (roundingMode
-                 == (sign ? softfloat_round_min : softfloat_round_max))
-                ? 0xFFF
-                : 0;
+    if ( 
+        (roundingMode != softfloat_round_near_maxMag) 
+            && (roundingMode != softfloat_round_near_even)
+    ) {
+        roundIncrement = 0;
+        if ( sign ) {
+            if ( !sig ) return 0;
+            if ( roundingMode == softfloat_round_min ) goto invalid;
+#ifdef SOFTFLOAT_ROUND_ODD
+            if ( roundingMode == softfloat_round_odd ) goto invalid;
+#endif
+        } else {
+            if ( roundingMode == softfloat_round_max ) roundIncrement = 0xFFF;
+        }
     }
     roundBits = sig & 0xFFF;
     sig += roundIncrement;
     if ( sig & UINT64_C( 0xFFFFF00000000000 ) ) goto invalid;
     z = sig>>12;
-    z &= ~(uint_fast32_t) (! (roundBits ^ 0x800) & roundNearEven);
+    if ( 
+        (roundBits == 0x800) && (roundingMode == softfloat_round_near_even)
+    ) {
+        z &= ~(uint_fast32_t) 1;
+    }
     if ( sign && z ) goto invalid;
-    if ( exact && roundBits ) {
-        softfloat_exceptionFlags |= softfloat_flag_inexact;
+    if ( roundBits ) {
+#ifdef SOFTFLOAT_ROUND_ODD
+        if ( roundingMode == softfloat_round_odd ) z |= 1;
+#endif
+        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
     }
     return z;
     /*------------------------------------------------------------------------

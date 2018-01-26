@@ -2,7 +2,7 @@
 /*============================================================================
 
 This C header file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3d, by John R. Hauser.
+Package, Release 3e, by John R. Hauser.
 
 Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
 University of California.  All rights reserved.
@@ -74,7 +74,7 @@ enum {
     softfloat_round_min         = 2,
     softfloat_round_max         = 3,
     softfloat_round_near_maxMag = 4,
-    softfloat_round_odd         = 5
+    softfloat_round_odd         = 6
 };
 
 /*----------------------------------------------------------------------------

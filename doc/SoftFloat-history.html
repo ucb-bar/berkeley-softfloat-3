@@ -7,12 +7,55 @@
 
 <BODY>
 
-<H1>History of Berkeley SoftFloat, to Release 3d</H1>
+<H1>History of Berkeley SoftFloat, to Release 3e</H1>
 
 <P>
 John R. Hauser<BR>
-2017 August 10<BR>
+2018 January 20<BR>
 </P>
+
+
+<H3>Release 3e (2018 January)</H3>
+
+<UL>
+
+<LI>
+Changed the default numeric code for optional rounding mode <CODE>odd</CODE>
+(round to odd, also known as <EM>jamming</EM>) from 5 to 6.
+
+<LI>
+Modified the behavior of rounding mode <CODE>odd</CODE> when rounding to an
+integer value (either conversion to an integer format or a
+&lsquo;<CODE>roundToInt</CODE>&rsquo; function).
+Previously, for those cases only, rounding mode <CODE>odd</CODE> acted the same
+as rounding to minimum magnitude.
+Now all operations are rounded consistently.
+
+<LI>
+Fixed some errors in the specialization code modeling Intel x86 floating-point,
+specifically the integers returned on invalid operations and the propagation of
+NaN payloads in a few rare cases.
+
+<LI>
+Added specialization code modeling ARM floating-point, conforming to VFPv2 or
+later.
+
+<LI>
+Added an example target for ARM processors.
+
+<LI>
+Fixed a minor bug whereby function <CODE>f16_to_ui64</CODE> might return a
+different integer than expected in the case that the floating-point operand is
+negative.
+
+<LI>
+Added example target-specific optimization for GCC, employing GCC instrinsics
+and support for <NOBR>128-bit</NOBR> integer arithmetic.
+
+<LI>
+Made other minor improvements.
+
+</UL>
 
 
 <H3>Release 3d (2017 August)</H3>

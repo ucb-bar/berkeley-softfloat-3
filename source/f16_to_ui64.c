@@ -2,9 +2,9 @@
 /*============================================================================
 
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
-Package, Release 3d, by John R. Hauser.
+Package, Release 3e, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 The Regents of the
 University of California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,9 @@ uint_fast64_t f16_to_ui64( float16_t a, uint_fast8_t roundingMode, bool exact )
     uint_fast16_t frac;
     uint_fast32_t sig32;
     int_fast8_t shiftDist;
+#ifndef SOFTFLOAT_FAST_INT64
+    uint32_t extSig[3];
+#endif
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -78,7 +81,16 @@ uint_fast64_t f16_to_ui64( float16_t a, uint_fast8_t roundingMode, bool exact )
         shiftDist = exp - 0x0D;
         if ( 0 < shiftDist ) sig32 <<= shiftDist;
     }
-    return softfloat_roundToUI32( sign, sig32, roundingMode, exact );
+#ifdef SOFTFLOAT_FAST_INT64
+    return
+        softfloat_roundToUI64(
+            sign, sig32>>12, (uint_fast64_t) sig32<<52, roundingMode, exact );
+#else
+    extSig[indexWord( 3, 2 )] = 0;
+    extSig[indexWord( 3, 1 )] = sig32>>12;
+    extSig[indexWord( 3, 0 )] = sig32<<20;
+    return softfloat_roundMToUI64( sign, extSig, roundingMode, exact );
+#endif
 
 }
 

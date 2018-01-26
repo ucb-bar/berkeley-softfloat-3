@@ -7,11 +7,11 @@
 
 <BODY>
 
-<H1>Berkeley SoftFloat Release 3d: Source Documentation</H1>
+<H1>Berkeley SoftFloat Release 3e: Source Documentation</H1>
 
 <P>
 John R. Hauser<BR>
-2017 August 10<BR>
+2018 January 20<BR>
 </P>
 
 
@@ -69,7 +69,7 @@ SoftFloat has been successfully compiled with the GNU C Compiler
 <NOBR>Release 2</NOBR> or earlier.
 Changes to the interface of SoftFloat functions are documented in
 <A HREF="SoftFloat.html"><NOBR><CODE>SoftFloat.html</CODE></NOBR></A>.
-The current version of SoftFloat is <NOBR>Release 3d</NOBR>.
+The current version of SoftFloat is <NOBR>Release 3e</NOBR>.
 </P>
 
 
@@ -114,7 +114,7 @@ and <CODE>&lt;stdint.h&gt;</CODE></I>.
 The SoftFloat package was written by me, <NOBR>John R.</NOBR> Hauser.
 <NOBR>Release 3</NOBR> of SoftFloat was a completely new implementation
 supplanting earlier releases.
-The project to create <NOBR>Release 3</NOBR> (now <NOBR>through 3d</NOBR>) was
+The project to create <NOBR>Release 3</NOBR> (now <NOBR>through 3e</NOBR>) was
 done in the employ of the University of California, Berkeley, within the
 Department of Electrical Engineering and Computer Sciences, first for the
 Parallel Computing Laboratory (Par Lab) and then for the ASPIRE Lab.
@@ -148,12 +148,12 @@ Oracle, and Samsung.
 </P>
 
 <P>
-The following applies to the whole of SoftFloat <NOBR>Release 3d</NOBR> as well
+The following applies to the whole of SoftFloat <NOBR>Release 3e</NOBR> as well
 as to each source file individually.
 </P>
 
 <P>
-Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
+Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 The Regents of the
 University of California.
 All rights reserved.
 </P>
@@ -215,12 +215,15 @@ source
     include
     8086
     8086-SSE
+    ARM-VFPv2
+    ARM-VFPv2-defaultNaN
 build
     template-FAST_INT64
     template-not-FAST_INT64
     Linux-386-GCC
     Linux-386-SSE2-GCC
     Linux-x86_64-GCC
+    Linux-ARM-VFPv2-GCC
     Win32-MinGW
     Win32-SSE2-MinGW
     Win64-MinGW-w64
@@ -228,20 +231,37 @@ build
 </BLOCKQUOTE>
 The majority of the SoftFloat sources are provided in the <CODE>source</CODE>
 directory.
-The <CODE>include</CODE> subdirectory of <CODE>source</CODE> contains several
-header files (unsurprisingly), while the <CODE>8086</CODE> and
-<NOBR><CODE>8086-SSE</CODE></NOBR> subdirectories contain source files that
-specialize the floating-point behavior to match the Intel x86 line of
-processors.
-The files in directory <CODE>8086</CODE> give floating-point behavior
-consistent solely with Intel&rsquo;s older, 8087-derived floating-point, while
-those in <NOBR><CODE>8086-SSE</CODE></NOBR> update the behavior of the
-non-extended formats (<CODE>float16_t</CODE>, <CODE>float32_t</CODE>,
-<CODE>float64_t</CODE>, and <CODE>float128_t</CODE>) to mirror Intel&rsquo;s
-more recent Streaming SIMD Extensions (SSE) and other compatible extensions.
+The <CODE>include</CODE> subdirectory contains several header files
+(unsurprisingly), while the other subdirectories of <CODE>source</CODE> contain
+source files that specialize the floating-point behavior to match particular
+processor families:
+<BLOCKQUOTE>
+<DL>
+<DT><CODE>8086</CODE></DT>
+<DD>
+Intel&rsquo;s older, 8087-derived floating-point, extended to all supported
+floating-point types
+</DD>
+<DT><CODE>8086-SSE</CODE></DT>
+<DD>
+Intel&rsquo;s x86 processors with Streaming SIMD Extensions (SSE) and later
+compatible extensions, having 8087 behavior for <NOBR>80-bit</NOBR>
+double-extended-precision (<CODE>extFloat80_t</CODE>) and SSE behavior for
+other floating-point types
+</DD>
+<DT><CODE>ARM-VFPv2</CODE></DT>
+<DD>
+ARM&rsquo;s VFPv2 or later floating-point, with NaN payload propagation
+</DD>
+<DT><CODE>ARM-VFPv2-defaultNaN</CODE></DT>
+<DD>
+ARM&rsquo;s VFPv2 or later floating-point, with the &ldquo;default NaN&rdquo;
+option
+</DD>
+</DL>
+</BLOCKQUOTE>
 If other specializations are attempted, these would be expected to be other
-subdirectories of <CODE>source</CODE> alongside <CODE>8086</CODE> and
-<NOBR><CODE>8086-SSE</CODE></NOBR>.
+subdirectories of <CODE>source</CODE> alongside the ones listed above.
 Specialization is covered later, in <NOBR>section 5.2</NOBR>, <I>Specializing
 Floating-Point Behavior</I>.
 </P>
@@ -264,19 +284,20 @@ are intended to follow a naming system of
 For the example targets,
 <NOBR><CODE>&lt;<I>execution-environment</I>&gt;</CODE></NOBR> is
 <NOBR><CODE>Linux-386</CODE></NOBR>, <NOBR><CODE>Linux-386-SSE2</CODE></NOBR>,
-<NOBR><CODE>Linux-x86_64</CODE></NOBR>, <CODE>Win32</CODE>,
+<NOBR><CODE>Linux-x86_64</CODE></NOBR>,
+<NOBR><CODE>Linux-ARM-VFPv2</CODE></NOBR>, <CODE>Win32</CODE>,
 <NOBR><CODE>Win32-SSE2</CODE></NOBR>, or <CODE>Win64</CODE>, and
 <NOBR><CODE>&lt;<I>compiler</I>&gt;</CODE></NOBR> is <CODE>GCC</CODE>,
 <CODE>MinGW</CODE>, or <NOBR><CODE>MinGW-w64</CODE></NOBR>.
 </P>
 
 <P>
-At the current time, all of the supplied target directories are merely examples
-that may or may not be correct for compiling on any particular system.
+All of the supplied target directories are merely examples that may or may not
+be correct for compiling on any particular system.
 Despite requests, there are currently no plans to include and maintain in the
 SoftFloat package the build files needed for a great many users&rsquo;
-compilation environments, which after all can span a broad range of operating
-systems, compilers, and other tools.
+compilation environments, which can span a huge range of operating systems,
+compilers, and other tools.
 </P>
 
 <P>
@@ -402,8 +423,8 @@ A new build target may use an existing specialization, such as the ones
 provided by the <CODE>8086</CODE> and <NOBR><CODE>8086-SSE</CODE></NOBR>
 subdirectories.
 If a build target needs a new specialization, different from any existing ones,
-it is recommended that a new specialization subdirectory be created in the
-<CODE>source</CODE> directory for this purpose.
+it is recommended that a new specialization directory be created for this
+purpose.
 The <CODE>specialize.h</CODE> header file from any of the provided
 specialization subdirectories can be used as a model for what definitions are
 needed.
@@ -577,8 +598,40 @@ function.
 This technically defines <NOBR><CODE>&lt;<I>function-name</I>&gt;</CODE></NOBR>
 as a macro, but one that resolves to the same name, which may then be a
 function.
-(A preprocessor that conforms to the C Standard must limit recursive macro
-expansion from being applied more than once.)
+(A preprocessor that conforms to the C Standard is required to limit recursive
+macro expansion from being applied more than once.)
+</P>
+
+<P>
+The supplied header file <CODE>opts-GCC.h</CODE> (in directory
+<CODE>source/include</CODE>) provides an example of target-specific
+optimization for the GCC compiler.
+Each GCC target example in the <CODE>build</CODE> directory has
+<BLOCKQUOTE>
+<CODE>#include "opts-GCC.h"</CODE>
+</BLOCKQUOTE>
+in its <CODE>platform.h</CODE> header file.
+Before <CODE>opts-GCC.h</CODE> is included, the following macros must be
+defined (or not) to control which features are invoked:
+<BLOCKQUOTE>
+<DL>
+<DT><CODE>SOFTFLOAT_BUILTIN_CLZ</CODE></DT>
+<DD>
+If defined, SoftFloat&rsquo;s internal
+&lsquo;<CODE>countLeadingZeros</CODE>&rsquo; functions use intrinsics
+<CODE>__builtin_clz</CODE> and <CODE>__builtin_clzll</CODE>.
+</DD>
+<DT><CODE>SOFTFLOAT_INTRINSIC_INT128</CODE></DT>
+<DD>
+If defined, SoftFloat makes use of GCC&rsquo;s nonstandard <NOBR>128-bit</NOBR>
+integer type <CODE>__int128</CODE>.
+</DD>
+</DL>
+</BLOCKQUOTE>
+On some machines, these improvements are observed to increase the speeds of
+<CODE>f64_mul</CODE> and <CODE>f128_mul</CODE> by around 20 to 25%, although
+other functions receive less dramatic boosts, or none at all.
+Results can vary greatly across different platforms.
 </P>
 
 

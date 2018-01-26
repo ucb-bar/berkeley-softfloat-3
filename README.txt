@@ -1,8 +1,8 @@
 
-Package Overview for Berkeley SoftFloat Release 3d
+Package Overview for Berkeley SoftFloat Release 3e
 
 John R. Hauser
-2017 August 10
+2018 January 20
 
 Berkeley SoftFloat is a software implementation of binary floating-point
 that conforms to the IEEE Standard for Floating-Point Arithmetic.  SoftFloat
