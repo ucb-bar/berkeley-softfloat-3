@@ -317,7 +317,7 @@ install_headers('source/include/softfloat.h',
                 'source/include/softfloat_types.h'
                 )
 
-library('softfloat3', sources: common_src + src_8080sse,
+lib = library('softfloat3', sources: common_src + src_8080sse,
  include_directories: incdir,
  version: version,
  c_args: ['-Werror-implicit-function-declaration',
@@ -328,3 +328,5 @@ library('softfloat3', sources: common_src + src_8080sse,
     '-DSOFTFLOAT_FAST_DIV32TO16',
     '-DSOFTFLOAT_FAST_DIV64TO32']
     )
+softfloat3_dep = declare_dependency(include_directories : incdir,
+      link_with : lib)
