@@ -4,7 +4,7 @@
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
 Package, Release 3e, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2018 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,10 +42,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*----------------------------------------------------------------------------
 | Assuming at least one of the two 128-bit floating-point values pointed to by
-| `aWPtr' and `bWPtr' is a NaN, stores the combined NaN result at the location
-| pointed to by `zWPtr'.  If either original floating-point value is a
-| signaling NaN, the invalid exception is raised.  Each of `aWPtr', `bWPtr',
-| and `zWPtr' points to an array of four 32-bit elements that concatenate in
+| 'aWPtr' and 'bWPtr' is a NaN, stores the combined NaN result at the location
+| pointed to by 'zWPtr'.  If either original floating-point value is a
+| signaling NaN, the invalid exception is raised.  Each of 'aWPtr', 'bWPtr',
+| and 'zWPtr' points to an array of four 32-bit elements that concatenate in
 | the platform's normal endian order to form a 128-bit floating-point value.
 *----------------------------------------------------------------------------*/
 void
@@ -54,7 +54,7 @@ void
 {
 
     if (
-        f128M_isSignalingNaN( (const float128_t *) aWPtr );
+        f128M_isSignalingNaN( (const float128_t *) aWPtr )
             || (bWPtr && f128M_isSignalingNaN( (const float128_t *) bWPtr ))
     ) {
         softfloat_raiseFlags( softfloat_flag_invalid );
