@@ -69,11 +69,10 @@ float64_t
         if ( exp < 0 ) {
             /*----------------------------------------------------------------
             *----------------------------------------------------------------*/
+            sig = softfloat_shiftRightJam64( sig, -exp );
             isTiny =
                 (softfloat_detectTininess == softfloat_tininess_beforeRounding)
-                    || (exp < -1)
-                    || (sig + roundIncrement < UINT64_C( 0x8000000000000000 ));
-            sig = softfloat_shiftRightJam64( sig, -exp );
+                    || (sig + roundIncrement < UINT64_C( 0x4000000000000000 ));
             exp = 0;
             roundBits = sig & 0x3FF;
             if ( isTiny && roundBits ) {
