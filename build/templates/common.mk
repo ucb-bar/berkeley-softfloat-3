@@ -1,8 +1,8 @@
 
 #=============================================================================
 #
-# This Makefile is part of the SoftFloat IEEE Floating-Point Arithmetic
-# Package, Release 3e, by John R. Hauser.
+# This Makefile template is part of the SoftFloat IEEE Floating-Point
+# Arithmetic Package, Release 3e, by John R. Hauser.
 #
 # Copyright 2011, 2012, 2013, 2014, 2015, 2016, 2017 The Regents of the
 # University of California.  All rights reserved.
@@ -34,8 +34,56 @@
 #
 #=============================================================================
 
-SPECIALIZE_TYPE = 8086-SSE
+ifndef SPECIALIZE_TYPE
+$(error this makefile is a template, do not use directly)
+endif
 
-CFLAGS += -DSOFTFLOAT_FAST_DIV32TO16 -DSOFTFLOAT_FAST_DIV64TO32
+dir_of_makefile = $(dir $(word $(shell expr $(words $(MAKEFILE_LIST)) - $(1)),$(MAKEFILE_LIST)))
+# the chain of include is
+# Makefile -> (not-)FAST_INT64/template.mk -> common.mk
+MAKEFILE_DIR = $(call dir_of_makefile,2)
+TEMPLATE_DIR = $(call dir_of_makefile,1)
 
-include $(dir $(lastword $(MAKEFILE_LIST)))/../templates/not-FAST_INT64/template.mk
+SOURCE_DIR ?= $(MAKEFILE_DIR)/../../source
+
+CFLAGS += -DSOFTFLOAT_ROUND_ODD -DINLINE_LEVEL=5
+CFLAGS += -I$(TEMPLATE_DIR) -I$(SOURCE_DIR)/$(SPECIALIZE_TYPE) -I$(SOURCE_DIR)/include
+
+OTHER_HEADERS ?=
+
+ifdef SHARED
+       MAKELIB = $(CC) $(LDFLAGS) -shared $^ -o $@ $(LOADLIBES) $(LDLIBS)
+       LIB = .so
+       CFLAGS += -fPIC
+else
+       MAKELIB = $(AR) crs $@ $^
+       LIB = .a
+endif
+
+OBJ = .o
+
+.PHONY: all
+all: softfloat$(LIB)
+
+OBJS_ALL = $(OBJS_PRIMITIVES) $(OBJS_SPECIALIZE) $(OBJS_OTHERS)
+
+$(OBJS_ALL): \
+  $(OTHER_HEADERS) $(TEMPLATE_DIR)/platform.h $(SOURCE_DIR)/include/primitiveTypes.h \
+  $(SOURCE_DIR)/include/primitives.h
+$(OBJS_SPECIALIZE) $(OBJS_OTHERS): \
+  $(SOURCE_DIR)/include/softfloat_types.h $(SOURCE_DIR)/include/internals.h \
+  $(SOURCE_DIR)/$(SPECIALIZE_TYPE)/specialize.h \
+  $(SOURCE_DIR)/include/softfloat.h
+
+$(OBJS_PRIMITIVES) $(OBJS_OTHERS): %$(OBJ): $(SOURCE_DIR)/%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+$(OBJS_SPECIALIZE): %$(OBJ): $(SOURCE_DIR)/$(SPECIALIZE_TYPE)/%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+softfloat$(LIB): $(OBJS_ALL)
+	$(MAKELIB)
+
+.PHONY: clean
+clean:
+	$(RM) $(OBJS_ALL) softfloat$(LIB)
