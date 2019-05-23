@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-bool f32_eq_signaling( float32_t a, float32_t b )
+bool f32_eq_signaling( float32_t a, float32_t b STATE_PARAM )
 {
     union ui32_f32 uA;
     uint_fast32_t uiA;
@@ -52,7 +52,7 @@ bool f32_eq_signaling( float32_t a, float32_t b )
     uB.f = b;
     uiB = uB.ui;
     if ( isNaNF32UI( uiA ) || isNaNF32UI( uiB ) ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         return false;
     }
     return (uiA == uiB) || ! (uint32_t) ((uiA | uiB)<<1);

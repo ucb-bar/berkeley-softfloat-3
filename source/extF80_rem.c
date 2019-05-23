@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-extFloat80_t extF80_rem( extFloat80_t a, extFloat80_t b )
+extFloat80_t extF80_rem( extFloat80_t a, extFloat80_t b STATE_PARAM )
 {
     union { struct extFloat80M s; extFloat80_t f; } uA;
     uint_fast16_t uiA64;
@@ -192,18 +192,19 @@ extFloat80_t extF80_rem( extFloat80_t a, extFloat80_t b )
     }
     return
         softfloat_normRoundPackToExtF80(
-            signRem, rem.v64 | rem.v0 ? expB + 32 : 0, rem.v64, rem.v0, 80 );
+            signRem, rem.v64 | rem.v0 ? expB + 32 : 0, rem.v64, rem.v0, 80
+            STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN:
-    uiZ = softfloat_propagateNaNExtF80UI( uiA64, uiA0, uiB64, uiB0 );
+    uiZ = softfloat_propagateNaNExtF80UI( uiA64, uiA0, uiB64, uiB0 STATE_VAR );
     uiZ64 = uiZ.v64;
     uiZ0  = uiZ.v0;
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     uiZ64 = defaultNaNExtF80UI64;
     uiZ0  = defaultNaNExtF80UI0;
     goto uiZ;

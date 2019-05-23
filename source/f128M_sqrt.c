@@ -43,16 +43,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
+void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr STATE_PARAM )
 {
 
-    *zPtr = f128_sqrt( *aPtr );
+    *zPtr = f128_sqrt( *aPtr STATE_VAR );
 
 }
 
 #else
 
-void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
+void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr STATE_PARAM )
 {
     const uint32_t *aWPtr;
     uint32_t *zWPtr;
@@ -85,7 +85,7 @@ void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
                 || (aWPtr[indexWord( 4, 2 )] | aWPtr[indexWord( 4, 1 )]
                         | aWPtr[indexWord( 4, 0 )])
         ) {
-            softfloat_propagateNaNF128M( aWPtr, 0, zWPtr );
+            softfloat_propagateNaNF128M( aWPtr, 0, zWPtr STATE_VAR );
             return;
         }
         if ( ! signA ) goto copyA;
@@ -207,12 +207,12 @@ void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
             }
         }
     }
-    softfloat_roundPackMToF128M( 0, expZ, y, zWPtr );
+    softfloat_roundPackMToF128M( 0, expZ, y, zWPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_invalidF128M( zWPtr );
+    softfloat_invalidF128M( zWPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

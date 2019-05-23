@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-float32_t f32_div( float32_t a, float32_t b )
+float32_t f32_div( float32_t a, float32_t b STATE_PARAM )
 {
     union ui32_f32 uA;
     uint_fast32_t uiA;
@@ -98,7 +98,7 @@ float32_t f32_div( float32_t a, float32_t b )
     if ( ! expB ) {
         if ( ! sigB ) {
             if ( ! (expA | sigA) ) goto invalid;
-            softfloat_raiseFlags( softfloat_flag_infinite );
+            softfloat_raiseFlags( softfloat_flag_infinite STATE_VAR );
             goto infinity;
         }
         normExpSig = softfloat_normSubnormalF32Sig( sigB );
@@ -151,16 +151,16 @@ float32_t f32_div( float32_t a, float32_t b )
         }
     }
 #endif
-    return softfloat_roundPackToF32( signZ, expZ, sigZ );
+    return softfloat_roundPackToF32( signZ, expZ, sigZ STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN:
-    uiZ = softfloat_propagateNaNF32UI( uiA, uiB );
+    uiZ = softfloat_propagateNaNF32UI( uiA, uiB STATE_VAR );
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     uiZ = defaultNaNF32UI;
     goto uiZ;
     /*------------------------------------------------------------------------

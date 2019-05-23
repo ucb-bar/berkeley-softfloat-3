@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern const uint16_t softfloat_approxRecipSqrt_1k0s[];
 extern const uint16_t softfloat_approxRecipSqrt_1k1s[];
 
-float16_t f16_sqrt( float16_t a )
+float16_t f16_sqrt( float16_t a STATE_PARAM )
 {
     union ui16_f16 uA;
     uint_fast16_t uiA;
@@ -72,7 +72,7 @@ float16_t f16_sqrt( float16_t a )
     *------------------------------------------------------------------------*/
     if ( expA == 0x1F ) {
         if ( sigA ) {
-            uiZ = softfloat_propagateNaNF16UI( uiA, 0 );
+            uiZ = softfloat_propagateNaNF16UI( uiA, 0 STATE_VAR );
             goto uiZ;
         }
         if ( ! signA ) return a;
@@ -122,11 +122,11 @@ float16_t f16_sqrt( float16_t a )
             if ( negRem ) --sigZ;
         }
     }
-    return softfloat_roundPackToF16( 0, expZ, sigZ );
+    return softfloat_roundPackToF16( 0, expZ, sigZ STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     uiZ = defaultNaNF16UI;
  uiZ:
     uZ.ui = uiZ;

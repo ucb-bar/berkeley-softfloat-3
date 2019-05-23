@@ -47,6 +47,7 @@ void
      const struct extFloat80M *bSPtr,
      struct extFloat80M *zSPtr,
      bool negateB
+     STATE_PARAM
  )
 {
     uint32_t uiA64;
@@ -59,7 +60,8 @@ void
     uint64_t sigZ, sigB;
     void
      (*roundPackRoutinePtr)(
-         bool, int32_t, uint32_t *, uint_fast8_t, struct extFloat80M * );
+         bool, int32_t, uint32_t *, uint_fast8_t, struct extFloat80M *
+         STATE_VAR );
     int32_t expDiff;
     uint32_t extSigX[3], sigZExtra;
 
@@ -77,7 +79,7 @@ void
         if ( expB == 0x7FFF ) {
             uiZ64 = uiB64 ^ packToExtF80UI64( negateB, 0 );
             if ( (expA == 0x7FFF) && (uiZ64 != uiA64) ) {
-                softfloat_invalidExtF80M( zSPtr );
+                softfloat_invalidExtF80M( zSPtr STATE_VAR );
                 return;
             }
         }
@@ -151,7 +153,7 @@ void
             } else {
                 sigZ -= sigB;
                 if ( ! sigZ ) {
-                    signZ = (softfloat_roundingMode == softfloat_round_min);
+                    signZ = (STATE(roundingMode) == softfloat_round_min);
                     zSPtr->signExp = packToExtF80UI64( signZ, 0 );
                     zSPtr->signif = 0;
                     return;
@@ -180,7 +182,13 @@ void
     *------------------------------------------------------------------------*/
  roundPack:
     (*roundPackRoutinePtr)(
-        signZ, expA, extSigX, extF80_roundingPrecision, zSPtr );
+        signZ, expA, extSigX,
+#ifdef SOFTFLOAT_USE_GLOBAL_STATE
+        extF80_roundingPrecision,
+#else
+        state->extF80_roundingPrecision,
+#endif
+        zSPtr );
 
 }
 

@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-extFloat80_t f64_to_extF80( float64_t a )
+extFloat80_t f64_to_extF80( float64_t a STATE_PARAM )
 {
     union ui64_f64 uA;
     uint_fast64_t uiA;
@@ -66,7 +66,7 @@ extFloat80_t f64_to_extF80( float64_t a )
     *------------------------------------------------------------------------*/
     if ( exp == 0x7FF ) {
         if ( frac ) {
-            softfloat_f64UIToCommonNaN( uiA, &commonNaN );
+            softfloat_f64UIToCommonNaN( uiA, &commonNaN STATE_VAR );
             uiZ = softfloat_commonNaNToExtF80UI( &commonNaN );
             uiZ64 = uiZ.v64;
             uiZ0  = uiZ.v0;

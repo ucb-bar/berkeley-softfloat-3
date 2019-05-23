@@ -46,6 +46,7 @@ void
      uint32_t *extSigPtr,
      uint_fast8_t roundingPrecision,
      struct extFloat80M *zSPtr
+     STATE_PARAM
  )
 {
     int_fast16_t shiftDist;
@@ -72,7 +73,7 @@ void
         softfloat_shiftLeft96M( extSigPtr, shiftDist, extSigPtr );
     }
     softfloat_roundPackMToExtF80M(
-        sign, exp, extSigPtr, roundingPrecision, zSPtr );
+        sign, exp, extSigPtr, roundingPrecision, zSPtr STATE_VAR );
 
 }
 

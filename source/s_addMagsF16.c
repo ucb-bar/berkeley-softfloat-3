@@ -41,7 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-float16_t softfloat_addMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
+float16_t softfloat_addMagsF16( uint_fast16_t uiA, uint_fast16_t uiB
+                                STATE_PARAM )
 {
     int_fast8_t expA;
     uint_fast16_t sigA;
@@ -141,16 +142,16 @@ float16_t softfloat_addMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
             }
         }
     }
-    return softfloat_roundPackToF16( signZ, expZ, sigZ );
+    return softfloat_roundPackToF16( signZ, expZ, sigZ STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN:
-    uiZ = softfloat_propagateNaNF16UI( uiA, uiB );
+    uiZ = softfloat_propagateNaNF16UI( uiA, uiB STATE_VAR );
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  addEpsilon:
-    roundingMode = softfloat_roundingMode;
+    roundingMode = STATE(roundingMode);
     if ( roundingMode != softfloat_round_near_even ) {
         if (
             roundingMode
@@ -160,7 +161,7 @@ float16_t softfloat_addMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
             ++uiZ;
             if ( (uint16_t) (uiZ<<1) == 0xF800 ) {
                 softfloat_raiseFlags(
-                    softfloat_flag_overflow | softfloat_flag_inexact );
+                    softfloat_flag_overflow | softfloat_flag_inexact STATE_VAR);
             }
         }
 #ifdef SOFTFLOAT_ROUND_ODD
@@ -169,7 +170,7 @@ float16_t softfloat_addMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
         }
 #endif
     }
-    softfloat_exceptionFlags |= softfloat_flag_inexact;
+    softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

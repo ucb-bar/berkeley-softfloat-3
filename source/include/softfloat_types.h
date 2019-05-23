@@ -39,6 +39,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdint.h>
 
+// Uncomment the following line to use global state
+//#define SOFTFLOAT_USE_GLOBAL_STATE
+
+#ifdef SOFTFLOAT_USE_GLOBAL_STATE
+
+// Use global state
+#define STATE_PARAM
+#define STATE_VAR
+#define STATE(field)          softfloat_ ## field
+
+#else
+
+// No global state
+#define STATE_PARAM           , softfloat_state_t *state
+#define STATE_VAR             , state
+#define STATE(field)          state->field
+
+#endif
+
+
 /*----------------------------------------------------------------------------
 | Types used to pass 16-bit, 32-bit, 64-bit, and 128-bit floating-point
 | arguments and results to/from functions.  These types must be exactly
@@ -76,6 +96,16 @@ struct extFloat80M { uint16_t signExp; uint64_t signif; };
 | significand of the native type.
 *----------------------------------------------------------------------------*/
 typedef struct extFloat80M extFloat80_t;
+
+/*----------------------------------------------------------------------------
+| State struct. Used when USE_GLOBAL_STATE is defined
+*----------------------------------------------------------------------------*/
+typedef struct {
+    uint_fast8_t detectTininess;
+    uint_fast8_t roundingMode;
+    uint_fast8_t exceptionFlags;
+    uint_fast8_t extF80_roundingPrecision;
+} softfloat_state_t;
 
 #endif
 

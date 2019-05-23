@@ -38,10 +38,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-void softfloat_invalidExtF80M( struct extFloat80M *zSPtr )
+void softfloat_invalidExtF80M( struct extFloat80M *zSPtr STATE_PARAM )
 {
 
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     zSPtr->signExp = defaultNaNExtF80UI64;
     zSPtr->signif  = defaultNaNExtF80UI0;
 

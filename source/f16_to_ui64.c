@@ -41,7 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-uint_fast64_t f16_to_ui64( float16_t a, uint_fast8_t roundingMode, bool exact )
+uint_fast64_t f16_to_ui64( float16_t a, uint_fast8_t roundingMode, bool exact
+                           STATE_PARAM )
 {
     union ui16_f16 uA;
     uint_fast16_t uiA;
@@ -64,7 +65,7 @@ uint_fast64_t f16_to_ui64( float16_t a, uint_fast8_t roundingMode, bool exact )
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( exp == 0x1F ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         return
             frac ? ui64_fromNaN
                 : sign ? ui64_fromNegOverflow : ui64_fromPosOverflow;
@@ -84,12 +85,13 @@ uint_fast64_t f16_to_ui64( float16_t a, uint_fast8_t roundingMode, bool exact )
 #ifdef SOFTFLOAT_FAST_INT64
     return
         softfloat_roundToUI64(
-            sign, sig32>>12, (uint_fast64_t) sig32<<52, roundingMode, exact );
+            sign, sig32>>12, (uint_fast64_t) sig32<<52, roundingMode, exact
+            STATE_VAR );
 #else
     extSig[indexWord( 3, 2 )] = 0;
     extSig[indexWord( 3, 1 )] = sig32>>12;
     extSig[indexWord( 3, 0 )] = sig32<<20;
-    return softfloat_roundMToUI64( sign, extSig, roundingMode, exact );
+    return softfloat_roundMToUI64( sign, extSig, roundingMode, exact STATE_VAR);
 #endif
 
 }

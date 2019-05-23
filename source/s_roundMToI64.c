@@ -43,7 +43,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int_fast64_t
  softfloat_roundMToI64(
-     bool sign, uint32_t *extSigPtr, uint_fast8_t roundingMode, bool exact )
+     bool sign, uint32_t *extSigPtr, uint_fast8_t roundingMode, bool exact
+     STATE_PARAM )
 {
     uint64_t sig;
     uint32_t sigExtra;
@@ -89,13 +90,13 @@ int_fast64_t
 #ifdef SOFTFLOAT_ROUND_ODD
         if ( roundingMode == softfloat_round_odd ) z |= 1;
 #endif
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     }
     return z;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     return sign ? i64_fromNegOverflow : i64_fromPosOverflow;
 
 }

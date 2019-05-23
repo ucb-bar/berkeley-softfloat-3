@@ -40,7 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "specialize.h"
 
-float32_t softfloat_addMagsF32( uint_fast32_t uiA, uint_fast32_t uiB )
+float32_t softfloat_addMagsF32( uint_fast32_t uiA, uint_fast32_t uiB
+                                STATE_PARAM )
 {
     int_fast16_t expA;
     uint_fast32_t sigA;
@@ -113,11 +114,11 @@ float32_t softfloat_addMagsF32( uint_fast32_t uiA, uint_fast32_t uiB )
             sigZ <<= 1;
         }
     }
-    return softfloat_roundPackToF32( signZ, expZ, sigZ );
+    return softfloat_roundPackToF32( signZ, expZ, sigZ STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN:
-    uiZ = softfloat_propagateNaNF32UI( uiA, uiB );
+    uiZ = softfloat_propagateNaNF32UI( uiA, uiB STATE_VAR );
  uiZ:
     uZ.ui = uiZ;
     return uZ.f;

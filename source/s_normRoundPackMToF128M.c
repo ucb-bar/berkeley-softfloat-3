@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  softfloat_normRoundPackMToF128M(
-     bool sign, int32_t exp, uint32_t *extSigPtr, uint32_t *zWPtr )
+     bool sign, int32_t exp, uint32_t *extSigPtr, uint32_t *zWPtr STATE_PARAM )
 {
     const uint32_t *ptr;
     int_fast16_t shiftDist;
@@ -67,7 +67,7 @@ void
         exp -= shiftDist;
         softfloat_shiftLeft160M( extSigPtr, shiftDist, extSigPtr );
     }
-    softfloat_roundPackMToF128M( sign, exp, extSigPtr, zWPtr );
+    softfloat_roundPackMToF128M( sign, exp, extSigPtr, zWPtr STATE_VAR );
 
 }
 

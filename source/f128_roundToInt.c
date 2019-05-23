@@ -42,7 +42,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "softfloat.h"
 
 float128_t
- f128_roundToInt( float128_t a, uint_fast8_t roundingMode, bool exact )
+ f128_roundToInt( float128_t a, uint_fast8_t roundingMode, bool exact
+                  STATE_PARAM )
 {
     union ui128_f128 uA;
     uint_fast64_t uiA64, uiA0;
@@ -66,7 +67,7 @@ float128_t
         *--------------------------------------------------------------------*/
         if ( 0x406F <= exp ) {
             if ( (exp == 0x7FFF) && (fracF128UI64( uiA64 ) | uiA0) ) {
-                uiZ = softfloat_propagateNaNF128UI( uiA64, uiA0, 0, 0 );
+                uiZ = softfloat_propagateNaNF128UI(uiA64, uiA0, 0, 0 STATE_VAR);
                 goto uiZ;
             }
             return a;
@@ -109,7 +110,7 @@ float128_t
         *--------------------------------------------------------------------*/
         if ( exp < 0x3FFF ) {
             if ( !((uiA64 & UINT64_C( 0x7FFFFFFFFFFFFFFF )) | uiA0) ) return a;
-            if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+            if ( exact ) softfloat_raiseFlags(softfloat_flag_inexact STATE_VAR);
             uiZ.v64 = uiA64 & packToF128UI64( 1, 0, 0 );
             uiZ.v0  = 0;
             switch ( roundingMode ) {
@@ -162,7 +163,7 @@ float128_t
             uiZ.v0  |= lastBitMask0;
         }
 #endif
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     }
  uiZ:
     uZ.ui = uiZ;

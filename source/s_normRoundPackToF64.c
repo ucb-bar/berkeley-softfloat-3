@@ -40,7 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 
 float64_t
- softfloat_normRoundPackToF64( bool sign, int_fast16_t exp, uint_fast64_t sig )
+ softfloat_normRoundPackToF64(
+     bool sign, int_fast16_t exp, uint_fast64_t sig STATE_PARAM )
 {
     int_fast8_t shiftDist;
     union ui64_f64 uZ;
@@ -51,7 +52,7 @@ float64_t
         uZ.ui = packToF64UI( sign, sig ? exp : 0, sig<<(shiftDist - 10) );
         return uZ.f;
     } else {
-        return softfloat_roundPackToF64( sign, exp, sig<<shiftDist );
+        return softfloat_roundPackToF64( sign, exp, sig<<shiftDist STATE_VAR );
     }
 
 }

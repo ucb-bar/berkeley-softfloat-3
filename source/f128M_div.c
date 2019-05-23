@@ -44,17 +44,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef SOFTFLOAT_FAST_INT64
 
 void
- f128M_div( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr )
+ f128M_div( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr
+            STATE_PARAM )
 {
 
-    *zPtr = f128_div( *aPtr, *bPtr );
+    *zPtr = f128_div( *aPtr, *bPtr STATE_VAR );
 
 }
 
 #else
 
 void
- f128M_div( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr )
+ f128M_div( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr
+            STATE_PARAM )
 {
     const uint32_t *aWPtr, *bWPtr;
     uint32_t *zWPtr, uiA96;
@@ -104,7 +106,7 @@ void
         goto zero;
     }
     if ( expB == -128 ) {
-        softfloat_raiseFlags( softfloat_flag_infinite );
+        softfloat_raiseFlags( softfloat_flag_infinite STATE_VAR );
         goto infinity;
     }
     /*------------------------------------------------------------------------
@@ -161,12 +163,12 @@ void
     q64 = ((uint64_t) qs[2]<<19) + (q64>>32);
     y[indexWord( 5, 3 )] = q64;
     y[indexWord( 5, 4 )] = q64>>32;
-    softfloat_roundPackMToF128M( signZ, expZ, y, zWPtr );
+    softfloat_roundPackMToF128M( signZ, expZ, y, zWPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_invalidF128M( zWPtr );
+    softfloat_invalidF128M( zWPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

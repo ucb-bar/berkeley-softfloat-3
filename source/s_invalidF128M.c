@@ -40,10 +40,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-void softfloat_invalidF128M( uint32_t *zWPtr )
+void softfloat_invalidF128M( uint32_t *zWPtr STATE_PARAM )
 {
 
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     zWPtr[indexWord( 4, 3 )] = defaultNaNF128UI96;
     zWPtr[indexWord( 4, 2 )] = defaultNaNF128UI64;
     zWPtr[indexWord( 4, 1 )] = defaultNaNF128UI32;
