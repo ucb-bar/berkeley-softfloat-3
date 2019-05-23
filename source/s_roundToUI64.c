@@ -48,6 +48,7 @@ uint_fast64_t
      uint_fast64_t sigExtra,
      uint_fast8_t roundingMode,
      bool exact
+     STATE_PARAM
  )
 {
 
@@ -70,7 +71,7 @@ uint_fast64_t
  increment:
                 ++sig;
                 if ( !sig ) goto invalid;
-                if ( 
+                if (
                     (sigExtra == UINT64_C( 0x8000000000000000 ))
                         && (roundingMode == softfloat_round_near_even)
                 ) {
@@ -84,13 +85,13 @@ uint_fast64_t
 #ifdef SOFTFLOAT_ROUND_ODD
         if ( roundingMode == softfloat_round_odd ) sig |= 1;
 #endif
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     }
     return sig;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     return sign ? ui64_fromNegOverflow : ui64_fromPosOverflow;
 
 }

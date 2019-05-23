@@ -43,16 +43,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-int_fast32_t f128M_to_i32_r_minMag( const float128_t *aPtr, bool exact )
+int_fast32_t f128M_to_i32_r_minMag( const float128_t *aPtr, bool exact
+                                    STATE_PARAM )
 {
 
-    return f128_to_i32_r_minMag( *aPtr, exact );
+    return f128_to_i32_r_minMag( *aPtr, exact STATE_VAR );
 
 }
 
 #else
 
-int_fast32_t f128M_to_i32_r_minMag( const float128_t *aPtr, bool exact )
+int_fast32_t f128M_to_i32_r_minMag( const float128_t *aPtr, bool exact
+                                    STATE_PARAM )
 {
     const uint32_t *aWPtr;
     uint32_t uiA96;
@@ -75,7 +77,7 @@ int_fast32_t f128M_to_i32_r_minMag( const float128_t *aPtr, bool exact )
     *------------------------------------------------------------------------*/
     if ( exp < 0x3FFF ) {
         if ( exact && (exp | sig64) ) {
-            softfloat_exceptionFlags |= softfloat_flag_inexact;
+            softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         }
         return 0;
     }
@@ -88,14 +90,14 @@ int_fast32_t f128M_to_i32_r_minMag( const float128_t *aPtr, bool exact )
     uiZ = sign ? -absZ : absZ;
     if ( uiZ>>31 != sign ) goto invalid;
     if ( exact && ((uint64_t) absZ<<shiftDist != sig64) ) {
-        softfloat_exceptionFlags |= softfloat_flag_inexact;
+        softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     }
     uZ.ui = uiZ;
     return uZ.i;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     return
         (exp == 0x7FFF) && sig64 ? i32_fromNaN
             : sign ? i32_fromNegOverflow : i32_fromPosOverflow;

@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-float128_t f128_div( float128_t a, float128_t b )
+float128_t f128_div( float128_t a, float128_t b STATE_PARAM )
 {
     union ui128_f128 uA;
     uint_fast64_t uiA64, uiA0;
@@ -103,7 +103,7 @@ float128_t f128_div( float128_t a, float128_t b )
     if ( ! expB ) {
         if ( ! (sigB.v64 | sigB.v0) ) {
             if ( ! (expA | sigA.v64 | sigA.v0) ) goto invalid;
-            softfloat_raiseFlags( softfloat_flag_infinite );
+            softfloat_raiseFlags( softfloat_flag_infinite STATE_VAR );
             goto infinity;
         }
         normExpSig = softfloat_normSubnormalF128Sig( sigB.v64, sigB.v0 );
@@ -167,16 +167,17 @@ float128_t f128_div( float128_t a, float128_t b )
             term.v64, term.v0
         );
     return
-        softfloat_roundPackToF128( signZ, expZ, sigZ.v64, sigZ.v0, sigZExtra );
+        softfloat_roundPackToF128(
+            signZ, expZ, sigZ.v64, sigZ.v0, sigZExtra STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN:
-    uiZ = softfloat_propagateNaNF128UI( uiA64, uiA0, uiB64, uiB0 );
+    uiZ = softfloat_propagateNaNF128UI( uiA64, uiA0, uiB64, uiB0 STATE_VAR );
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     uiZ.v64 = defaultNaNF128UI64;
     uiZ.v0  = defaultNaNF128UI0;
     goto uiZ;

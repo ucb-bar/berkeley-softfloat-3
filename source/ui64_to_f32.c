@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float32_t ui64_to_f32( uint64_t a )
+float32_t ui64_to_f32( uint64_t a STATE_PARAM )
 {
     int_fast8_t shiftDist;
     union ui32_f32 u;
@@ -57,7 +57,7 @@ float32_t ui64_to_f32( uint64_t a )
         sig =
             (shiftDist < 0) ? softfloat_shortShiftRightJam64( a, -shiftDist )
                 : (uint_fast32_t) a<<shiftDist;
-        return softfloat_roundPackToF32( 0, 0x9C - shiftDist, sig );
+        return softfloat_roundPackToF32( 0, 0x9C - shiftDist, sig STATE_VAR );
     }
 
 }

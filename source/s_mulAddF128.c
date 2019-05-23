@@ -50,6 +50,7 @@ float128_t
      uint_fast64_t uiC64,
      uint_fast64_t uiC0,
      uint_fast8_t op
+     STATE_PARAM
  )
 {
     bool signA;
@@ -308,11 +309,11 @@ float128_t
  roundPack:
     return
         softfloat_roundPackToF128(
-            signZ, expZ - 1, sigZ.v64, sigZ.v0, sigZExtra );
+            signZ, expZ - 1, sigZ.v64, sigZ.v0, sigZExtra STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN_ABC:
-    uiZ = softfloat_propagateNaNF128UI( uiA64, uiA0, uiB64, uiB0 );
+    uiZ = softfloat_propagateNaNF128UI( uiA64, uiA0, uiB64, uiB0 STATE_VAR );
     goto propagateNaN_ZC;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -324,11 +325,11 @@ float128_t
         if ( sigC.v64 | sigC.v0 ) goto propagateNaN_ZC;
         if ( signZ == signC ) goto uiZ;
     }
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     uiZ.v64 = defaultNaNF128UI64;
     uiZ.v0  = defaultNaNF128UI0;
  propagateNaN_ZC:
-    uiZ = softfloat_propagateNaNF128UI( uiZ.v64, uiZ.v0, uiC64, uiC0 );
+    uiZ = softfloat_propagateNaNF128UI( uiZ.v64, uiZ.v0, uiC64, uiC0 STATE_VAR);
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -339,7 +340,7 @@ float128_t
  completeCancellation:
         uiZ.v64 =
             packToF128UI64(
-                (softfloat_roundingMode == softfloat_round_min), 0, 0 );
+                (STATE(roundingMode) == softfloat_round_min), 0, 0 );
         uiZ.v0 = 0;
     }
  uiZ:

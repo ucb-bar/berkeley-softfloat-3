@@ -41,7 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 
 float64_t
- softfloat_addMagsF64( uint_fast64_t uiA, uint_fast64_t uiB, bool signZ )
+ softfloat_addMagsF64( uint_fast64_t uiA, uint_fast64_t uiB, bool signZ
+                       STATE_PARAM )
 {
     int_fast16_t expA;
     uint_fast64_t sigA;
@@ -115,11 +116,11 @@ float64_t
             sigZ <<= 1;
         }
     }
-    return softfloat_roundPackToF64( signZ, expZ, sigZ );
+    return softfloat_roundPackToF64( signZ, expZ, sigZ STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN:
-    uiZ = softfloat_propagateNaNF64UI( uiA, uiB );
+    uiZ = softfloat_propagateNaNF64UI( uiA, uiB STATE_VAR );
  uiZ:
     uZ.ui = uiZ;
     return uZ.f;

@@ -51,6 +51,7 @@ void
      const struct extFloat80M *aSPtr,
      const struct extFloat80M *bSPtr,
      struct extFloat80M *zSPtr
+     STATE_PARAM
  )
 {
     uint_fast16_t ui64;
@@ -65,7 +66,7 @@ void
                         ui0  = bSPtr->signif,
                         softfloat_isSigNaNExtF80UI( ui64, ui0 )))
     ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     }
     zSPtr->signExp = defaultNaNExtF80UI64;
     zSPtr->signif  = defaultNaNExtF80UI0;

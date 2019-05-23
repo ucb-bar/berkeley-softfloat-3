@@ -43,16 +43,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-void f64_to_f128M( float64_t a, float128_t *zPtr )
+void f64_to_f128M( float64_t a, float128_t *zPtr STATE_PARAM )
 {
 
-    *zPtr = f64_to_f128( a );
+    *zPtr = f64_to_f128( a STATE_VAR );
 
 }
 
 #else
 
-void f64_to_f128M( float64_t a, float128_t *zPtr )
+void f64_to_f128M( float64_t a, float128_t *zPtr STATE_PARAM )
 {
     uint32_t *zWPtr;
     union ui64_f64 uA;
@@ -79,7 +79,7 @@ void f64_to_f128M( float64_t a, float128_t *zPtr )
     zWPtr[indexWord( 4, 0 )] = 0;
     if ( exp == 0x7FF ) {
         if ( frac ) {
-            softfloat_f64UIToCommonNaN( uiA, &commonNaN );
+            softfloat_f64UIToCommonNaN( uiA, &commonNaN STATE_VAR );
             softfloat_commonNaNToF128M( &commonNaN, zWPtr );
             return;
         }

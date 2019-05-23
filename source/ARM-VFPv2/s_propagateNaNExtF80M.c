@@ -52,6 +52,7 @@ void
      const struct extFloat80M *aSPtr,
      const struct extFloat80M *bSPtr,
      struct extFloat80M *zSPtr
+     STATE_PARAM
  )
 {
     const struct extFloat80M *sPtr;
@@ -66,7 +67,7 @@ void
             || (bSPtr
                     && extF80M_isSignalingNaN( (const extFloat80_t *) bSPtr ))
     ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         if ( isSigNaNA ) goto copyNonsig;
         goto copyNonsigB;
     }

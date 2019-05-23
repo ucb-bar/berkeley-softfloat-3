@@ -44,17 +44,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef SOFTFLOAT_FAST_INT64
 
 int_fast64_t
- f128M_to_i64( const float128_t *aPtr, uint_fast8_t roundingMode, bool exact )
+ f128M_to_i64( const float128_t *aPtr, uint_fast8_t roundingMode, bool exact
+               STATE_PARAM )
 {
 
-    return f128_to_i64( *aPtr, roundingMode, exact );
+    return f128_to_i64( *aPtr, roundingMode, exact STATE_VAR );
 
 }
 
 #else
 
 int_fast64_t
- f128M_to_i64( const float128_t *aPtr, uint_fast8_t roundingMode, bool exact )
+ f128M_to_i64( const float128_t *aPtr, uint_fast8_t roundingMode, bool exact
+               STATE_PARAM )
 {
     const uint32_t *aWPtr;
     uint32_t uiA96;
@@ -75,7 +77,7 @@ int_fast64_t
     *------------------------------------------------------------------------*/
     shiftDist = 0x404F - exp;
     if ( shiftDist < 17 ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         return
             (exp == 0x7FFF)
                 && (sig96
@@ -94,7 +96,7 @@ int_fast64_t
     softfloat_shiftRightJam128M( sig, shiftDist, sig );
     return
         softfloat_roundMToI64(
-            sign, sig + indexMultiwordLo( 4, 3 ), roundingMode, exact );
+            sign, sig + indexMultiwordLo(4, 3), roundingMode, exact STATE_VAR );
 
 }
 

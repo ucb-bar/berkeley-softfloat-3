@@ -43,16 +43,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-uint_fast32_t extF80M_to_ui32_r_minMag( const extFloat80_t *aPtr, bool exact )
+uint_fast32_t extF80M_to_ui32_r_minMag( const extFloat80_t *aPtr, bool exact
+                                        STATE_PARAM )
 {
 
-    return extF80_to_ui32_r_minMag( *aPtr, exact );
+    return extF80_to_ui32_r_minMag( *aPtr, exact STATE_VAR );
 
 }
 
 #else
 
-uint_fast32_t extF80M_to_ui32_r_minMag( const extFloat80_t *aPtr, bool exact )
+uint_fast32_t extF80M_to_ui32_r_minMag( const extFloat80_t *aPtr, bool exact
+                                        STATE_PARAM )
 {
     const struct extFloat80M *aSPtr;
     uint_fast16_t uiA64;
@@ -74,7 +76,7 @@ uint_fast32_t extF80M_to_ui32_r_minMag( const extFloat80_t *aPtr, bool exact )
     if ( ! sig && (exp != 0x7FFF) ) return 0;
     shiftDist = 0x403E - exp;
     if ( 64 <= shiftDist ) {
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         return 0;
     }
     /*------------------------------------------------------------------------
@@ -92,14 +94,14 @@ uint_fast32_t extF80M_to_ui32_r_minMag( const extFloat80_t *aPtr, bool exact )
         z = shiftedSig;
         if ( sign && z ) goto invalid;
         if ( exact && shiftDist && ((uint64_t) z<<shiftDist != sig) ) {
-            softfloat_exceptionFlags |= softfloat_flag_inexact;
+            softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         }
     }
     return z;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     return
         (exp == 0x7FFF) && (sig & UINT64_C( 0x7FFFFFFFFFFFFFFF ))
             ? ui32_fromNaN

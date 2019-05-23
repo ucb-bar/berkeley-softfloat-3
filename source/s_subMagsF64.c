@@ -42,7 +42,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "softfloat.h"
 
 float64_t
- softfloat_subMagsF64( uint_fast64_t uiA, uint_fast64_t uiB, bool signZ )
+ softfloat_subMagsF64( uint_fast64_t uiA, uint_fast64_t uiB, bool signZ
+                       STATE_PARAM )
 {
     int_fast16_t expA;
     uint_fast64_t sigA;
@@ -70,7 +71,7 @@ float64_t
         *--------------------------------------------------------------------*/
         if ( expA == 0x7FF ) {
             if ( sigA | sigB ) goto propagateNaN;
-            softfloat_raiseFlags( softfloat_flag_invalid );
+            softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
             uiZ = defaultNaNF64UI;
             goto uiZ;
         }
@@ -78,7 +79,7 @@ float64_t
         if ( ! sigDiff ) {
             uiZ =
                 packToF64UI(
-                    (softfloat_roundingMode == softfloat_round_min), 0, 0 );
+                    (STATE(roundingMode) == softfloat_round_min), 0, 0 );
             goto uiZ;
         }
         if ( expA ) --expA;
@@ -127,12 +128,12 @@ float64_t
             expZ = expA;
             sigZ = sigA - sigB;
         }
-        return softfloat_normRoundPackToF64( signZ, expZ - 1, sigZ );
+        return softfloat_normRoundPackToF64( signZ, expZ - 1, sigZ STATE_VAR );
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN:
-    uiZ = softfloat_propagateNaNF64UI( uiA, uiB );
+    uiZ = softfloat_propagateNaNF64UI( uiA, uiB STATE_VAR );
  uiZ:
     uZ.ui = uiZ;
     return uZ.f;

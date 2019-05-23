@@ -100,7 +100,8 @@ struct commonNaN {
 | location pointed to by 'zPtr'.  If the NaN is a signaling NaN, the invalid
 | exception is raised.
 *----------------------------------------------------------------------------*/
-void softfloat_f16UIToCommonNaN( uint_fast16_t uiA, struct commonNaN *zPtr );
+void softfloat_f16UIToCommonNaN( uint_fast16_t uiA, struct commonNaN *zPtr
+                                 STATE_PARAM );
 
 /*----------------------------------------------------------------------------
 | Converts the common NaN pointed to by 'aPtr' into a 16-bit floating-point
@@ -115,7 +116,7 @@ uint_fast16_t softfloat_commonNaNToF16UI( const struct commonNaN *aPtr );
 | signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 uint_fast16_t
- softfloat_propagateNaNF16UI( uint_fast16_t uiA, uint_fast16_t uiB );
+ softfloat_propagateNaNF16UI( uint_fast16_t uiA, uint_fast16_t uiB STATE_PARAM);
 
 /*----------------------------------------------------------------------------
 | The bit pattern for a default generated 32-bit floating-point NaN.
@@ -135,7 +136,8 @@ uint_fast16_t
 | location pointed to by 'zPtr'.  If the NaN is a signaling NaN, the invalid
 | exception is raised.
 *----------------------------------------------------------------------------*/
-void softfloat_f32UIToCommonNaN( uint_fast32_t uiA, struct commonNaN *zPtr );
+void softfloat_f32UIToCommonNaN( uint_fast32_t uiA, struct commonNaN *zPtr
+                                 STATE_PARAM );
 
 /*----------------------------------------------------------------------------
 | Converts the common NaN pointed to by 'aPtr' into a 32-bit floating-point
@@ -150,7 +152,7 @@ uint_fast32_t softfloat_commonNaNToF32UI( const struct commonNaN *aPtr );
 | signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 uint_fast32_t
- softfloat_propagateNaNF32UI( uint_fast32_t uiA, uint_fast32_t uiB );
+ softfloat_propagateNaNF32UI( uint_fast32_t uiA, uint_fast32_t uiB STATE_PARAM);
 
 /*----------------------------------------------------------------------------
 | The bit pattern for a default generated 64-bit floating-point NaN.
@@ -170,7 +172,8 @@ uint_fast32_t
 | location pointed to by 'zPtr'.  If the NaN is a signaling NaN, the invalid
 | exception is raised.
 *----------------------------------------------------------------------------*/
-void softfloat_f64UIToCommonNaN( uint_fast64_t uiA, struct commonNaN *zPtr );
+void softfloat_f64UIToCommonNaN( uint_fast64_t uiA, struct commonNaN *zPtr
+                                 STATE_PARAM );
 
 /*----------------------------------------------------------------------------
 | Converts the common NaN pointed to by 'aPtr' into a 64-bit floating-point
@@ -185,7 +188,7 @@ uint_fast64_t softfloat_commonNaNToF64UI( const struct commonNaN *aPtr );
 | signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 uint_fast64_t
- softfloat_propagateNaNF64UI( uint_fast64_t uiA, uint_fast64_t uiB );
+ softfloat_propagateNaNF64UI( uint_fast64_t uiA, uint_fast64_t uiB STATE_PARAM);
 
 /*----------------------------------------------------------------------------
 | The bit pattern for a default generated 80-bit extended floating-point NaN.
@@ -217,7 +220,8 @@ uint_fast64_t
 *----------------------------------------------------------------------------*/
 void
  softfloat_extF80UIToCommonNaN(
-     uint_fast16_t uiA64, uint_fast64_t uiA0, struct commonNaN *zPtr );
+     uint_fast16_t uiA64, uint_fast64_t uiA0, struct commonNaN *zPtr
+     STATE_PARAM );
 
 /*----------------------------------------------------------------------------
 | Converts the common NaN pointed to by 'aPtr' into an 80-bit extended
@@ -241,6 +245,7 @@ struct uint128
      uint_fast64_t uiA0,
      uint_fast16_t uiB64,
      uint_fast64_t uiB0
+     STATE_PARAM
  );
 
 /*----------------------------------------------------------------------------
@@ -266,7 +271,8 @@ struct uint128
 *----------------------------------------------------------------------------*/
 void
  softfloat_f128UIToCommonNaN(
-     uint_fast64_t uiA64, uint_fast64_t uiA0, struct commonNaN *zPtr );
+     uint_fast64_t uiA64, uint_fast64_t uiA0, struct commonNaN *zPtr
+     STATE_PARAM );
 
 /*----------------------------------------------------------------------------
 | Converts the common NaN pointed to by 'aPtr' into a 128-bit floating-point
@@ -289,6 +295,7 @@ struct uint128
      uint_fast64_t uiA0,
      uint_fast64_t uiB64,
      uint_fast64_t uiB0
+     STATE_PARAM
  );
 
 #else
@@ -306,7 +313,7 @@ struct uint128
 *----------------------------------------------------------------------------*/
 void
  softfloat_extF80MToCommonNaN(
-     const struct extFloat80M *aSPtr, struct commonNaN *zPtr );
+     const struct extFloat80M *aSPtr, struct commonNaN *zPtr STATE_PARAM );
 
 /*----------------------------------------------------------------------------
 | Converts the common NaN pointed to by 'aPtr' into an 80-bit extended
@@ -328,6 +335,7 @@ void
      const struct extFloat80M *aSPtr,
      const struct extFloat80M *bSPtr,
      struct extFloat80M *zSPtr
+     STATE_PARAM
  );
 
 /*----------------------------------------------------------------------------
@@ -347,7 +355,8 @@ void
 | to form a 128-bit floating-point value.
 *----------------------------------------------------------------------------*/
 void
- softfloat_f128MToCommonNaN( const uint32_t *aWPtr, struct commonNaN *zPtr );
+ softfloat_f128MToCommonNaN( const uint32_t *aWPtr, struct commonNaN *zPtr
+                             STATE_PARAM );
 
 /*----------------------------------------------------------------------------
 | Converts the common NaN pointed to by 'aPtr' into a 128-bit floating-point
@@ -368,7 +377,7 @@ void
 *----------------------------------------------------------------------------*/
 void
  softfloat_propagateNaNF128M(
-     const uint32_t *aWPtr, const uint32_t *bWPtr, uint32_t *zWPtr );
+     const uint32_t *aWPtr, const uint32_t *bWPtr, uint32_t *zWPtr STATE_PARAM);
 
 #endif
 

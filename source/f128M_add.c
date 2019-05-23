@@ -43,7 +43,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef SOFTFLOAT_FAST_INT64
 
 void
- f128M_add( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr )
+ f128M_add( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr
+            STATE_PARAM )
 {
     const uint64_t *aWPtr, *bWPtr;
     uint_fast64_t uiA64, uiA0;
@@ -53,7 +54,8 @@ void
 #if ! defined INLINE_LEVEL || (INLINE_LEVEL < 2)
     float128_t
         (*magsFuncPtr)(
-            uint_fast64_t, uint_fast64_t, uint_fast64_t, uint_fast64_t, bool );
+            uint_fast64_t, uint_fast64_t, uint_fast64_t, uint_fast64_t, bool
+            STATE_VAR );
 #endif
 
     aWPtr = (const uint64_t *) aPtr;
@@ -66,14 +68,16 @@ void
     signB = signF128UI64( uiB64 );
 #if defined INLINE_LEVEL && (2 <= INLINE_LEVEL)
     if ( signA == signB ) {
-        *zPtr = softfloat_addMagsF128( uiA64, uiA0, uiB64, uiB0, signA );
+        *zPtr = softfloat_addMagsF128( uiA64, uiA0, uiB64, uiB0, signA
+                                       STATE_VAR );
     } else {
-        *zPtr = softfloat_subMagsF128( uiA64, uiA0, uiB64, uiB0, signA );
+        *zPtr = softfloat_subMagsF128( uiA64, uiA0, uiB64, uiB0, signA
+                                       STATE_VAR );
     }
 #else
     magsFuncPtr =
         (signA == signB) ? softfloat_addMagsF128 : softfloat_subMagsF128;
-    *zPtr = (*magsFuncPtr)( uiA64, uiA0, uiB64, uiB0, signA );
+    *zPtr = (*magsFuncPtr)( uiA64, uiA0, uiB64, uiB0, signA STATE_VAR );
 #endif
 
 }

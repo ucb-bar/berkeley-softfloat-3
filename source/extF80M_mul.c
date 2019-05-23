@@ -45,10 +45,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  extF80M_mul(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr
+     STATE_PARAM )
 {
 
-    *zPtr = extF80_mul( *aPtr, *bPtr );
+    *zPtr = extF80_mul( *aPtr, *bPtr STATE_VAR );
 
 }
 
@@ -56,7 +57,8 @@ void
 
 void
  extF80M_mul(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr
+     STATE_PARAM )
 {
     const struct extFloat80M *aSPtr, *bSPtr;
     struct extFloat80M *zSPtr;
@@ -122,7 +124,13 @@ void
         softfloat_add96M( extSigZPtr, extSigZPtr, extSigZPtr );
     }
     softfloat_roundPackMToExtF80M(
-        signZ, expZ, extSigZPtr, extF80_roundingPrecision, zSPtr );
+        signZ, expZ, extSigZPtr,
+#ifdef SOFTFLOAT_USE_GLOBAL_STATE
+        extF80_roundingPrecision,
+#else
+        state->extF80_roundingPrecision,
+#endif
+        zSPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

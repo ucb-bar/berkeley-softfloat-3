@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-extFloat80_t extF80_sqrt( extFloat80_t a )
+extFloat80_t extF80_sqrt( extFloat80_t a STATE_PARAM )
 {
     union { struct extFloat80M s; extFloat80_t f; } uA;
     uint_fast16_t uiA64;
@@ -73,7 +73,7 @@ extFloat80_t extF80_sqrt( extFloat80_t a )
     *------------------------------------------------------------------------*/
     if ( expA == 0x7FFF ) {
         if ( sigA & UINT64_C( 0x7FFFFFFFFFFFFFFF ) ) {
-            uiZ = softfloat_propagateNaNExtF80UI( uiA64, uiA0, 0, 0 );
+            uiZ = softfloat_propagateNaNExtF80UI( uiA64, uiA0, 0, 0 STATE_VAR );
             uiZ64 = uiZ.v64;
             uiZ0  = uiZ.v0;
             goto uiZ;
@@ -154,11 +154,17 @@ extFloat80_t extF80_sqrt( extFloat80_t a )
     }
     return
         softfloat_roundPackToExtF80(
-            0, expZ, sigZ, sigZExtra, extF80_roundingPrecision );
+            0, expZ, sigZ, sigZExtra,
+#ifdef SOFTFLOAT_USE_GLOBAL_STATE
+            extF80_roundingPrecision
+#else
+            state->extF80_roundingPrecision
+#endif
+            STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     uiZ64 = defaultNaNExtF80UI64;
     uiZ0  = defaultNaNExtF80UI0;
     goto uiZ;

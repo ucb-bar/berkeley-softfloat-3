@@ -43,7 +43,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 uint_fast32_t
  softfloat_roundToUI32(
-     bool sign, uint_fast64_t sig, uint_fast8_t roundingMode, bool exact )
+     bool sign, uint_fast64_t sig, uint_fast8_t roundingMode, bool exact
+     STATE_PARAM )
 {
     uint_fast16_t roundIncrement, roundBits;
     uint_fast32_t z;
@@ -51,8 +52,8 @@ uint_fast32_t
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     roundIncrement = 0x800;
-    if ( 
-        (roundingMode != softfloat_round_near_maxMag) 
+    if (
+        (roundingMode != softfloat_round_near_maxMag)
             && (roundingMode != softfloat_round_near_even)
     ) {
         roundIncrement = 0;
@@ -70,7 +71,7 @@ uint_fast32_t
     sig += roundIncrement;
     if ( sig & UINT64_C( 0xFFFFF00000000000 ) ) goto invalid;
     z = sig>>12;
-    if ( 
+    if (
         (roundBits == 0x800) && (roundingMode == softfloat_round_near_even)
     ) {
         z &= ~(uint_fast32_t) 1;
@@ -80,13 +81,13 @@ uint_fast32_t
 #ifdef SOFTFLOAT_ROUND_ODD
         if ( roundingMode == softfloat_round_odd ) z |= 1;
 #endif
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     }
     return z;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     return sign ? ui32_fromNegOverflow : ui32_fromPosOverflow;
 
 }

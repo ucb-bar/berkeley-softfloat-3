@@ -48,13 +48,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 | signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 uint_fast32_t
- softfloat_propagateNaNF32UI( uint_fast32_t uiA, uint_fast32_t uiB )
+ softfloat_propagateNaNF32UI( uint_fast32_t uiA, uint_fast32_t uiB STATE_PARAM )
 {
     bool isSigNaNA;
 
     isSigNaNA = softfloat_isSigNaNF32UI( uiA );
     if ( isSigNaNA || softfloat_isSigNaNF32UI( uiB ) ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         return (isSigNaNA ? uiA : uiB) | 0x00400000;
     }
     return isNaNF32UI( uiA ) ? uiA : uiB;

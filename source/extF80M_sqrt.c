@@ -43,16 +43,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr )
+void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr STATE_PARAM )
 {
 
-    *zPtr = extF80_sqrt( *aPtr );
+    *zPtr = extF80_sqrt( *aPtr STATE_VAR );
 
 }
 
 #else
 
-void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr )
+void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr STATE_PARAM )
 {
     const struct extFloat80M *aSPtr;
     struct extFloat80M *zSPtr;
@@ -161,12 +161,18 @@ void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr )
         }
     }
     softfloat_roundPackMToExtF80M(
-        0, expZ, extSigZ, extF80_roundingPrecision, zSPtr );
+        0, expZ, extSigZ,
+#ifdef SOFTFLOAT_USE_GLOBAL_STATE
+        extF80_roundingPrecision,
+#else
+        state->extF80_roundingPrecision,
+#endif
+        zSPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_invalidExtF80M( zSPtr );
+    softfloat_invalidExtF80M( zSPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

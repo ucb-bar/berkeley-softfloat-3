@@ -43,7 +43,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 float16_t
  softfloat_mulAddF16(
-     uint_fast16_t uiA, uint_fast16_t uiB, uint_fast16_t uiC, uint_fast8_t op )
+     uint_fast16_t uiA, uint_fast16_t uiB, uint_fast16_t uiC, uint_fast8_t op
+     STATE_PARAM )
 {
     bool signA;
     int_fast8_t expA;
@@ -188,11 +189,11 @@ float16_t
         }
     }
  roundPack:
-    return softfloat_roundPackToF16( signZ, expZ, sigZ );
+    return softfloat_roundPackToF16( signZ, expZ, sigZ STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN_ABC:
-    uiZ = softfloat_propagateNaNF16UI( uiA, uiB );
+    uiZ = softfloat_propagateNaNF16UI( uiA, uiB STATE_VAR );
     goto propagateNaN_ZC;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -203,10 +204,10 @@ float16_t
         if ( sigC ) goto propagateNaN_ZC;
         if ( signProd == signC ) goto uiZ;
     }
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     uiZ = defaultNaNF16UI;
  propagateNaN_ZC:
-    uiZ = softfloat_propagateNaNF16UI( uiZ, uiC );
+    uiZ = softfloat_propagateNaNF16UI( uiZ, uiC STATE_VAR );
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -216,7 +217,7 @@ float16_t
  completeCancellation:
         uiZ =
             packToF16UI(
-                (softfloat_roundingMode == softfloat_round_min), 0, 0 );
+                (STATE(roundingMode) == softfloat_round_min), 0, 0 );
     }
  uiZ:
     uZ.ui = uiZ;

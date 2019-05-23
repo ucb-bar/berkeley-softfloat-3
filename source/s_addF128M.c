@@ -47,6 +47,7 @@ void
      const uint32_t *bWPtr,
      uint32_t *zWPtr,
      bool negateB
+     STATE_PARAM
  )
 {
     uint32_t uiA96;
@@ -84,7 +85,7 @@ void
         if ( expB == 0x7FFF ) {
             uiZ96 = uiB96 ^ packToF128UI96( negateB, 0, 0 );
             if ( (expA == 0x7FFF) && (uiZ96 != uiA96) ) {
-                softfloat_invalidF128M( zWPtr );
+                softfloat_invalidF128M( zWPtr STATE_VAR );
                 return;
             }
         }
@@ -182,7 +183,7 @@ void
                               | extSigZ[indexWord( 5, 0 )]
                              )
                 ) {
-                    signZ = (softfloat_roundingMode == softfloat_round_min);
+                    signZ = (STATE(roundingMode) == softfloat_round_min);
                     zWPtr[indexWordHi( 4 )] = packToF128UI96( signZ, 0, 0 );
                     zWPtr[indexWord( 4, 2 )] = 0;
                     zWPtr[indexWord( 4, 1 )] = 0;

@@ -47,6 +47,7 @@ extFloat80_t
      uint_fast64_t sig,
      uint_fast64_t sigExtra,
      uint_fast8_t roundingPrecision
+     STATE_PARAM
  )
 {
     uint_fast8_t roundingMode;
@@ -58,7 +59,7 @@ extFloat80_t
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    roundingMode = softfloat_roundingMode;
+    roundingMode = STATE(roundingMode);
     roundNearEven = (roundingMode == softfloat_round_near_even);
     if ( roundingPrecision == 80 ) goto precision80;
     if ( roundingPrecision == 64 ) {
@@ -86,15 +87,16 @@ extFloat80_t
             /*----------------------------------------------------------------
             *----------------------------------------------------------------*/
             isTiny =
-                   (softfloat_detectTininess
+                   (STATE(detectTininess)
                         == softfloat_tininess_beforeRounding)
                 || (exp < 0)
                 || (sig <= (uint64_t) (sig + roundIncrement));
             sig = softfloat_shiftRightJam64( sig, 1 - exp );
             roundBits = sig & roundMask;
             if ( roundBits ) {
-                if ( isTiny ) softfloat_raiseFlags( softfloat_flag_underflow );
-                softfloat_exceptionFlags |= softfloat_flag_inexact;
+                if ( isTiny ) softfloat_raiseFlags( softfloat_flag_underflow
+                                                    STATE_VAR );
+                softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
 #ifdef SOFTFLOAT_ROUND_ODD
                 if ( roundingMode == softfloat_round_odd ) {
                     sig |= roundMask + 1;
@@ -120,7 +122,7 @@ extFloat80_t
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( roundBits ) {
-        softfloat_exceptionFlags |= softfloat_flag_inexact;
+        softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
 #ifdef SOFTFLOAT_ROUND_ODD
         if ( roundingMode == softfloat_round_odd ) {
             sig = (sig & ~roundMask) | (roundMask + 1);
@@ -156,7 +158,7 @@ extFloat80_t
             /*----------------------------------------------------------------
             *----------------------------------------------------------------*/
             isTiny =
-                   (softfloat_detectTininess
+                   (STATE(detectTininess)
                         == softfloat_tininess_beforeRounding)
                 || (exp < 0)
                 || ! doIncrement
@@ -167,8 +169,9 @@ extFloat80_t
             sig = sig64Extra.v;
             sigExtra = sig64Extra.extra;
             if ( sigExtra ) {
-                if ( isTiny ) softfloat_raiseFlags( softfloat_flag_underflow );
-                softfloat_exceptionFlags |= softfloat_flag_inexact;
+                if ( isTiny ) softfloat_raiseFlags( softfloat_flag_underflow
+                                                    STATE_VAR );
+                softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
 #ifdef SOFTFLOAT_ROUND_ODD
                 if ( roundingMode == softfloat_round_odd ) {
                     sig |= 1;
@@ -206,7 +209,7 @@ extFloat80_t
             roundMask = 0;
  overflow:
             softfloat_raiseFlags(
-                softfloat_flag_overflow | softfloat_flag_inexact );
+                softfloat_flag_overflow | softfloat_flag_inexact STATE_VAR );
             if (
                    roundNearEven
                 || (roundingMode == softfloat_round_near_maxMag)
@@ -225,7 +228,7 @@ extFloat80_t
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( sigExtra ) {
-        softfloat_exceptionFlags |= softfloat_flag_inexact;
+        softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
 #ifdef SOFTFLOAT_ROUND_ODD
         if ( roundingMode == softfloat_round_odd ) {
             sig |= 1;

@@ -44,17 +44,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef SOFTFLOAT_FAST_INT64
 
 void
- f128M_rem( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr )
+ f128M_rem( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr
+            STATE_PARAM )
 {
 
-    *zPtr = f128_rem( *aPtr, *bPtr );
+    *zPtr = f128_rem( *aPtr, *bPtr STATE_VAR );
 
 }
 
 #else
 
 void
- f128M_rem( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr )
+ f128M_rem( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr
+            STATE_PARAM )
 {
     const uint32_t *aWPtr, *bWPtr;
     uint32_t *zWPtr, uiA96;
@@ -166,7 +168,7 @@ void
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_invalidF128M( zWPtr );
+    softfloat_invalidF128M( zWPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

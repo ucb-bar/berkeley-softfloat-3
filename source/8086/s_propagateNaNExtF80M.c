@@ -52,6 +52,7 @@ void
      const struct extFloat80M *aSPtr,
      const struct extFloat80M *bSPtr,
      struct extFloat80M *zSPtr
+     STATE_PARAM
  )
 {
     bool isSigNaNA;
@@ -66,12 +67,13 @@ void
     isSigNaNA = extF80M_isSignalingNaN( (const extFloat80_t *) aSPtr );
     sPtr = aSPtr;
     if ( ! bSPtr ) {
-        if ( isSigNaNA ) softfloat_raiseFlags( softfloat_flag_invalid );
+        if ( isSigNaNA ) softfloat_raiseFlags( softfloat_flag_invalid
+                                               STATE_VAR );
         goto copy;
     }
     isSigNaNB = extF80M_isSignalingNaN( (const extFloat80_t *) bSPtr );
     if ( isSigNaNA | isSigNaNB ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         if ( isSigNaNA ) {
             uiB64 = bSPtr->signExp;
             if ( isSigNaNB ) goto returnLargerUIMag;

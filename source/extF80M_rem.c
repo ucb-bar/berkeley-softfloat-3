@@ -45,10 +45,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  extF80M_rem(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr
+     STATE_PARAM )
 {
 
-    *zPtr = extF80_rem( *aPtr, *bPtr );
+    *zPtr = extF80_rem( *aPtr, *bPtr STATE_VAR );
 
 }
 
@@ -56,7 +57,8 @@ void
 
 void
  extF80M_rem(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr
+     STATE_PARAM )
 {
     const struct extFloat80M *aSPtr, *bSPtr;
     struct extFloat80M *zSPtr;
@@ -186,7 +188,7 @@ void
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_invalidExtF80M( zSPtr );
+    softfloat_invalidExtF80M( zSPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

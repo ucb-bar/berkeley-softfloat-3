@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-bool extF80_lt_quiet( extFloat80_t a, extFloat80_t b )
+bool extF80_lt_quiet( extFloat80_t a, extFloat80_t b STATE_PARAM )
 {
     union { struct extFloat80M s; extFloat80_t f; } uA;
     uint_fast16_t uiA64;
@@ -62,7 +62,7 @@ bool extF80_lt_quiet( extFloat80_t a, extFloat80_t b )
                softfloat_isSigNaNExtF80UI( uiA64, uiA0 )
             || softfloat_isSigNaNExtF80UI( uiB64, uiB0 )
         ) {
-            softfloat_raiseFlags( softfloat_flag_invalid );
+            softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         }
         return false;
     }

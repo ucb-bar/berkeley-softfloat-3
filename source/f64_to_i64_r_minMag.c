@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-int_fast64_t f64_to_i64_r_minMag( float64_t a, bool exact )
+int_fast64_t f64_to_i64_r_minMag( float64_t a, bool exact STATE_PARAM )
 {
     union ui64_f64 uA;
     uint_fast64_t uiA;
@@ -68,7 +68,7 @@ int_fast64_t f64_to_i64_r_minMag( float64_t a, bool exact )
             if ( uiA == packToF64UI( 1, 0x43E, 0 ) ) {
                 return -INT64_C( 0x7FFFFFFFFFFFFFFF ) - 1;
             }
-            softfloat_raiseFlags( softfloat_flag_invalid );
+            softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
             return
                 (exp == 0x7FF) && sig ? i64_fromNaN
                     : sign ? i64_fromNegOverflow : i64_fromPosOverflow;
@@ -82,7 +82,7 @@ int_fast64_t f64_to_i64_r_minMag( float64_t a, bool exact )
         *--------------------------------------------------------------------*/
         if ( 53 <= shiftDist ) {
             if ( exact && (exp | sig) ) {
-                softfloat_exceptionFlags |= softfloat_flag_inexact;
+                softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
             }
             return 0;
         }
@@ -91,7 +91,7 @@ int_fast64_t f64_to_i64_r_minMag( float64_t a, bool exact )
         sig |= UINT64_C( 0x0010000000000000 );
         absZ = sig>>shiftDist;
         if ( exact && (absZ<<shiftDist != sig) ) {
-            softfloat_exceptionFlags |= softfloat_flag_inexact;
+            softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         }
     }
     return sign ? -absZ : absZ;

@@ -40,7 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 
 float16_t
- softfloat_normRoundPackToF16( bool sign, int_fast16_t exp, uint_fast16_t sig )
+ softfloat_normRoundPackToF16(
+     bool sign, int_fast16_t exp, uint_fast16_t sig STATE_PARAM )
 {
     int_fast8_t shiftDist;
     union ui16_f16 uZ;
@@ -51,7 +52,7 @@ float16_t
         uZ.ui = packToF16UI( sign, sig ? exp : 0, sig<<(shiftDist - 4) );
         return uZ.f;
     } else {
-        return softfloat_roundPackToF16( sign, exp, sig<<shiftDist );
+        return softfloat_roundPackToF16( sign, exp, sig<<shiftDist STATE_VAR );
     }
 
 }

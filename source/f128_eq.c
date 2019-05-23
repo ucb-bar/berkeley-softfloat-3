@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-bool f128_eq( float128_t a, float128_t b )
+bool f128_eq( float128_t a, float128_t b STATE_PARAM )
 {
     union ui128_f128 uA;
     uint_fast64_t uiA64, uiA0;
@@ -59,7 +59,7 @@ bool f128_eq( float128_t a, float128_t b )
                softfloat_isSigNaNF128UI( uiA64, uiA0 )
             || softfloat_isSigNaNF128UI( uiB64, uiB0 )
         ) {
-            softfloat_raiseFlags( softfloat_flag_invalid );
+            softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         }
         return false;
     }

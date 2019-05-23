@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  softfloat_roundPackMToF128M(
-     bool sign, int32_t exp, uint32_t *extSigPtr, uint32_t *zWPtr )
+     bool sign, int32_t exp, uint32_t *extSigPtr, uint32_t *zWPtr STATE_PARAM)
 {
     uint_fast8_t roundingMode;
     bool roundNearEven;
@@ -54,7 +54,7 @@ void
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    roundingMode = softfloat_roundingMode;
+    roundingMode = STATE(roundingMode);
     roundNearEven = (roundingMode == softfloat_round_near_even);
     sigExtra = extSigPtr[indexWordLo( 5 )];
     doIncrement = (0x80000000 <= sigExtra);
@@ -71,7 +71,7 @@ void
             /*----------------------------------------------------------------
             *----------------------------------------------------------------*/
             isTiny =
-                   (softfloat_detectTininess
+                   (STATE(detectTininess)
                         == softfloat_tininess_beforeRounding)
                 || (exp < -1)
                 || ! doIncrement
@@ -82,7 +82,7 @@ void
             exp = 0;
             sigExtra = extSigPtr[indexWordLo( 5 )];
             if ( isTiny && sigExtra ) {
-                softfloat_raiseFlags( softfloat_flag_underflow );
+                softfloat_raiseFlags( softfloat_flag_underflow STATE_VAR );
             }
             doIncrement = (0x80000000 <= sigExtra);
             if (
@@ -104,7 +104,7 @@ void
             /*----------------------------------------------------------------
             *----------------------------------------------------------------*/
             softfloat_raiseFlags(
-                softfloat_flag_overflow | softfloat_flag_inexact );
+                softfloat_flag_overflow | softfloat_flag_inexact STATE_VAR );
             if (
                    roundNearEven
                 || (roundingMode == softfloat_round_near_maxMag)
@@ -128,7 +128,7 @@ void
     *------------------------------------------------------------------------*/
     uj = extSigPtr[indexWord( 5, 1 )];
     if ( sigExtra ) {
-        softfloat_exceptionFlags |= softfloat_flag_inexact;
+        softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
 #ifdef SOFTFLOAT_ROUND_ODD
         if ( roundingMode == softfloat_round_odd ) {
             uj |= 1;

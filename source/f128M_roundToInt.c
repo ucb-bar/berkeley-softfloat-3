@@ -49,10 +49,11 @@ void
      uint_fast8_t roundingMode,
      bool exact,
      float128_t *zPtr
+     STATE_PARAM
  )
 {
 
-    *zPtr = f128_roundToInt( *aPtr, roundingMode, exact );
+    *zPtr = f128_roundToInt( *aPtr, roundingMode, exact STATE_VAR );
 
 }
 
@@ -64,6 +65,7 @@ void
      uint_fast8_t roundingMode,
      bool exact,
      float128_t *zPtr
+     STATE_PARAM
  )
 {
     const uint32_t *aWPtr;
@@ -99,7 +101,7 @@ void
             sigExtra = aWPtr[indexWord( 4, 1 )] | aWPtr[indexWord( 4, 0 )];
         }
         if ( !sigExtra && !(ui96 & 0x7FFFFFFF) ) goto ui96;
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         sign = signF128UI96( ui96 );
         switch ( roundingMode ) {
          case softfloat_round_near_even:
@@ -133,7 +135,7 @@ void
                         || (aWPtr[indexWord( 4, 2 )] | aWPtr[indexWord( 4, 1 )]
                                 | aWPtr[indexWord( 4, 0 )]))
         ) {
-            softfloat_propagateNaNF128M( aWPtr, 0, zWPtr );
+            softfloat_propagateNaNF128M( aWPtr, 0, zWPtr STATE_VAR );
             return;
         }
         zWPtr[indexWord( 4, 2 )] = aWPtr[indexWord( 4, 2 )];
@@ -166,7 +168,7 @@ void
         bit <<= 1;
         extrasMask = bit - 1;
         if ( exact && (extra || (wordA & extrasMask)) ) {
-            softfloat_exceptionFlags |= softfloat_flag_inexact;
+            softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         }
         if (
             (roundingMode == softfloat_round_near_even)
@@ -187,7 +189,7 @@ void
         carry = 0;
         extrasMask = bit - 1;
         if ( extra || (wordA & extrasMask) ) {
-            if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+            if ( exact ) softfloat_raiseFlags(softfloat_flag_inexact STATE_VAR);
             if (
                 roundingMode
                     == (signF128UI96( ui96 ) ? softfloat_round_min

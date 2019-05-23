@@ -41,7 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-float16_t softfloat_subMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
+float16_t softfloat_subMagsF16( uint_fast16_t uiA, uint_fast16_t uiB
+                                STATE_PARAM )
 {
     int_fast8_t expA;
     uint_fast16_t sigA;
@@ -71,7 +72,7 @@ float16_t softfloat_subMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
         *--------------------------------------------------------------------*/
         if ( expA == 0x1F ) {
             if ( sigA | sigB ) goto propagateNaN;
-            softfloat_raiseFlags( softfloat_flag_invalid );
+            softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
             uiZ = defaultNaNF16UI;
             goto uiZ;
         }
@@ -79,7 +80,7 @@ float16_t softfloat_subMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
         if ( ! sigDiff ) {
             uiZ =
                 packToF16UI(
-                    (softfloat_roundingMode == softfloat_round_min), 0, 0 );
+                    (STATE(roundingMode) == softfloat_round_min), 0, 0 );
             goto uiZ;
         }
         if ( expA ) --expA;
@@ -147,17 +148,17 @@ float16_t softfloat_subMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
                 goto pack;
             }
         }
-        return softfloat_roundPackToF16( signZ, expZ, sigZ );
+        return softfloat_roundPackToF16( signZ, expZ, sigZ STATE_VAR );
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  propagateNaN:
-    uiZ = softfloat_propagateNaNF16UI( uiA, uiB );
+    uiZ = softfloat_propagateNaNF16UI( uiA, uiB STATE_VAR );
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  subEpsilon:
-    roundingMode = softfloat_roundingMode;
+    roundingMode = STATE(roundingMode);
     if ( roundingMode != softfloat_round_near_even ) {
         if (
             (roundingMode == softfloat_round_minMag)
@@ -173,7 +174,7 @@ float16_t softfloat_subMagsF16( uint_fast16_t uiA, uint_fast16_t uiB )
         }
 #endif
     }
-    softfloat_exceptionFlags |= softfloat_flag_inexact;
+    softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

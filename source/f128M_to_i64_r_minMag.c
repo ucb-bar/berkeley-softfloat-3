@@ -43,16 +43,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-int_fast64_t f128M_to_i64_r_minMag( const float128_t *aPtr, bool exact )
+int_fast64_t f128M_to_i64_r_minMag( const float128_t *aPtr, bool exact
+                                    STATE_PARAM )
 {
 
-    return f128_to_i64_r_minMag( *aPtr, exact );
+    return f128_to_i64_r_minMag( *aPtr, exact STATE_VAR );
 
 }
 
 #else
 
-int_fast64_t f128M_to_i64_r_minMag( const float128_t *aPtr, bool exact )
+int_fast64_t f128M_to_i64_r_minMag( const float128_t *aPtr, bool exact
+                                    STATE_PARAM )
 {
     const uint32_t *aWPtr;
     uint32_t uiA96;
@@ -87,7 +89,7 @@ int_fast64_t f128M_to_i64_r_minMag( const float128_t *aPtr, bool exact )
             goto invalid;
         }
         if ( sig[indexWordLo( 4 )] ) {
-            softfloat_exceptionFlags |= softfloat_flag_inexact;
+            softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         }
     } else {
         if ( 64 <= shiftDist ) return 0;
@@ -109,7 +111,7 @@ int_fast64_t f128M_to_i64_r_minMag( const float128_t *aPtr, bool exact )
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     return
         (exp == 0x7FFF)
             && (sig96
