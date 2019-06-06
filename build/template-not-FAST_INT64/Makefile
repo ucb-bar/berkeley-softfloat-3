@@ -228,6 +228,7 @@ OBJS_OTHERS = \
   f64_to_ui64_r_minMag$(OBJ) \
   f64_to_i32_r_minMag$(OBJ) \
   f64_to_i64_r_minMag$(OBJ) \
+  fall_maxmin$(OBJ) \
   f64_to_f16$(OBJ) \
   f64_to_f32$(OBJ) \
   f64_to_extF80M$(OBJ) \
