@@ -38,18 +38,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-int_fast16_t f16_to_i16( float16_t a, uint_fast8_t roundingMode, bool exact )
+int_fast8_t f16_to_i8( float16_t a, uint_fast8_t roundingMode, bool exact )
 {
     uint_fast8_t old_flags = softfloat_exceptionFlags;
 
     int_fast32_t sig32 = f16_to_i32(a, roundingMode, exact);
 
-    if (sig32 > INT16_MAX) {
+    if (sig32 > INT8_MAX) {
         softfloat_exceptionFlags = old_flags | softfloat_flag_invalid;
-        return i16_fromPosOverflow;
-    } else if (sig32 < INT16_MIN) {
+        return i8_fromPosOverflow;
+    } else if (sig32 < INT8_MIN) {
         softfloat_exceptionFlags = old_flags | softfloat_flag_invalid;
-        return i16_fromNegOverflow;
+        return i8_fromNegOverflow;
     } else {
         return sig32;
     }
