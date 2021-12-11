@@ -34,28 +34,7 @@
 #
 #=============================================================================
 
-# Edit lines marked with `==>'.  See "SoftFloat-source.html".
-
-==> SOURCE_DIR ?= ../../source
-==> SPECIALIZE_TYPE ?= 8086
-
-==> SOFTFLOAT_OPTS ?= \
-==>   -DSOFTFLOAT_ROUND_ODD -DINLINE_LEVEL=5 -DSOFTFLOAT_FAST_DIV32TO16 \
-==>   -DSOFTFLOAT_FAST_DIV64TO32
-
-==> DELETE = rm -f
-==> C_INCLUDES = -I. -I$(SOURCE_DIR)/$(SPECIALIZE_TYPE) -I$(SOURCE_DIR)/include
-==> COMPILE_C = \
-==>   cc -c -DSOFTFLOAT_FAST_INT64 $(SOFTFLOAT_OPTS) $(C_INCLUDES) -O2 -o $@
-==> MAKELIB = ar crs $@
-
-==> OBJ = .o
-==> LIB = .a
-
-==> OTHER_HEADERS =
-
-.PHONY: all
-all: softfloat$(LIB)
+CFLAGS += -DSOFTFLOAT_FAST_INT64
 
 OBJS_PRIMITIVES = \
   s_eq128$(OBJ) \
@@ -365,27 +344,4 @@ OBJS_OTHERS = \
   f128M_le_quiet$(OBJ) \
   f128M_lt_quiet$(OBJ) \
 
-OBJS_ALL = $(OBJS_PRIMITIVES) $(OBJS_SPECIALIZE) $(OBJS_OTHERS)
-
-$(OBJS_ALL): \
-  $(OTHER_HEADERS) platform.h $(SOURCE_DIR)/include/primitiveTypes.h \
-  $(SOURCE_DIR)/include/primitives.h
-$(OBJS_SPECIALIZE) $(OBJS_OTHERS): \
-  $(SOURCE_DIR)/include/softfloat_types.h $(SOURCE_DIR)/include/internals.h \
-  $(SOURCE_DIR)/$(SPECIALIZE_TYPE)/specialize.h \
-  $(SOURCE_DIR)/include/softfloat.h
-
-$(OBJS_PRIMITIVES) $(OBJS_OTHERS): %$(OBJ): $(SOURCE_DIR)/%.c
-	$(COMPILE_C) $(SOURCE_DIR)/$*.c
-
-$(OBJS_SPECIALIZE): %$(OBJ): $(SOURCE_DIR)/$(SPECIALIZE_TYPE)/%.c
-	$(COMPILE_C) $(SOURCE_DIR)/$(SPECIALIZE_TYPE)/$*.c
-
-softfloat$(LIB): $(OBJS_ALL)
-	$(DELETE) $@
-	$(MAKELIB) $^
-
-.PHONY: clean
-clean:
-	$(DELETE) $(OBJS_ALL) softfloat$(LIB)
-
+include $(dir $(lastword $(MAKEFILE_LIST)))/../common.mk

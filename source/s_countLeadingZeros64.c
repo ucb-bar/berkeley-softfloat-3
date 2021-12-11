@@ -37,6 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 
+uint_fast8_t softfloat_countLeadingZeros64( uint64_t a );
+
 #ifndef softfloat_countLeadingZeros64
 
 #define softfloat_countLeadingZeros64 softfloat_countLeadingZeros64
