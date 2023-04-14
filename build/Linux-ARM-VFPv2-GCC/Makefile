@@ -110,6 +110,7 @@ OBJS_OTHERS = \
   s_roundMToUI64$(OBJ) \
   s_roundToI32$(OBJ) \
   s_roundMToI64$(OBJ) \
+  s_roundPackToBF16$(OBJ) \
   s_normSubnormalF16Sig$(OBJ) \
   s_roundPackToF16$(OBJ) \
   s_normRoundPackToF16$(OBJ) \
@@ -164,6 +165,8 @@ OBJS_OTHERS = \
   i64_to_f64$(OBJ) \
   i64_to_extF80M$(OBJ) \
   i64_to_f128M$(OBJ) \
+  bf16_isSignalingNaN$(OBJ) \
+  bf16_to_f32$(OBJ) \
   f16_to_ui32$(OBJ) \
   f16_to_ui64$(OBJ) \
   f16_to_i32$(OBJ) \
@@ -205,6 +208,7 @@ OBJS_OTHERS = \
   f32_to_i32_r_minMag$(OBJ) \
   f32_to_i64_r_minMag$(OBJ) \
   f32_to_ui16$(OBJ) \
+  f32_to_bf16$(OBJ) \
   f32_to_f16$(OBJ) \
   f32_to_f64$(OBJ) \
   f32_to_i16$(OBJ) \
