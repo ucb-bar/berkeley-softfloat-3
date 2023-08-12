@@ -44,13 +44,53 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 float32_t bf16_to_f32( bfloat16_t a )
 {
     union ui16_bf16 uA;
+    uint_fast16_t uiA;
+    bool sign;
+    int_fast16_t exp;
+    uint_fast16_t frac;
+    struct commonNaN commonNaN;
+    uint_fast32_t uiZ;
+    struct exp8_sig16 normExpSig;
     union ui32_f32 uZ;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     uA.f = a;
-    uZ.ui = (uint32_t) uA.ui << 16;
+    uiA = uA.ui;
+    sign = signBF16UI( uiA );
+    exp  = expBF16UI( uiA );
+    frac = fracBF16UI( uiA );
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    // NaN or Inf
+    if ( exp == 0xFF ) {
+        if ( frac ) {
+            softfloat_bf16UIToCommonNaN( uiA, &commonNaN );
+            uiZ = softfloat_commonNaNToF32UI( &commonNaN );
+        } else {
+            uiZ = packToF32UI( sign, 0xFF, 0 );
+        }
+        goto uiZ;
+    }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    if ( ! exp ) {
+        if ( ! frac ) {
+            uiZ = packToF32UI( sign, 0, 0 );
+            goto uiZ;
+        }
+        normExpSig = softfloat_normSubnormalBF16Sig( frac );
+        exp = normExpSig.exp - 1;
+        frac = normExpSig.sig;
+    }
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+    uiZ = packToF32UI( sign, exp, (uint_fast32_t) frac<<16 );
+ uiZ:
+    uZ.ui = uiZ;
     return uZ.f;
 
 }
+
+
 
