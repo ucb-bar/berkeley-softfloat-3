@@ -88,6 +88,13 @@ struct commonNaN { char _unused; };
 #define softfloat_isSigNaNF16UI( uiA ) ((((uiA) & 0x7E00) == 0x7C00) && ((uiA) & 0x01FF))
 
 /*----------------------------------------------------------------------------
+| Returns true when 16-bit unsigned integer 'uiA' has the bit pattern of a
+| 16-bit brain floating-point (BF16) signaling NaN.
+| Note:  This macro evaluates its argument more than once.
+*----------------------------------------------------------------------------*/
+#define softfloat_isSigNaNBF16UI( uiA ) ((((uiA) & 0x7FC0) == 0x7F80) && ((uiA) & 0x003F))
+
+/*----------------------------------------------------------------------------
 | Assuming 'uiA' has the bit pattern of a 16-bit floating-point NaN, converts
 | this NaN to the common NaN form, and stores the resulting common NaN at the
 | location pointed to by 'zPtr'.  If the NaN is a signaling NaN, the invalid

@@ -43,6 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "softfloat_types.h"
 
 union ui16_f16 { uint16_t ui; float16_t f; };
+union ui16_bf16 { uint16_t ui; bfloat16_t f; };
 union ui32_f32 { uint32_t ui; float32_t f; };
 union ui64_f64 { uint64_t ui; float64_t f; };
 
