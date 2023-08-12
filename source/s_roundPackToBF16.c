@@ -40,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
+/** sig last significant bit is sig[7], the 7 LSBs will be used for rounding */
 bfloat16_t
  softfloat_roundPackToBF16( bool sign, int_fast16_t exp, uint_fast16_t sig )
 {
@@ -54,18 +55,18 @@ bfloat16_t
     *------------------------------------------------------------------------*/
     roundingMode = softfloat_roundingMode;
     roundNearEven = (roundingMode == softfloat_round_near_even);
-    roundIncrement = 0x8;
+    roundIncrement = 0x40;
     if ( ! roundNearEven && (roundingMode != softfloat_round_near_maxMag) ) {
         roundIncrement =
             (roundingMode
                  == (sign ? softfloat_round_min : softfloat_round_max))
-                ? 0xF
+                ? 0x7F
                 : 0;
     }
-    roundBits = sig & 0xF;
+    roundBits = sig & 0x7F;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    if ( 0x1D <= (unsigned int) exp ) {
+    if ( 0xFD <= (unsigned int) exp ) {
         if ( exp < 0 ) {
             /*----------------------------------------------------------------
             *----------------------------------------------------------------*/
@@ -74,22 +75,22 @@ bfloat16_t
                     || (exp < -1) || (sig + roundIncrement < 0x8000);
             sig = softfloat_shiftRightJam32( sig, -exp );
             exp = 0;
-            roundBits = sig & 0xF;
+            roundBits = sig & 0x7F;
             if ( isTiny && roundBits ) {
                 softfloat_raiseFlags( softfloat_flag_underflow );
             }
-        } else if ( (0x1D < exp) || (0x8000 <= sig + roundIncrement) ) {
+        } else if ( (0xFD < exp) || (0x8000 <= sig + roundIncrement) ) {
             /*----------------------------------------------------------------
             *----------------------------------------------------------------*/
             softfloat_raiseFlags(
                 softfloat_flag_overflow | softfloat_flag_inexact );
-            uiZ = packToF16UI( sign, 0x1F, 0 ) - ! roundIncrement;
+            uiZ = packToBF16UI( sign, 0xFF, 0 ) - ! roundIncrement;
             goto uiZ;
         }
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    sig = (sig + roundIncrement)>>4;
+    sig = (sig + roundIncrement)>>7;
     if ( roundBits ) {
         softfloat_exceptionFlags |= softfloat_flag_inexact;
 #ifdef SOFTFLOAT_ROUND_ODD
@@ -99,12 +100,12 @@ bfloat16_t
         }
 #endif
     }
-    sig &= ~(uint_fast16_t) (! (roundBits ^ 8) & roundNearEven);
+    sig &= ~(uint_fast16_t) (! (roundBits ^ 0x40) & roundNearEven);
     if ( ! sig ) exp = 0;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  packReturn:
-    uiZ = packToF16UI( sign, exp, sig );
+    uiZ = packToBF16UI( sign, exp, sig );
  uiZ:
     uZ.ui = uiZ;
     return uZ.f;

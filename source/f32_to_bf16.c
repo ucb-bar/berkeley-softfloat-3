@@ -75,7 +75,8 @@ bfloat16_t f32_to_bf16( float32_t a )
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    frac16 = frac>>16 | ((frac & 0xFFFF) != 0);
+    // frac is a 24-bit mantissa, right shifted by 
+    frac16 = frac>>9 | ((frac & 0x1FF) != 0);
     if ( ! (exp | frac16) ) {
         uiZ = packToBF16UI( sign, 0, 0 );
         goto uiZ;

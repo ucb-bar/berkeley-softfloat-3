@@ -120,7 +120,7 @@ uint_fast16_t
 /*----------------------------------------------------------------------------
 | The bit pattern for a default generated 16-bit BF16 floating-point NaN.
 *----------------------------------------------------------------------------*/
-#define defaultNaNF16UI 0x7FC0
+#define defaultNaNBF16UI 0x7FC0
 
 /*----------------------------------------------------------------------------
 | Converts the common NaN pointed to by 'aPtr' into a 16-bit floating-point
