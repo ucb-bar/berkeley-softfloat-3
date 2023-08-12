@@ -118,6 +118,17 @@ uint_fast16_t
  softfloat_propagateNaNF16UI( uint_fast16_t uiA, uint_fast16_t uiB );
 
 /*----------------------------------------------------------------------------
+| The bit pattern for a default generated 16-bit BF16 floating-point NaN.
+*----------------------------------------------------------------------------*/
+#define defaultNaNF16UI 0x7FC0
+
+/*----------------------------------------------------------------------------
+| Converts the common NaN pointed to by 'aPtr' into a 16-bit floating-point
+| NaN, and returns the bit pattern of this value as an unsigned integer.
+*----------------------------------------------------------------------------*/
+#define softfloat_commonNaNToBF16UI( aPtr ) ((uint_fast16_t) defaultNaNBF16UI)
+
+/*----------------------------------------------------------------------------
 | The bit pattern for a default generated 32-bit floating-point NaN.
 *----------------------------------------------------------------------------*/
 #define defaultNaNF32UI 0x7FC00000

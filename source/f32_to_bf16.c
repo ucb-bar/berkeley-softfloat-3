@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-float16_t f32_to_f16( float32_t a )
+bfloat16_t f32_to_bf16( float32_t a )
 {
     union ui32_f32 uA;
     uint_fast32_t uiA;
@@ -50,7 +50,7 @@ float16_t f32_to_f16( float32_t a )
     uint_fast32_t frac;
     struct commonNaN commonNaN;
     uint_fast16_t uiZ, frac16;
-    union ui16_f16 uZ;
+    union ui16_bf16 uZ;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -61,28 +61,28 @@ float16_t f32_to_f16( float32_t a )
     frac = fracF32UI( uiA );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
+    // infinity or NaN cases
     if ( exp == 0xFF ) {
         if ( frac ) {
+            // NaN case
             softfloat_f32UIToCommonNaN( uiA, &commonNaN );
-            uiZ = softfloat_commonNaNToF16UI( &commonNaN );
+            uiZ = softfloat_commonNaNToBF16UI( &commonNaN );
         } else {
-            uiZ = packToF16UI( sign, 0x1F, 0 );
+            // infinity case
+            uiZ = packToBF16UI( sign, 0xFF, 0 );
         }
         goto uiZ;
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    // frac is a 24-bit significand, the bottom 9 bits LSB are extracted and OR-red
-    // into a sticky flag, the top 15 MSBs are extracted, the LSB of this top slice
-    // is OR-red with the sticky 
-    frac16 = frac>>9 | ((frac & 0x1FF) != 0);
+    frac16 = frac>>16 | ((frac & 0xFFFF) != 0);
     if ( ! (exp | frac16) ) {
-        uiZ = packToF16UI( sign, 0, 0 );
+        uiZ = packToBF16UI( sign, 0, 0 );
         goto uiZ;
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    return softfloat_roundPackToF16( sign, exp - 0x71, frac16 | 0x4000 );
+    return softfloat_roundPackToBF16( sign, exp, frac16 | 0x4000 );
  uiZ:
     uZ.ui = uiZ;
     return uZ.f;

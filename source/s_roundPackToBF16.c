@@ -4,7 +4,7 @@
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
 Package, Release 3e, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2017 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,51 +38,73 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
-#include "specialize.h"
 #include "softfloat.h"
 
-float16_t f32_to_f16( float32_t a )
+bfloat16_t
+ softfloat_roundPackToBF16( bool sign, int_fast16_t exp, uint_fast16_t sig )
 {
-    union ui32_f32 uA;
-    uint_fast32_t uiA;
-    bool sign;
-    int_fast16_t exp;
-    uint_fast32_t frac;
-    struct commonNaN commonNaN;
-    uint_fast16_t uiZ, frac16;
-    union ui16_f16 uZ;
+    uint_fast8_t roundingMode;
+    bool roundNearEven;
+    uint_fast8_t roundIncrement, roundBits;
+    bool isTiny;
+    uint_fast16_t uiZ;
+    union ui16_bf16 uZ;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    uA.f = a;
-    uiA = uA.ui;
-    sign = signF32UI( uiA );
-    exp  = expF32UI( uiA );
-    frac = fracF32UI( uiA );
+    roundingMode = softfloat_roundingMode;
+    roundNearEven = (roundingMode == softfloat_round_near_even);
+    roundIncrement = 0x8;
+    if ( ! roundNearEven && (roundingMode != softfloat_round_near_maxMag) ) {
+        roundIncrement =
+            (roundingMode
+                 == (sign ? softfloat_round_min : softfloat_round_max))
+                ? 0xF
+                : 0;
+    }
+    roundBits = sig & 0xF;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    if ( exp == 0xFF ) {
-        if ( frac ) {
-            softfloat_f32UIToCommonNaN( uiA, &commonNaN );
-            uiZ = softfloat_commonNaNToF16UI( &commonNaN );
-        } else {
-            uiZ = packToF16UI( sign, 0x1F, 0 );
+    if ( 0x1D <= (unsigned int) exp ) {
+        if ( exp < 0 ) {
+            /*----------------------------------------------------------------
+            *----------------------------------------------------------------*/
+            isTiny =
+                (softfloat_detectTininess == softfloat_tininess_beforeRounding)
+                    || (exp < -1) || (sig + roundIncrement < 0x8000);
+            sig = softfloat_shiftRightJam32( sig, -exp );
+            exp = 0;
+            roundBits = sig & 0xF;
+            if ( isTiny && roundBits ) {
+                softfloat_raiseFlags( softfloat_flag_underflow );
+            }
+        } else if ( (0x1D < exp) || (0x8000 <= sig + roundIncrement) ) {
+            /*----------------------------------------------------------------
+            *----------------------------------------------------------------*/
+            softfloat_raiseFlags(
+                softfloat_flag_overflow | softfloat_flag_inexact );
+            uiZ = packToF16UI( sign, 0x1F, 0 ) - ! roundIncrement;
+            goto uiZ;
         }
-        goto uiZ;
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    // frac is a 24-bit significand, the bottom 9 bits LSB are extracted and OR-red
-    // into a sticky flag, the top 15 MSBs are extracted, the LSB of this top slice
-    // is OR-red with the sticky 
-    frac16 = frac>>9 | ((frac & 0x1FF) != 0);
-    if ( ! (exp | frac16) ) {
-        uiZ = packToF16UI( sign, 0, 0 );
-        goto uiZ;
+    sig = (sig + roundIncrement)>>4;
+    if ( roundBits ) {
+        softfloat_exceptionFlags |= softfloat_flag_inexact;
+#ifdef SOFTFLOAT_ROUND_ODD
+        if ( roundingMode == softfloat_round_odd ) {
+            sig |= 1;
+            goto packReturn;
+        }
+#endif
     }
+    sig &= ~(uint_fast16_t) (! (roundBits ^ 8) & roundNearEven);
+    if ( ! sig ) exp = 0;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    return softfloat_roundPackToF16( sign, exp - 0x71, frac16 | 0x4000 );
+ packReturn:
+    uiZ = packToF16UI( sign, exp, sig );
  uiZ:
     uZ.ui = uiZ;
     return uZ.f;
