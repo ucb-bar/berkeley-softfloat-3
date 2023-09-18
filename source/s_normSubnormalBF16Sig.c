@@ -4,7 +4,7 @@
 This C source file is part of the SoftFloat IEEE Floating-Point Arithmetic
 Package, Release 3e, by John R. Hauser.
 
-Copyright 2011, 2012, 2013, 2014, 2015 The Regents of the University of
+Copyright 2011, 2012, 2013, 2014, 2015, 2016 The Regents of the University of
 California.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,63 +34,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =============================================================================*/
 
-#include <stdbool.h>
 #include <stdint.h>
 #include "platform.h"
 #include "internals.h"
-#include "specialize.h"
-#include "softfloat.h"
 
-float32_t bf16_to_f32( bfloat16_t a )
+struct exp8_sig16 softfloat_normSubnormalBF16Sig( uint_fast16_t sig )
 {
-    union ui16_bf16 uA;
-    uint_fast16_t uiA;
-    bool sign;
-    int_fast16_t exp;
-    uint_fast16_t frac;
-    struct commonNaN commonNaN;
-    uint_fast32_t uiZ;
-    struct exp8_sig16 normExpSig;
-    union ui32_f32 uZ;
+    int_fast8_t shiftDist;
+    struct exp8_sig16 z;
 
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    uA.f = a;
-    uiA = uA.ui;
-    sign = signBF16UI( uiA );
-    exp  = expBF16UI( uiA );
-    frac = fracBF16UI( uiA );
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    // NaN or Inf
-    if ( exp == 0xFF ) {
-        if ( frac ) {
-            softfloat_bf16UIToCommonNaN( uiA, &commonNaN );
-            uiZ = softfloat_commonNaNToF32UI( &commonNaN );
-        } else {
-            uiZ = packToF32UI( sign, 0xFF, 0 );
-        }
-        goto uiZ;
-    }
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    if ( ! exp ) {
-        if ( ! frac ) {
-            uiZ = packToF32UI( sign, 0, 0 );
-            goto uiZ;
-        }
-        normExpSig = softfloat_normSubnormalBF16Sig( frac );
-        exp = normExpSig.exp - 1;
-        frac = normExpSig.sig;
-    }
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    uiZ = packToF32UI( sign, exp, ((uint_fast32_t) frac) <<16 );
- uiZ:
-    uZ.ui = uiZ;
-    return uZ.f;
+    shiftDist = softfloat_countLeadingZeros16( sig ) - 8;
+    z.exp = 1 - shiftDist;
+    z.sig = sig<<shiftDist;
+    return z;
 
 }
-
-
 
