@@ -74,17 +74,11 @@ float32_t bf16_to_f32( bfloat16_t a )
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    if ( ! exp ) {
-        if ( ! frac ) {
-            uiZ = packToF32UI( sign, 0, 0 );
-            goto uiZ;
-        }
-        normExpSig = softfloat_normSubnormalBF16Sig( frac );
-        exp = normExpSig.exp - 1;
-        frac = normExpSig.sig;
-    }
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
+    // packToF32UI simply packs bitfields without any numerical change
+    // which means it can be used directly for any BF16 to f32 conversions which
+    // does not require bits manipulation
+    // (that is everything where the 16-bit are just padded right with 16 zeros, including
+    //  subnormal numbers)
     uiZ = packToF32UI( sign, exp, ((uint_fast32_t) frac) <<16 );
  uiZ:
     uZ.ui = uiZ;
