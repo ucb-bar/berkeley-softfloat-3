@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "softfloat.h"
 
 /*----------------------------------------------------------------------------
-| Assuming `uiA' has the bit pattern of a 32-bit floating-point NaN, converts
+| Assuming `uiA' has the bit pattern of a BF16 NaN, converts
 | this NaN to the common NaN form, and stores the resulting common NaN at the
 | location pointed to by `zPtr'.  If the NaN is a signaling NaN, the invalid
 | exception is raised.

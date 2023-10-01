@@ -39,8 +39,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 
 /*----------------------------------------------------------------------------
-| Converts the common NaN pointed to by `aPtr' into a 16-bit floating-point
-| NaN, and returns the bit pattern of this value as an unsigned integer.
+| Converts the common NaN pointed to by `aPtr' into a BF16 NaN, and 
+| returns the bit pattern of this value as an unsigned integer.
 *----------------------------------------------------------------------------*/
 uint_fast16_t softfloat_commonNaNToBF16UI( const struct commonNaN *aPtr )
 {
