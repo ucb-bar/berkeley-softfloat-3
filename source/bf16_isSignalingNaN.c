@@ -35,57 +35,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =============================================================================*/
 
 #include <stdbool.h>
-#include <stdint.h>
 #include "platform.h"
 #include "internals.h"
 #include "specialize.h"
 #include "softfloat.h"
 
-float16_t f32_to_f16( float32_t a )
+bool bf16_isSignalingNaN( bfloat16_t a )
 {
-    union ui32_f32 uA;
-    uint_fast32_t uiA;
-    bool sign;
-    int_fast16_t exp;
-    uint_fast32_t frac;
-    struct commonNaN commonNaN;
-    uint_fast16_t uiZ, frac16;
-    union ui16_f16 uZ;
+    union ui16_bf16 uA;
 
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
     uA.f = a;
-    uiA = uA.ui;
-    sign = signF32UI( uiA );
-    exp  = expF32UI( uiA );
-    frac = fracF32UI( uiA );
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    if ( exp == 0xFF ) {
-        if ( frac ) {
-            softfloat_f32UIToCommonNaN( uiA, &commonNaN );
-            uiZ = softfloat_commonNaNToF16UI( &commonNaN );
-        } else {
-            uiZ = packToF16UI( sign, 0x1F, 0 );
-        }
-        goto uiZ;
-    }
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    // frac is a 24-bit significand, the bottom 9 bits LSB are extracted and OR-red
-    // into a sticky flag, the top 15 MSBs are extracted, the LSB of this top slice
-    // is OR-red with the sticky 
-    frac16 = frac>>9 | ((frac & 0x1FF) != 0);
-    if ( ! (exp | frac16) ) {
-        uiZ = packToF16UI( sign, 0, 0 );
-        goto uiZ;
-    }
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    return softfloat_roundPackToF16( sign, exp - 0x71, frac16 | 0x4000 );
- uiZ:
-    uZ.ui = uiZ;
-    return uZ.f;
+    return softfloat_isSigNaNBF16UI( uA.ui );
 
 }
 

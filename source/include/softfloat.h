@@ -170,6 +170,13 @@ bool f16_lt_quiet( float16_t, float16_t );
 bool f16_isSignalingNaN( float16_t );
 
 /*----------------------------------------------------------------------------
+| 16-bit (brain float 16) floating-point operations.
+*----------------------------------------------------------------------------*/
+float32_t bf16_to_f32( bfloat16_t );
+bfloat16_t f32_to_bf16( float32_t );
+bool bf16_isSignalingNaN( bfloat16_t );
+
+/*----------------------------------------------------------------------------
 | 32-bit (single-precision) floating-point operations.
 *----------------------------------------------------------------------------*/
 uint_fast32_t f32_to_ui32( float32_t, uint_fast8_t, bool );

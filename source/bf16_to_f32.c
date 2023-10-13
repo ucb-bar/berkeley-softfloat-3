@@ -41,51 +41,50 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-float16_t f32_to_f16( float32_t a )
+float32_t bf16_to_f32( bfloat16_t a )
 {
-    union ui32_f32 uA;
-    uint_fast32_t uiA;
+    union ui16_bf16 uA;
+    uint_fast16_t uiA;
     bool sign;
     int_fast16_t exp;
-    uint_fast32_t frac;
+    uint_fast16_t frac;
     struct commonNaN commonNaN;
-    uint_fast16_t uiZ, frac16;
-    union ui16_f16 uZ;
+    uint_fast32_t uiZ;
+    struct exp8_sig16 normExpSig;
+    union ui32_f32 uZ;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     uA.f = a;
     uiA = uA.ui;
-    sign = signF32UI( uiA );
-    exp  = expF32UI( uiA );
-    frac = fracF32UI( uiA );
+    sign = signBF16UI( uiA );
+    exp  = expBF16UI( uiA );
+    frac = fracBF16UI( uiA );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
+    // NaN or Inf
     if ( exp == 0xFF ) {
         if ( frac ) {
-            softfloat_f32UIToCommonNaN( uiA, &commonNaN );
-            uiZ = softfloat_commonNaNToF16UI( &commonNaN );
+            softfloat_bf16UIToCommonNaN( uiA, &commonNaN );
+            uiZ = softfloat_commonNaNToF32UI( &commonNaN );
         } else {
-            uiZ = packToF16UI( sign, 0x1F, 0 );
+            uiZ = packToF32UI( sign, 0xFF, 0 );
         }
         goto uiZ;
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
-    // frac is a 24-bit significand, the bottom 9 bits LSB are extracted and OR-red
-    // into a sticky flag, the top 15 MSBs are extracted, the LSB of this top slice
-    // is OR-red with the sticky 
-    frac16 = frac>>9 | ((frac & 0x1FF) != 0);
-    if ( ! (exp | frac16) ) {
-        uiZ = packToF16UI( sign, 0, 0 );
-        goto uiZ;
-    }
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    return softfloat_roundPackToF16( sign, exp - 0x71, frac16 | 0x4000 );
+    // packToF32UI simply packs bitfields without any numerical change
+    // which means it can be used directly for any BF16 to f32 conversions which
+    // does not require bits manipulation
+    // (that is everything where the 16-bit are just padded right with 16 zeros, including
+    //  subnormal numbers)
+    uiZ = packToF32UI( sign, exp, ((uint_fast32_t) frac) <<16 );
  uiZ:
     uZ.ui = uiZ;
     return uZ.f;
 
 }
+
+
 
