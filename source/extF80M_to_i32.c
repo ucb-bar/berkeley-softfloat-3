@@ -45,10 +45,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int_fast32_t
  extF80M_to_i32(
-     const extFloat80_t *aPtr, uint_fast8_t roundingMode, bool exact )
+     const extFloat80_t *aPtr, uint_fast8_t roundingMode, bool exact
+     STATE_PARAM )
 {
 
-    return extF80_to_i32( *aPtr, roundingMode, exact );
+    return extF80_to_i32( *aPtr, roundingMode, exact STATE_VAR );
 
 }
 
@@ -56,7 +57,8 @@ int_fast32_t
 
 int_fast32_t
  extF80M_to_i32(
-     const extFloat80_t *aPtr, uint_fast8_t roundingMode, bool exact )
+     const extFloat80_t *aPtr, uint_fast8_t roundingMode, bool exact
+     STATE_PARAM )
 {
     const struct extFloat80M *aSPtr;
     uint_fast16_t uiA64;
@@ -85,11 +87,11 @@ int_fast32_t
     } else {
         sig = softfloat_shiftRightJam64( sig, shiftDist );
     }
-    return softfloat_roundToI32( sign, sig, roundingMode, exact );
+    return softfloat_roundToI32( sign, sig, roundingMode, exact STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_raiseFlags( softfloat_flag_invalid );
+    softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     return
         (exp == 0x7FFF) && (sig & UINT64_C( 0x7FFFFFFFFFFFFFFF )) ? i32_fromNaN
             : sign ? i32_fromNegOverflow : i32_fromPosOverflow;

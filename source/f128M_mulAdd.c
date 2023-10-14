@@ -47,6 +47,7 @@ void
      const float128_t *bPtr,
      const float128_t *cPtr,
      float128_t *zPtr
+     STATE_PARAM
  )
 {
     const uint64_t *aWPtr, *bWPtr, *cWPtr;
@@ -63,7 +64,8 @@ void
     uiB0  = bWPtr[indexWord( 2, 0 )];
     uiC64 = cWPtr[indexWord( 2, 1 )];
     uiC0  = cWPtr[indexWord( 2, 0 )];
-    *zPtr = softfloat_mulAddF128( uiA64, uiA0, uiB64, uiB0, uiC64, uiC0, 0 );
+    *zPtr = softfloat_mulAddF128( uiA64, uiA0, uiB64, uiB0, uiC64, uiC0, 0
+                                  STATE_VAR );
 
 }
 
@@ -75,6 +77,7 @@ void
      const float128_t *bPtr,
      const float128_t *cPtr,
      float128_t *zPtr
+     STATE_PARAM
  )
 {
 
@@ -84,6 +87,7 @@ void
         (const uint32_t *) cPtr,
         (uint32_t *) zPtr,
         0
+        STATE_VAR
     );
 
 }

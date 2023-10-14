@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float64_t f64_sub( float64_t a, float64_t b )
+float64_t f64_sub( float64_t a, float64_t b STATE_PARAM )
 {
     union ui64_f64 uA;
     uint_fast64_t uiA;
@@ -49,7 +49,7 @@ float64_t f64_sub( float64_t a, float64_t b )
     uint_fast64_t uiB;
     bool signB;
 #if ! defined INLINE_LEVEL || (INLINE_LEVEL < 2)
-    float64_t (*magsFuncPtr)( uint_fast64_t, uint_fast64_t, bool );
+    float64_t (*magsFuncPtr)( uint_fast64_t, uint_fast64_t, bool STATE_PARAM );
 #endif
 
     uA.f = a;
@@ -60,14 +60,14 @@ float64_t f64_sub( float64_t a, float64_t b )
     signB = signF64UI( uiB );
 #if defined INLINE_LEVEL && (2 <= INLINE_LEVEL)
     if ( signA == signB ) {
-        return softfloat_subMagsF64( uiA, uiB, signA );
+        return softfloat_subMagsF64( uiA, uiB, signA STATE_VAR );
     } else {
-        return softfloat_addMagsF64( uiA, uiB, signA );
+        return softfloat_addMagsF64( uiA, uiB, signA STATE_VAR );
     }
 #else
     magsFuncPtr =
         (signA == signB) ? softfloat_subMagsF64 : softfloat_addMagsF64;
-    return (*magsFuncPtr)( uiA, uiB, signA );
+    return (*magsFuncPtr)( uiA, uiB, signA STATE_VAR );
 #endif
 
 }

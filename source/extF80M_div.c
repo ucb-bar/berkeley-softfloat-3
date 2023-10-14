@@ -45,10 +45,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  extF80M_div(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr
+     STATE_PARAM )
 {
 
-    *zPtr = extF80_div( *aPtr, *bPtr );
+    *zPtr = extF80_div( *aPtr, *bPtr STATE_VAR );
 
 }
 
@@ -56,7 +57,8 @@ void
 
 void
  extF80M_div(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr
+     STATE_PARAM )
 {
     const struct extFloat80M *aSPtr, *bSPtr;
     struct extFloat80M *zSPtr;
@@ -104,7 +106,7 @@ void
     if ( ! (x64 & UINT64_C( 0x8000000000000000 )) ) {
         if ( ! x64 ) {
             if ( ! sigA ) goto invalid;
-            softfloat_raiseFlags( softfloat_flag_infinite );
+            softfloat_raiseFlags( softfloat_flag_infinite STATE_VAR );
             goto infinity;
         }
         expB += softfloat_normExtF80SigM( &x64 );
@@ -166,12 +168,18 @@ void
     y[indexWord( 3, 1 )] = x64;
     y[indexWord( 3, 2 )] = (qs[1]<<3) + (x64>>32);
     softfloat_roundPackMToExtF80M(
-        signZ, expZ, y, extF80_roundingPrecision, zSPtr );
+        signZ, expZ, y,
+#ifdef SOFTFLOAT_USE_GLOBAL_STATE
+        extF80_roundingPrecision,
+#else
+        state->extF80_roundingPrecision,
+#endif
+        zSPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_invalidExtF80M( zSPtr );
+    softfloat_invalidExtF80M( zSPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

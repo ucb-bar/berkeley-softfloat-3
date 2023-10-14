@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float16_t f16_mulAdd( float16_t a, float16_t b, float16_t c )
+float16_t f16_mulAdd( float16_t a, float16_t b, float16_t c STATE_PARAM)
 {
     union ui16_f16 uA;
     uint_fast16_t uiA;
@@ -54,7 +54,7 @@ float16_t f16_mulAdd( float16_t a, float16_t b, float16_t c )
     uiB = uB.ui;
     uC.f = c;
     uiC = uC.ui;
-    return softfloat_mulAddF16( uiA, uiB, uiC, 0 );
+    return softfloat_mulAddF16( uiA, uiB, uiC, 0 STATE_VAR );
 
 }
 

@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-bool f64_lt_quiet( float64_t a, float64_t b )
+bool f64_lt_quiet( float64_t a, float64_t b STATE_PARAM )
 {
     union ui64_f64 uA;
     uint_fast64_t uiA;
@@ -57,7 +57,7 @@ bool f64_lt_quiet( float64_t a, float64_t b )
         if (
             softfloat_isSigNaNF64UI( uiA ) || softfloat_isSigNaNF64UI( uiB )
         ) {
-            softfloat_raiseFlags( softfloat_flag_invalid );
+            softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         }
         return false;
     }

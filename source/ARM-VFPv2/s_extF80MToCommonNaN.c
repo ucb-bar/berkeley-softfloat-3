@@ -48,11 +48,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *----------------------------------------------------------------------------*/
 void
  softfloat_extF80MToCommonNaN(
-     const struct extFloat80M *aSPtr, struct commonNaN *zPtr )
+     const struct extFloat80M *aSPtr, struct commonNaN *zPtr STATE_PARAM )
 {
 
     if ( extF80M_isSignalingNaN( (const extFloat80_t *) aSPtr ) ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
     }
     zPtr->sign = signExtF80UI64( aSPtr->signExp );
     zPtr->v64 = aSPtr->signif<<1;

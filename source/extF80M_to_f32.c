@@ -43,16 +43,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-float32_t extF80M_to_f32( const extFloat80_t *aPtr )
+float32_t extF80M_to_f32( const extFloat80_t *aPtr STATE_PARAM )
 {
 
-    return extF80_to_f32( *aPtr );
+    return extF80_to_f32( *aPtr STATE_VAR );
 
 }
 
 #else
 
-float32_t extF80M_to_f32( const extFloat80_t *aPtr )
+float32_t extF80M_to_f32( const extFloat80_t *aPtr STATE_PARAM )
 {
     const struct extFloat80M *aSPtr;
     uint_fast16_t uiA64;
@@ -76,7 +76,7 @@ float32_t extF80M_to_f32( const extFloat80_t *aPtr )
     *------------------------------------------------------------------------*/
     if ( exp == 0x7FFF ) {
         if ( sig & UINT64_C( 0x7FFFFFFFFFFFFFFF ) ) {
-            softfloat_extF80MToCommonNaN( aSPtr, &commonNaN );
+            softfloat_extF80MToCommonNaN( aSPtr, &commonNaN STATE_VAR );
             uiZ = softfloat_commonNaNToF32UI( &commonNaN );
         } else {
             uiZ = packToF32UI( sign, 0xFF, 0 );
@@ -99,7 +99,7 @@ float32_t extF80M_to_f32( const extFloat80_t *aPtr )
     if ( sizeof (int_fast16_t) < sizeof (int32_t) ) {
         if ( exp < -0x1000 ) exp = -0x1000;
     }
-    return softfloat_roundPackToF32( sign, exp, sig32 );
+    return softfloat_roundPackToF32( sign, exp, sig32 STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  uiZ:

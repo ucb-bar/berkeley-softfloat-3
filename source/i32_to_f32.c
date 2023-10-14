@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float32_t i32_to_f32( int32_t a )
+float32_t i32_to_f32( int32_t a STATE_PARAM )
 {
     bool sign;
     union ui32_f32 uZ;
@@ -52,7 +52,7 @@ float32_t i32_to_f32( int32_t a )
         return uZ.f;
     }
     absA = sign ? -(uint_fast32_t) a : (uint_fast32_t) a;
-    return softfloat_normRoundPackToF32( sign, 0x9C, absA );
+    return softfloat_normRoundPackToF32( sign, 0x9C, absA STATE_VAR );
 
 }
 

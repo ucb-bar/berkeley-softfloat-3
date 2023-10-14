@@ -40,14 +40,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float16_t f16_add( float16_t a, float16_t b )
+float16_t f16_add( float16_t a, float16_t b STATE_PARAM )
 {
     union ui16_f16 uA;
     uint_fast16_t uiA;
     union ui16_f16 uB;
     uint_fast16_t uiB;
 #if ! defined INLINE_LEVEL || (INLINE_LEVEL < 1)
-    float16_t (*magsFuncPtr)( uint_fast16_t, uint_fast16_t );
+    float16_t (*magsFuncPtr)( uint_fast16_t, uint_fast16_t STATE_PARAM );
 #endif
 
     uA.f = a;
@@ -56,14 +56,14 @@ float16_t f16_add( float16_t a, float16_t b )
     uiB = uB.ui;
 #if defined INLINE_LEVEL && (1 <= INLINE_LEVEL)
     if ( signF16UI( uiA ^ uiB ) ) {
-        return softfloat_subMagsF16( uiA, uiB );
+        return softfloat_subMagsF16( uiA, uiB STATE_VAR );
     } else {
-        return softfloat_addMagsF16( uiA, uiB );
+        return softfloat_addMagsF16( uiA, uiB STATE_VAR );
     }
 #else
     magsFuncPtr =
         signF16UI( uiA ^ uiB ) ? softfloat_subMagsF16 : softfloat_addMagsF16;
-    return (*magsFuncPtr)( uiA, uiB );
+    return (*magsFuncPtr)( uiA, uiB STATE_VAR );
 #endif
 
 }

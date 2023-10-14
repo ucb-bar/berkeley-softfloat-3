@@ -43,16 +43,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-bool extF80M_lt_quiet( const extFloat80_t *aPtr, const extFloat80_t *bPtr )
+bool extF80M_lt_quiet( const extFloat80_t *aPtr, const extFloat80_t *bPtr
+                       STATE_PARAM )
 {
 
-    return extF80_lt_quiet( *aPtr, *bPtr );
+    return extF80_lt_quiet( *aPtr, *bPtr STATE_VAR );
 
 }
 
 #else
 
-bool extF80M_lt_quiet( const extFloat80_t *aPtr, const extFloat80_t *bPtr )
+bool extF80M_lt_quiet( const extFloat80_t *aPtr, const extFloat80_t *bPtr
+                       STATE_PARAM )
 {
     const struct extFloat80M *aSPtr, *bSPtr;
     uint_fast16_t uiA64;
@@ -78,7 +80,7 @@ bool extF80M_lt_quiet( const extFloat80_t *aPtr, const extFloat80_t *bPtr )
                softfloat_isSigNaNExtF80UI( uiA64, uiA0 )
             || softfloat_isSigNaNExtF80UI( uiB64, uiB0 )
         ) {
-            softfloat_raiseFlags( softfloat_flag_invalid );
+            softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         }
         return false;
     }

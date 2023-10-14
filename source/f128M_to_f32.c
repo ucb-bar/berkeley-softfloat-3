@@ -43,16 +43,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-float32_t f128M_to_f32( const float128_t *aPtr )
+float32_t f128M_to_f32( const float128_t *aPtr STATE_PARAM )
 {
 
-    return f128_to_f32( *aPtr );
+    return f128_to_f32( *aPtr STATE_VAR );
 
 }
 
 #else
 
-float32_t f128M_to_f32( const float128_t *aPtr )
+float32_t f128M_to_f32( const float128_t *aPtr STATE_PARAM )
 {
     const uint32_t *aWPtr;
     uint32_t uiA96;
@@ -76,7 +76,7 @@ float32_t f128M_to_f32( const float128_t *aPtr )
     *------------------------------------------------------------------------*/
     if ( exp == 0x7FFF ) {
         if ( frac64 ) {
-            softfloat_f128MToCommonNaN( aWPtr, &commonNaN );
+            softfloat_f128MToCommonNaN( aWPtr, &commonNaN STATE_VAR );
             uiZ = softfloat_commonNaNToF32UI( &commonNaN );
         } else {
             uiZ = packToF32UI( sign, 0xFF, 0 );
@@ -96,7 +96,7 @@ float32_t f128M_to_f32( const float128_t *aPtr )
     if ( sizeof (int_fast16_t) < sizeof (int32_t) ) {
         if ( exp < -0x1000 ) exp = -0x1000;
     }
-    return softfloat_roundPackToF32( sign, exp, frac32 | 0x40000000 );
+    return softfloat_roundPackToF32( sign, exp, frac32 | 0x40000000 STATE_VAR );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  uiZ:

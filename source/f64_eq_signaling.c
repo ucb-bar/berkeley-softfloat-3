@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-bool f64_eq_signaling( float64_t a, float64_t b )
+bool f64_eq_signaling( float64_t a, float64_t b STATE_PARAM )
 {
     union ui64_f64 uA;
     uint_fast64_t uiA;
@@ -52,7 +52,7 @@ bool f64_eq_signaling( float64_t a, float64_t b )
     uB.f = b;
     uiB = uB.ui;
     if ( isNaNF64UI( uiA ) || isNaNF64UI( uiB ) ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         return false;
     }
     return (uiA == uiB) || ! ((uiA | uiB) & UINT64_C( 0x7FFFFFFFFFFFFFFF ));

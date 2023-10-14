@@ -46,6 +46,7 @@ extFloat80_t
      uint_fast64_t sig,
      uint_fast64_t sigExtra,
      uint_fast8_t roundingPrecision
+     STATE_PARAM
  )
 {
     int_fast8_t shiftDist;
@@ -65,7 +66,7 @@ extFloat80_t
     }
     return
         softfloat_roundPackToExtF80(
-            sign, exp, sig, sigExtra, roundingPrecision );
+            sign, exp, sig, sigExtra, roundingPrecision STATE_VAR );
 
 }
 

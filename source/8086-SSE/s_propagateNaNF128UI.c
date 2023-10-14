@@ -56,6 +56,7 @@ struct uint128
      uint_fast64_t uiA0,
      uint_fast64_t uiB64,
      uint_fast64_t uiB0
+     STATE_PARAM
  )
 {
     bool isSigNaNA;
@@ -63,7 +64,7 @@ struct uint128
 
     isSigNaNA = softfloat_isSigNaNF128UI( uiA64, uiA0 );
     if ( isSigNaNA || softfloat_isSigNaNF128UI( uiB64, uiB0 ) ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         if ( isSigNaNA ) goto returnNonsigA;
     }
     if ( isNaNF128UI( uiA64, uiA0 ) ) {

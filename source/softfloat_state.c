@@ -40,6 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
+#ifdef SOFTFLOAT_USE_GLOBAL_STATE
+
 #ifndef THREAD_LOCAL
 #define THREAD_LOCAL
 #endif
@@ -49,4 +51,14 @@ THREAD_LOCAL uint_fast8_t softfloat_detectTininess = init_detectTininess;
 THREAD_LOCAL uint_fast8_t softfloat_exceptionFlags = 0;
 
 THREAD_LOCAL uint_fast8_t extF80_roundingPrecision = 80;
+
+#endif
+
+void softfloat_init_state(softfloat_state_t * state)
+{
+    state->roundingMode = softfloat_round_near_even;
+    state->detectTininess = init_detectTininess;
+    state->exceptionFlags = 0;
+    state->extF80_roundingPrecision = 80;
+}
 

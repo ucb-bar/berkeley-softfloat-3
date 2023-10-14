@@ -49,10 +49,11 @@ void
      uint_fast8_t roundingMode,
      bool exact,
      extFloat80_t *zPtr
+     STATE_PARAM
  )
 {
 
-    *zPtr = extF80_roundToInt( *aPtr, roundingMode, exact );
+    *zPtr = extF80_roundToInt( *aPtr, roundingMode, exact STATE_VAR );
 
 }
 
@@ -64,6 +65,7 @@ void
      uint_fast8_t roundingMode,
      bool exact,
      extFloat80_t *zPtr
+     STATE_PARAM
  )
 {
     const struct extFloat80M *aSPtr;
@@ -97,7 +99,7 @@ void
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( exp <= 0x3FFE ) {
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         switch ( roundingMode ) {
          case softfloat_round_near_even:
             if ( !(sigA & UINT64_C( 0x7FFFFFFFFFFFFFFF )) ) break;
@@ -128,7 +130,7 @@ void
     if ( 0x403E <= exp ) {
         if ( exp == 0x7FFF ) {
             if ( sigA & UINT64_C( 0x7FFFFFFFFFFFFFFF ) ) {
-                softfloat_propagateNaNExtF80M( aSPtr, 0, zSPtr );
+                softfloat_propagateNaNExtF80M( aSPtr, 0, zSPtr STATE_VAR );
                 return;
             }
             sigZ = UINT64_C( 0x8000000000000000 );
@@ -163,7 +165,7 @@ void
 #ifdef SOFTFLOAT_ROUND_ODD
         if ( roundingMode == softfloat_round_odd ) sigZ |= lastBitMask;
 #endif
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     }
  uiZ:
     zSPtr->signExp = uiZ64;

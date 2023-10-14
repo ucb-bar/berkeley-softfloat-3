@@ -42,7 +42,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "softfloat.h"
 
 extFloat80_t
- extF80_roundToInt( extFloat80_t a, uint_fast8_t roundingMode, bool exact )
+ extF80_roundToInt(
+     extFloat80_t a, uint_fast8_t roundingMode, bool exact STATE_PARAM )
 {
     union { struct extFloat80M s; extFloat80_t f; } uA;
     uint_fast16_t uiA64, signUI64;
@@ -79,7 +80,8 @@ extFloat80_t
     if ( 0x403E <= exp ) {
         if ( exp == 0x7FFF ) {
             if ( sigA & UINT64_C( 0x7FFFFFFFFFFFFFFF ) ) {
-                uiZ = softfloat_propagateNaNExtF80UI( uiA64, sigA, 0, 0 );
+                uiZ = softfloat_propagateNaNExtF80UI(
+                    uiA64, sigA, 0, 0 STATE_VAR );
                 uiZ64 = uiZ.v64;
                 sigZ  = uiZ.v0;
                 goto uiZ;
@@ -92,7 +94,7 @@ extFloat80_t
         goto uiZ;
     }
     if ( exp <= 0x3FFE ) {
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         switch ( roundingMode ) {
          case softfloat_round_near_even:
             if ( !(sigA & UINT64_C( 0x7FFFFFFFFFFFFFFF )) ) break;
@@ -143,7 +145,7 @@ extFloat80_t
 #ifdef SOFTFLOAT_ROUND_ODD
         if ( roundingMode == softfloat_round_odd ) sigZ |= lastBitMask;
 #endif
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     }
  uiZ:
     uZ.s.signExp = uiZ64;

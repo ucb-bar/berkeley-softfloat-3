@@ -44,17 +44,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef SOFTFLOAT_FAST_INT64
 
 void
- f128M_mul( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr )
+ f128M_mul( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr
+            STATE_PARAM )
 {
 
-    *zPtr = f128_mul( *aPtr, *bPtr );
+    *zPtr = f128_mul( *aPtr, *bPtr STATE_VAR );
 
 }
 
 #else
 
 void
- f128M_mul( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr )
+ f128M_mul( const float128_t *aPtr, const float128_t *bPtr, float128_t *zPtr
+            STATE_PARAM )
 {
     const uint32_t *aWPtr, *bWPtr;
     uint32_t *zWPtr;
@@ -96,7 +98,7 @@ void
                     && ! (ptr[indexWord( 4, 2 )] | ptr[indexWord( 4, 1 )]
                               | ptr[indexWord( 4, 0 )])
             ) {
-                softfloat_invalidF128M( zWPtr );
+                softfloat_invalidF128M( zWPtr STATE_VAR );
                 return;
             }
         }
@@ -140,7 +142,7 @@ void
         shiftDist = 15;
     }
     softfloat_shortShiftLeft160M( extSigZPtr, shiftDist, extSigZPtr );
-    softfloat_roundPackMToF128M( signZ, expZ, extSigZPtr, zWPtr );
+    softfloat_roundPackMToF128M( signZ, expZ, extSigZPtr, zWPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

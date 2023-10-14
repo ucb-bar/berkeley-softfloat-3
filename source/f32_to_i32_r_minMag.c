@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-int_fast32_t f32_to_i32_r_minMag( float32_t a, bool exact )
+int_fast32_t f32_to_i32_r_minMag( float32_t a, bool exact STATE_PARAM )
 {
     union ui32_f32 uA;
     uint_fast32_t uiA;
@@ -62,7 +62,7 @@ int_fast32_t f32_to_i32_r_minMag( float32_t a, bool exact )
     shiftDist = 0x9E - exp;
     if ( 32 <= shiftDist ) {
         if ( exact && (exp | sig) ) {
-            softfloat_exceptionFlags |= softfloat_flag_inexact;
+            softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         }
         return 0;
     }
@@ -71,7 +71,7 @@ int_fast32_t f32_to_i32_r_minMag( float32_t a, bool exact )
     sign = signF32UI( uiA );
     if ( shiftDist <= 0 ) {
         if ( uiA == packToF32UI( 1, 0x9E, 0 ) ) return -0x7FFFFFFF - 1;
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         return
             (exp == 0xFF) && sig ? i32_fromNaN
                 : sign ? i32_fromNegOverflow : i32_fromPosOverflow;
@@ -81,7 +81,7 @@ int_fast32_t f32_to_i32_r_minMag( float32_t a, bool exact )
     sig = (sig | 0x00800000)<<8;
     absZ = sig>>shiftDist;
     if ( exact && ((uint_fast32_t) absZ<<shiftDist != sig) ) {
-        softfloat_exceptionFlags |= softfloat_flag_inexact;
+        softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     }
     return sign ? -absZ : absZ;
 

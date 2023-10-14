@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float32_t ui32_to_f32( uint32_t a )
+float32_t ui32_to_f32( uint32_t a STATE_PARAM )
 {
     union ui32_f32 uZ;
 
@@ -48,9 +48,9 @@ float32_t ui32_to_f32( uint32_t a )
         return uZ.f;
     }
     if ( a & 0x80000000 ) {
-        return softfloat_roundPackToF32( 0, 0x9D, a>>1 | (a & 1) );
+        return softfloat_roundPackToF32( 0, 0x9D, a>>1 | (a & 1) STATE_VAR );
     } else {
-        return softfloat_normRoundPackToF32( 0, 0x9C, a );
+        return softfloat_normRoundPackToF32( 0, 0x9C, a STATE_VAR );
     }
 
 }

@@ -51,7 +51,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *----------------------------------------------------------------------------*/
 void
  softfloat_propagateNaNF128M(
-     const uint32_t *aWPtr, const uint32_t *bWPtr, uint32_t *zWPtr )
+     const uint32_t *aWPtr, const uint32_t *bWPtr, uint32_t *zWPtr STATE_PARAM )
 {
     const uint32_t *ptr;
     bool isSigNaNA;
@@ -62,7 +62,7 @@ void
         isSigNaNA
             || (bWPtr && f128M_isSignalingNaN( (const float128_t *) bWPtr ))
     ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
+        softfloat_raiseFlags( softfloat_flag_invalid STATE_VAR );
         if ( ! isSigNaNA ) ptr = bWPtr;
         goto copyNonsig;
     }

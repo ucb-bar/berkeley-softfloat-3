@@ -48,6 +48,7 @@ void
      const uint32_t *cWPtr,
      uint32_t *zWPtr,
      uint_fast8_t op
+     STATE_PARAM
  )
 {
     uint32_t uiA96;
@@ -333,12 +334,12 @@ void
  roundPack:
     roundPackRoutinePtr = softfloat_roundPackMToF128M;
  doRoundPack:
-    (*roundPackRoutinePtr)( signZ, expZ, extSigPtr, zWPtr );
+    (*roundPackRoutinePtr)( signZ, expZ, extSigPtr, zWPtr STATE_VAR );
     return;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
  invalid:
-    softfloat_invalidF128M( zWPtr );
+    softfloat_invalidF128M( zWPtr STATE_VAR );
  propagateNaN_ZC:
     softfloat_propagateNaNF128M( zWPtr, cWPtr, zWPtr );
     return;
@@ -371,7 +372,7 @@ void
  completeCancellation:
     uiZ96 =
         packToF128UI96(
-            (softfloat_roundingMode == softfloat_round_min), 0, 0 );
+            (STATE(roundingMode) == softfloat_round_min), 0, 0 );
  uiZ:
     zWPtr[indexWordHi( 4 )] = uiZ96;
     zWPtr[indexWord( 4, 2 )] = 0;

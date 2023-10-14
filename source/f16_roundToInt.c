@@ -41,7 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-float16_t f16_roundToInt( float16_t a, uint_fast8_t roundingMode, bool exact )
+float16_t f16_roundToInt( float16_t a, uint_fast8_t roundingMode, bool exact
+                          STATE_PARAM )
 {
     union ui16_f16 uA;
     uint_fast16_t uiA;
@@ -58,7 +59,7 @@ float16_t f16_roundToInt( float16_t a, uint_fast8_t roundingMode, bool exact )
     *------------------------------------------------------------------------*/
     if ( exp <= 0xE ) {
         if ( !(uint16_t) (uiA<<1) ) return a;
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
         uiZ = uiA & packToF16UI( 1, 0, 0 );
         switch ( roundingMode ) {
          case softfloat_round_near_even:
@@ -84,7 +85,7 @@ float16_t f16_roundToInt( float16_t a, uint_fast8_t roundingMode, bool exact )
     *------------------------------------------------------------------------*/
     if ( 0x19 <= exp ) {
         if ( (exp == 0x1F) && fracF16UI( uiA ) ) {
-            uiZ = softfloat_propagateNaNF16UI( uiA, 0 );
+            uiZ = softfloat_propagateNaNF16UI( uiA, 0 STATE_VAR );
             goto uiZ;
         }
         return a;
@@ -110,7 +111,7 @@ float16_t f16_roundToInt( float16_t a, uint_fast8_t roundingMode, bool exact )
 #ifdef SOFTFLOAT_ROUND_ODD
         if ( roundingMode == softfloat_round_odd ) uiZ |= lastBitMask;
 #endif
-        if ( exact ) softfloat_exceptionFlags |= softfloat_flag_inexact;
+        if ( exact ) softfloat_raiseFlags( softfloat_flag_inexact STATE_VAR );
     }
  uiZ:
     uZ.ui = uiZ;
