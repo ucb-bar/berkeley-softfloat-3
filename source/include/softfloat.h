@@ -81,13 +81,13 @@ enum {
 | Software floating-point exception flags.
 *----------------------------------------------------------------------------*/
 extern THREAD_LOCAL uint_fast8_t softfloat_exceptionFlags;
-enum {
+typedef enum {
     softfloat_flag_inexact   =  1,
     softfloat_flag_underflow =  2,
     softfloat_flag_overflow  =  4,
     softfloat_flag_infinite  =  8,
     softfloat_flag_invalid   = 16
-};
+} exceptionFlag_t;
 
 /*----------------------------------------------------------------------------
 | Routine to raise any or all of the software floating-point exception flags.
