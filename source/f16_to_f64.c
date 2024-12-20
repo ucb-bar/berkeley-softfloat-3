@@ -48,7 +48,7 @@ float64_t f16_to_f64( float16_t a )
     bool sign;
     int_fast8_t exp;
     uint_fast16_t frac;
-    struct commonNaN commonNaN;
+    //struct commonNaN commonNaN;
     uint_fast64_t uiZ;
     struct exp8_sig16 normExpSig;
     union ui64_f64 uZ;

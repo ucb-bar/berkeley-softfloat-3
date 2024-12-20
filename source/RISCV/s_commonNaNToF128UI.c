@@ -46,6 +46,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *----------------------------------------------------------------------------*/
 struct uint128 softfloat_commonNaNToF128UI( const struct commonNaN *aPtr )
 {
+    (void)aPtr;
     struct uint128 uiZ;
 
     uiZ.v64 = defaultNaNF128UI64;

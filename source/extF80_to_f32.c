@@ -49,7 +49,7 @@ float32_t extF80_to_f32( extFloat80_t a )
     bool sign;
     int_fast32_t exp;
     uint_fast64_t sig;
-    struct commonNaN commonNaN;
+    //struct commonNaN commonNaN;
     uint_fast32_t uiZ, sig32;
     union ui32_f32 uZ;
 

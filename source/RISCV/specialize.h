@@ -245,6 +245,7 @@ uint_fast64_t
 INLINE
 struct uint128 softfloat_commonNaNToExtF80UI( const struct commonNaN *aPtr )
 {
+    (void)aPtr;
     struct uint128 uiZ;
     uiZ.v64 = defaultNaNExtF80UI64;
     uiZ.v0  = defaultNaNExtF80UI0;
@@ -302,6 +303,7 @@ struct uint128
 INLINE
 struct uint128 softfloat_commonNaNToF128UI( const struct commonNaN *aPtr )
 {
+    (void)aPtr;
     struct uint128 uiZ;
     uiZ.v64 = defaultNaNF128UI64;
     uiZ.v0  = defaultNaNF128UI0;

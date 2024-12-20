@@ -51,7 +51,7 @@ bfloat16_t f32_to_bf16( float32_t a )
     bool sign;
     int_fast16_t exp;
     uint_fast32_t frac;
-    struct commonNaN commonNaN;
+    //struct commonNaN commonNaN;
     uint_fast16_t uiZ, frac16;
     union ui16_bf16 uZ;
 
