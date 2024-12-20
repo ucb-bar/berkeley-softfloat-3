@@ -41,6 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
+//extern "C" float32_t f32_sqrt(float32_t);
+
 float32_t f32_sqrt( float32_t a )
 {
     union ui32_f32 uA;
