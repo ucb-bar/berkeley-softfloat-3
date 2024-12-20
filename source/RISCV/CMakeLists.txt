@@ -1,6 +1,7 @@
 project(SoftFloat C)
 
 add_library(softfloat-riscv
+  OBJECT
   softfloat_raiseFlags.c
   s_f16UIToCommonNaN.c
   s_commonNaNToF16UI.c

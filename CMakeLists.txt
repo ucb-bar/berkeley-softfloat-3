@@ -18,8 +18,8 @@ set(CMAKE_C_FLAGS "-c -Werror-implicit-function-declaration -DSOFTFLOAT_FAST_INT
 add_subdirectory(${SOURCE_DIR})
 add_subdirectory(${SOURCE_DIR}/${SPECIALIZE_TYPE})
 
-add_library(softfloat INTERFACE)
-target_link_libraries(softfloat INTERFACE
+add_library(softfloat)
+target_link_libraries(softfloat
     softfloat-prim
     softfloat-src
     softfloat-riscv

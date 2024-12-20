@@ -1,6 +1,7 @@
 project(SoftFloat C)
 
 add_library(softfloat-prim
+  OBJECT
   s_eq128.c
   s_le128.c
   s_lt128.c
@@ -35,6 +36,7 @@ add_library(softfloat-prim
 )
 
 add_library(softfloat-src
+  OBJECT
   s_roundToUI32.c
   s_roundToUI64.c
   s_roundToI32.c
