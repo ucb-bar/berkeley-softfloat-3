@@ -38,6 +38,7 @@ SOURCE_DIR ?= ../../source
 SPECIALIZE_TYPE ?= RISCV
 MARCH ?= rv64gcv_zfh_zfhmin
 MABI ?= lp64d
+CC ?= riscv64-unknown-linux-gnu-gcc
 
 SOFTFLOAT_OPTS ?= \
   -DSOFTFLOAT_ROUND_ODD -DINLINE_LEVEL=5 -DSOFTFLOAT_FAST_DIV32TO16 \
@@ -46,7 +47,7 @@ SOFTFLOAT_OPTS ?= \
 DELETE = rm -f
 C_INCLUDES = -I. -I$(SOURCE_DIR)/$(SPECIALIZE_TYPE) -I$(SOURCE_DIR)/include
 COMPILE_C = \
-  riscv64-unknown-linux-gnu-gcc -c -march=$(MARCH) -mabi=$(MABI) -Werror-implicit-function-declaration -DSOFTFLOAT_FAST_INT64 \
+  $(CC) -c -march=$(MARCH) -mabi=$(MABI) -Werror-implicit-function-declaration -DSOFTFLOAT_FAST_INT64 \
     $(SOFTFLOAT_OPTS) $(C_INCLUDES) -O2 -o $@
 MAKELIB = ar crs $@
 
