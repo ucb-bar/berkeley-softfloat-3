@@ -1,0 +1,38 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "metadata": {
+    "authors": [
+      {
+        "name": "@VCS_SBOM_AUTHORS@"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:github/ucb-bar/berkeley-softfloat-3@@VCS_TAG@",
+      "cpe": "cpe:2.3:a:ucb-bar:berkeley-softfloat-3:@VCS_TAG@:*:*:*:*:*:*:*",
+      "name": "berkeley-softfloat-3",
+      "version": "@VCS_VERSION@",
+      "description": "Software implementation of floating-point that conforms to the IEEE Standard",
+      "supplier": {
+        "name": "Berkeley SoftFloat developers"
+      },
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/ucb-bar/berkeley-softfloat-3"
+        }
+      ]
+    }
+  ]
+}
