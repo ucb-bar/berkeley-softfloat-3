@@ -107,7 +107,7 @@ float16_t
 #define fracBF16UI( a ) ((a) & 0x07F)
 #define packToBF16UI( sign, exp, sig ) (((uint16_t) (sign)<<15) + ((uint16_t) (exp)<<7) + (sig))
 
-#define isNaNBF16UI( a ) (((~(a) & 0x7FC0) == 0) && ((a) & 0x07F))
+#define isNaNBF16UI( a ) (((~(a) & 0x7F80) == 0) && ((a) & 0x007F))
 
 bfloat16_t softfloat_roundPackToBF16( bool, int_fast16_t, uint_fast16_t );
 struct exp8_sig16 softfloat_normSubnormalBF16Sig( uint_fast16_t );
