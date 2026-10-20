@@ -1,0 +1,47 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Test SoftFloat (Ubuntu)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo xargs apt-get install -y < .github/workflows/apt-packages.txt
+
+      - name: Build SoftFloat
+        run: |
+          cd build/Linux-x86_64-GCC
+          make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)"
+
+      - name: Build TestFloat
+        run: |
+          ln -s . berkeley-softfloat-3
+          git clone https://github.com/ucb-bar/berkeley-testfloat-3.git
+          cd berkeley-testfloat-3
+          git checkout a9c849f1b0eb0264b626d9686ffae167d996e3be
+          cd build/Linux-x86_64-GCC
+          make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)"
+
+      - name: Test SoftFloat
+        run: |
+          cd berkeley-testfloat-3/build/Linux-x86_64-GCC
+          set -x
+          ./testsoftfloat -all1 -level 2 2> /dev/null
+          ./testsoftfloat -all2          2> /dev/null
+          ./testsoftfloat f16_mulAdd     2> /dev/null
+          ./testsoftfloat f32_mulAdd     2> /dev/null
+          ./testsoftfloat f64_mulAdd     2> /dev/null
+          ./testsoftfloat f128_mulAdd    2> /dev/null
