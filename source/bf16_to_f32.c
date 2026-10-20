@@ -50,7 +50,6 @@ float32_t bf16_to_f32( bfloat16_t a )
     uint_fast16_t frac;
     struct commonNaN commonNaN;
     uint_fast32_t uiZ;
-    struct exp8_sig16 normExpSig;
     union ui32_f32 uZ;
 
     /*------------------------------------------------------------------------
