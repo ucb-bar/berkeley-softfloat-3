@@ -61,6 +61,7 @@ float64_t extF80_to_f64( extFloat80_t a )
     sign = signExtF80UI64( uiA64 );
     exp  = expExtF80UI64( uiA64 );
     sig  = uiA0;
+    softfloat_canonicalizeExtF80( &exp, &sig );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( ! (exp | sig) ) {

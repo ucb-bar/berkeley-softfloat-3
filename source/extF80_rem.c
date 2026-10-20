@@ -97,6 +97,7 @@ extFloat80_t extF80_rem( extFloat80_t a, extFloat80_t b )
         | that `expDiff' later is less than -1, which will result in returning
         | a canonicalized version of argument a.
         *--------------------------------------------------------------------*/
+        sigB = UINT64_C( 0x8000000000000000 );
         expB += expB;
     }
     /*------------------------------------------------------------------------

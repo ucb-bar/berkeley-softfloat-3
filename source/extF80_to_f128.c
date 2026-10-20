@@ -46,8 +46,8 @@ float128_t extF80_to_f128( extFloat80_t a )
     union { struct extFloat80M s; extFloat80_t f; } uA;
     uint_fast16_t uiA64;
     uint_fast64_t uiA0;
-    uint_fast16_t exp;
-    uint_fast64_t frac;
+    int_fast32_t exp;
+    uint_fast64_t sig, frac;
     struct commonNaN commonNaN;
     struct uint128 uiZ;
     bool sign;
@@ -58,7 +58,9 @@ float128_t extF80_to_f128( extFloat80_t a )
     uiA64 = uA.s.signExp;
     uiA0  = uA.s.signif;
     exp = expExtF80UI64( uiA64 );
-    frac = uiA0 & UINT64_C( 0x7FFFFFFFFFFFFFFF );
+    sig = uiA0;
+    softfloat_canonicalizeExtF80( &exp, &sig );
+    frac = sig & UINT64_C( 0x7FFFFFFFFFFFFFFF );
     if ( (exp == 0x7FFF) && frac ) {
         softfloat_extF80UIToCommonNaN( uiA64, uiA0, &commonNaN );
         uiZ = softfloat_commonNaNToF128UI( &commonNaN );

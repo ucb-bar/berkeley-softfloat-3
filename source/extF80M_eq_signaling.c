@@ -69,6 +69,8 @@ bool extF80M_eq_signaling( const extFloat80_t *aPtr, const extFloat80_t *bPtr )
     uiA0  = aSPtr->signif;
     uiB64 = bSPtr->signExp;
     uiB0  = bSPtr->signif;
+    softfloat_canonicalizeExtF80MUI( &uiA64, &uiA0 );
+    softfloat_canonicalizeExtF80MUI( &uiB64, &uiB0 );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( isNaNExtF80UI( uiA64, uiA0 ) || isNaNExtF80UI( uiB64, uiB0 ) ) {

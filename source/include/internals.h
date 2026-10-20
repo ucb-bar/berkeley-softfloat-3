@@ -162,13 +162,22 @@ float64_t
 
 #define isNaNExtF80UI( a64, a0 ) ((((a64) & 0x7FFF) == 0x7FFF) && ((a0) & UINT64_C( 0x7FFFFFFFFFFFFFFF )))
 
+struct exp32_sig64 { int_fast32_t exp; uint64_t sig; };
+struct exp32_sig64 softfloat_normSubnormalExtF80Sig( uint_fast64_t );
+
+void
+ softfloat_canonicalizeExtF80( int_fast32_t *, uint_fast64_t * );
+void
+ softfloat_canonicalizeExtF80UI( uint_fast16_t *, uint_fast64_t * );
+void
+ softfloat_canonicalizeExtF80M( int32_t *, uint64_t * );
+void
+ softfloat_canonicalizeExtF80MUI( uint_fast16_t *, uint64_t * );
+
 #ifdef SOFTFLOAT_FAST_INT64
 
 /*----------------------------------------------------------------------------
 *----------------------------------------------------------------------------*/
-
-struct exp32_sig64 { int_fast32_t exp; uint64_t sig; };
-struct exp32_sig64 softfloat_normSubnormalExtF80Sig( uint_fast64_t );
 
 extFloat80_t
  softfloat_roundPackToExtF80(

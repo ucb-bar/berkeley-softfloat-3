@@ -69,6 +69,8 @@ extFloat80_t
     sigA = uiA0;
     expB = expExtF80UI64( uiB64 );
     sigB = uiB0;
+    softfloat_canonicalizeExtF80( &expA, &sigA );
+    softfloat_canonicalizeExtF80( &expB, &sigB );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     expDiff = expA - expB;
@@ -78,12 +80,21 @@ extFloat80_t
                 goto propagateNaN;
             }
             uiZ64 = uiA64;
-            uiZ0  = uiA0;
+            uiZ0  = UINT64_C( 0x8000000000000000 );
             goto uiZ;
         }
         sigZ = sigA + sigB;
         sigZExtra = 0;
         if ( ! expA ) {
+            if ( sigZ < sigA ) {
+                /*------------------------------------------------------------
+                | Significand addition carried (e.g., two pseudo-denormals
+                | with J=1).  Treat as effective exp=1 and fall through to
+                | `shiftRight1', which captures the carry.
+                *------------------------------------------------------------*/
+                expZ = 1;
+                goto shiftRight1;
+            }
             normExpSig = softfloat_normSubnormalExtF80Sig( sigZ );
             expZ = normExpSig.exp + 1;
             sigZ = normExpSig.sig;
@@ -98,7 +109,7 @@ extFloat80_t
         if ( expB == 0x7FFF ) {
             if ( sigB & UINT64_C( 0x7FFFFFFFFFFFFFFF ) ) goto propagateNaN;
             uiZ64 = packToExtF80UI64( signZ, 0x7FFF );
-            uiZ0  = uiB0;
+            uiZ0  = UINT64_C( 0x8000000000000000 );
             goto uiZ;
         }
         expZ = expB;
@@ -114,7 +125,7 @@ extFloat80_t
         if ( expA == 0x7FFF ) {
             if ( sigA & UINT64_C( 0x7FFFFFFFFFFFFFFF ) ) goto propagateNaN;
             uiZ64 = uiA64;
-            uiZ0  = uiA0;
+            uiZ0  = UINT64_C( 0x8000000000000000 );
             goto uiZ;
         }
         expZ = expA;
@@ -129,6 +140,7 @@ extFloat80_t
     }
  newlyAligned:
     sigZ = sigA + sigB;
+    if ( sigZ < sigA ) goto shiftRight1;
     if ( sigZ & UINT64_C( 0x8000000000000000 ) ) goto roundAndPack;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

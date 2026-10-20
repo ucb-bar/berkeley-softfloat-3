@@ -66,6 +66,8 @@ bool extF80_le_quiet( extFloat80_t a, extFloat80_t b )
         }
         return false;
     }
+    softfloat_canonicalizeExtF80UI( &uiA64, &uiA0 );
+    softfloat_canonicalizeExtF80UI( &uiB64, &uiB0 );
     signA = signExtF80UI64( uiA64 );
     signB = signExtF80UI64( uiB64 );
     return
