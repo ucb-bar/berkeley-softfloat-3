@@ -172,8 +172,20 @@ bool f16_isSignalingNaN( float16_t );
 /*----------------------------------------------------------------------------
 | 16-bit (brain float 16) floating-point operations.
 *----------------------------------------------------------------------------*/
+uint_fast32_t bf16_to_ui32( bfloat16_t, uint_fast8_t, bool );
+int_fast32_t bf16_to_i32( bfloat16_t, uint_fast8_t, bool );
 float32_t bf16_to_f32( bfloat16_t );
+float64_t bf16_to_f64( bfloat16_t );
 bfloat16_t f32_to_bf16( float32_t );
+bfloat16_t bf16_add( bfloat16_t, bfloat16_t );
+bfloat16_t bf16_sub( bfloat16_t, bfloat16_t );
+bfloat16_t bf16_mul( bfloat16_t, bfloat16_t );
+bfloat16_t bf16_mulAdd( bfloat16_t, bfloat16_t, bfloat16_t );
+bfloat16_t bf16_div( bfloat16_t, bfloat16_t );
+bfloat16_t bf16_sqrt( bfloat16_t );
+bool bf16_eq( bfloat16_t, bfloat16_t );
+bool bf16_le( bfloat16_t, bfloat16_t );
+bool bf16_lt( bfloat16_t, bfloat16_t );
 bool bf16_isSignalingNaN( bfloat16_t );
 
 /*----------------------------------------------------------------------------
