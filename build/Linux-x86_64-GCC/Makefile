@@ -237,6 +237,7 @@ OBJS_OTHERS = \
   f32_le_quiet$(OBJ) \
   f32_lt_quiet$(OBJ) \
   f32_isSignalingNaN$(OBJ) \
+  f64_to_bf16$(OBJ) \
   f64_to_ui32$(OBJ) \
   f64_to_ui64$(OBJ) \
   f64_to_i32$(OBJ) \
