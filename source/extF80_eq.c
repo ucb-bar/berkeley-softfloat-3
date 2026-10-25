@@ -65,6 +65,8 @@ bool extF80_eq( extFloat80_t a, extFloat80_t b )
         }
         return false;
     }
+    softfloat_canonicalizeExtF80UI( &uiA64, &uiA0 );
+    softfloat_canonicalizeExtF80UI( &uiB64, &uiB0 );
     return
            (uiA0 == uiB0)
         && ((uiA64 == uiB64) || (! uiA0 && ! ((uiA64 | uiB64) & 0x7FFF)));

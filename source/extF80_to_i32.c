@@ -58,6 +58,7 @@ int_fast32_t
     sign = signExtF80UI64( uiA64 );
     exp  = expExtF80UI64( uiA64 );
     sig = uA.s.signif;
+    softfloat_canonicalizeExtF80( &exp, &sig );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
 #if (i32_fromNaN != i32_fromPosOverflow) || (i32_fromNaN != i32_fromNegOverflow)
