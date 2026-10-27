@@ -177,6 +177,7 @@ int_fast32_t bf16_to_i32( bfloat16_t, uint_fast8_t, bool );
 float32_t bf16_to_f32( bfloat16_t );
 float64_t bf16_to_f64( bfloat16_t );
 bfloat16_t f32_to_bf16( float32_t );
+bfloat16_t f64_to_bf16( float64_t );
 bfloat16_t bf16_add( bfloat16_t, bfloat16_t );
 bfloat16_t bf16_sub( bfloat16_t, bfloat16_t );
 bfloat16_t bf16_mul( bfloat16_t, bfloat16_t );
