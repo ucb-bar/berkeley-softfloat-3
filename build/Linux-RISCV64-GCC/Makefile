@@ -181,6 +181,18 @@ OBJS_OTHERS = \
   i64_to_f128M$(OBJ) \
   bf16_isSignalingNaN$(OBJ) \
   bf16_to_f32$(OBJ) \
+  bf16_to_f64$(OBJ) \
+  bf16_to_i32$(OBJ) \
+  bf16_to_ui32$(OBJ) \
+  bf16_add$(OBJ) \
+  bf16_sub$(OBJ) \
+  bf16_mul$(OBJ) \
+  bf16_mulAdd$(OBJ) \
+  bf16_div$(OBJ) \
+  bf16_sqrt$(OBJ) \
+  bf16_eq$(OBJ) \
+  bf16_le$(OBJ) \
+  bf16_lt$(OBJ) \
   f16_to_ui32$(OBJ) \
   f16_to_ui64$(OBJ) \
   f16_to_i32$(OBJ) \
