@@ -148,6 +148,7 @@ OBJS_OTHERS = \
   s_mulAddF128$(OBJ) \
   softfloat_state$(OBJ) \
   ui32_to_f16$(OBJ) \
+  ui32_to_bf16$(OBJ) \
   ui32_to_f32$(OBJ) \
   ui32_to_f64$(OBJ) \
   ui32_to_extF80$(OBJ) \
@@ -162,6 +163,7 @@ OBJS_OTHERS = \
   ui64_to_f128$(OBJ) \
   ui64_to_f128M$(OBJ) \
   i32_to_f16$(OBJ) \
+  i32_to_bf16$(OBJ) \
   i32_to_f32$(OBJ) \
   i32_to_f64$(OBJ) \
   i32_to_extF80$(OBJ) \

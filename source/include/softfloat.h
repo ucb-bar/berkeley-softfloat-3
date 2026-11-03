@@ -98,6 +98,7 @@ void softfloat_raiseFlags( uint_fast8_t );
 | Integer-to-floating-point conversion routines.
 *----------------------------------------------------------------------------*/
 float16_t ui32_to_f16( uint32_t );
+bfloat16_t ui32_to_bf16( uint32_t );
 float32_t ui32_to_f32( uint32_t );
 float64_t ui32_to_f64( uint32_t );
 #ifdef SOFTFLOAT_FAST_INT64
@@ -116,6 +117,7 @@ float128_t ui64_to_f128( uint64_t );
 void ui64_to_extF80M( uint64_t, extFloat80_t * );
 void ui64_to_f128M( uint64_t, float128_t * );
 float16_t i32_to_f16( int32_t );
+bfloat16_t i32_to_bf16( int32_t );
 float32_t i32_to_f32( int32_t );
 float64_t i32_to_f64( int32_t );
 #ifdef SOFTFLOAT_FAST_INT64
