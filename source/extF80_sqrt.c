@@ -78,7 +78,11 @@ extFloat80_t extF80_sqrt( extFloat80_t a )
             uiZ0  = uiZ.v0;
             goto uiZ;
         }
-        if ( ! signA ) return a;
+        if ( ! signA ) {
+            uiZ64 = packToExtF80UI64( 0, 0x7FFF );
+            uiZ0  = UINT64_C( 0x8000000000000000 );
+            goto uiZ;
+        }
         goto invalid;
     }
     /*------------------------------------------------------------------------

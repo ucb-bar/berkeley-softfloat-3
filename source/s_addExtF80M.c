@@ -53,10 +53,11 @@ void
     int32_t expA;
     uint32_t uiB64;
     int32_t expB;
+    uint64_t sigA, sigB;
     uint32_t uiZ64;
     bool signZ, signB;
     const struct extFloat80M *tempSPtr;
-    uint64_t sigZ, sigB;
+    uint64_t sigZ;
     void
      (*roundPackRoutinePtr)(
          bool, int32_t, uint32_t *, uint_fast8_t, struct extFloat80M * );
@@ -69,6 +70,12 @@ void
     expA = expExtF80UI64( uiA64 );
     uiB64 = bSPtr->signExp;
     expB = expExtF80UI64( uiB64 );
+    sigA = aSPtr->signif;
+    sigB = bSPtr->signif;
+    softfloat_canonicalizeExtF80M( &expA, &sigA );
+    softfloat_canonicalizeExtF80M( &expB, &sigB );
+    uiA64 = packToExtF80UI64( signExtF80UI64( uiA64 ), expA );
+    uiB64 = packToExtF80UI64( signExtF80UI64( uiB64 ), expB );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( (expA == 0x7FFF) || (expB == 0x7FFF) ) {
@@ -91,19 +98,21 @@ void
     signB = signExtF80UI64( uiB64 ) ^ negateB;
     negateB = (signZ != signB);
     if ( expA < expB ) {
+        int32_t tmpExp;
+        uint64_t tmpSig;
         signZ = signB;
+        tmpExp = expA;
         expA = expB;
-        expB = expExtF80UI64( uiA64 );
-        tempSPtr = aSPtr;
-        aSPtr = bSPtr;
-        bSPtr = tempSPtr;
+        expB = tmpExp;
+        tmpSig = sigA;
+        sigA = sigB;
+        sigB = tmpSig;
     }
     if ( ! expB ) {
         expB = 1;
         if ( ! expA ) expA = 1;
     }
-    sigZ = aSPtr->signif;
-    sigB = bSPtr->signif;
+    sigZ = sigA;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     roundPackRoutinePtr = softfloat_roundPackMToExtF80M;

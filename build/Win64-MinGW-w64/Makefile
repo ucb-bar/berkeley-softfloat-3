@@ -133,6 +133,8 @@ OBJS_OTHERS = \
   s_subMagsF64$(OBJ) \
   s_mulAddF64$(OBJ) \
   s_normSubnormalExtF80Sig$(OBJ) \
+  s_canonicalizeExtF80$(OBJ) \
+  s_canonicalizeExtF80UI$(OBJ) \
   s_roundPackToExtF80$(OBJ) \
   s_normRoundPackToExtF80$(OBJ) \
   s_addMagsExtF80$(OBJ) \

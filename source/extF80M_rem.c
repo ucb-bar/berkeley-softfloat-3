@@ -79,6 +79,10 @@ void
     uiA64 = aSPtr->signExp;
     expA = expExtF80UI64( uiA64 );
     expB = expExtF80UI64( bSPtr->signExp );
+    sigA = aSPtr->signif;
+    x64 = bSPtr->signif;
+    softfloat_canonicalizeExtF80M( &expA, &sigA );
+    softfloat_canonicalizeExtF80M( &expB, &x64 );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( (expA == 0x7FFF) || (expB == 0x7FFF) ) {
@@ -95,14 +99,12 @@ void
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( ! expB ) expB = 1;
-    x64 = bSPtr->signif;
     if ( ! (x64 & UINT64_C( 0x8000000000000000 )) ) {
         if ( ! x64 ) goto invalid;
         expB += softfloat_normExtF80SigM( &x64 );
     }
     signRem = signExtF80UI64( uiA64 );
     if ( ! expA ) expA = 1;
-    sigA = aSPtr->signif;
     if ( ! (sigA & UINT64_C( 0x8000000000000000 )) ) {
         if ( ! sigA ) {
             expA = 0;

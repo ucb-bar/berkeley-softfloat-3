@@ -61,6 +61,8 @@ bool extF80_lt( extFloat80_t a, extFloat80_t b )
         softfloat_raiseFlags( softfloat_flag_invalid );
         return false;
     }
+    softfloat_canonicalizeExtF80UI( &uiA64, &uiA0 );
+    softfloat_canonicalizeExtF80UI( &uiB64, &uiB0 );
     signA = signExtF80UI64( uiA64 );
     signB = signExtF80UI64( uiB64 );
     return

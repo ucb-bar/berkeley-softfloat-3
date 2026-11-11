@@ -73,6 +73,7 @@ uint_fast64_t
     sign = signExtF80UI64( uiA64 );
     exp  = expExtF80UI64( uiA64 );
     sig = aSPtr->signif;
+    softfloat_canonicalizeExtF80M( &exp, &sig );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     shiftDist = 0x403E - exp;

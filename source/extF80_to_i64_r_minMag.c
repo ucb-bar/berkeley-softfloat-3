@@ -57,6 +57,7 @@ int_fast64_t extF80_to_i64_r_minMag( extFloat80_t a, bool exact )
     uiA64 = uA.s.signExp;
     exp = expExtF80UI64( uiA64 );
     sig = uA.s.signif;
+    softfloat_canonicalizeExtF80( &exp, &sig );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     shiftDist = 0x403E - exp;

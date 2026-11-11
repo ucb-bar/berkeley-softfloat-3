@@ -56,7 +56,6 @@ extFloat80_t extF80_mul( extFloat80_t a, extFloat80_t b )
     int_fast32_t expB;
     uint_fast64_t sigB;
     bool signZ;
-    uint_fast64_t magBits;
     struct exp32_sig64 normExpSig;
     int_fast32_t expZ;
     struct uint128 sig128Z, uiZ;
@@ -88,13 +87,13 @@ extFloat80_t extF80_mul( extFloat80_t a, extFloat80_t b )
         ) {
             goto propagateNaN;
         }
-        magBits = expB | sigB;
-        goto infArg;
+        if ( (expB != 0x7FFF) && ! sigB ) goto invalid;
+        goto infinity;
     }
     if ( expB == 0x7FFF ) {
         if ( sigB & UINT64_C( 0x7FFFFFFFFFFFFFFF ) ) goto propagateNaN;
-        magBits = expA | sigA;
-        goto infArg;
+        if ( ! sigA ) goto invalid;
+        goto infinity;
     }
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -134,15 +133,16 @@ extFloat80_t extF80_mul( extFloat80_t a, extFloat80_t b )
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
- infArg:
-    if ( ! magBits ) {
-        softfloat_raiseFlags( softfloat_flag_invalid );
-        uiZ64 = defaultNaNExtF80UI64;
-        uiZ0  = defaultNaNExtF80UI0;
-    } else {
-        uiZ64 = packToExtF80UI64( signZ, 0x7FFF );
-        uiZ0  = UINT64_C( 0x8000000000000000 );
-    }
+ invalid:
+    softfloat_raiseFlags( softfloat_flag_invalid );
+    uiZ64 = defaultNaNExtF80UI64;
+    uiZ0  = defaultNaNExtF80UI0;
+    goto uiZ;
+    /*------------------------------------------------------------------------
+    *------------------------------------------------------------------------*/
+ infinity:
+    uiZ64 = packToExtF80UI64( signZ, 0x7FFF );
+    uiZ0  = UINT64_C( 0x8000000000000000 );
     goto uiZ;
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

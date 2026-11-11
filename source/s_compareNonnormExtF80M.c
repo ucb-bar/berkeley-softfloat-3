@@ -56,16 +56,16 @@ int
     sigA = aSPtr->signif;
     signB = signExtF80UI64( uiB64 );
     sigB = bSPtr->signif;
+    expA = expExtF80UI64( uiA64 );
+    expB = expExtF80UI64( uiB64 );
+    softfloat_canonicalizeExtF80M( &expA, &sigA );
+    softfloat_canonicalizeExtF80M( &expB, &sigB );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     if ( (uiA64 ^ uiB64) & 0x8000 ) {
         if ( ! (sigA | sigB) ) return 0;
         goto resultFromSignB;
     }
-    /*------------------------------------------------------------------------
-    *------------------------------------------------------------------------*/
-    expA = expExtF80UI64( uiA64 );
-    expB = expExtF80UI64( uiB64 );
     if ( expA == 0x7FFF ) {
         if (expB == 0x7FFF) return 0;
         signB = ! signB;

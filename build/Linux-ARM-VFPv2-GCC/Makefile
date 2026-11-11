@@ -131,6 +131,9 @@ OBJS_OTHERS = \
   s_tryPropagateNaNExtF80M$(OBJ) \
   s_invalidExtF80M$(OBJ) \
   s_normExtF80SigM$(OBJ) \
+  s_normSubnormalExtF80Sig$(OBJ) \
+  s_canonicalizeExtF80M$(OBJ) \
+  s_canonicalizeExtF80MUI$(OBJ) \
   s_roundPackMToExtF80M$(OBJ) \
   s_normRoundPackMToExtF80M$(OBJ) \
   s_addExtF80M$(OBJ) \

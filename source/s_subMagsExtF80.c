@@ -68,6 +68,8 @@ extFloat80_t
     sigA = uiA0;
     expB = expExtF80UI64( uiB64 );
     sigB = uiB0;
+    softfloat_canonicalizeExtF80( &expA, &sigA );
+    softfloat_canonicalizeExtF80( &expB, &sigB );
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     expDiff = expA - expB;
@@ -112,6 +114,12 @@ extFloat80_t
     sigExtra = sig128.v0;
  newlyAlignedBBigger:
     expZ = expB;
+    if ( sigA < sigB ) goto bBigger;
+    if ( sigB < sigA ) goto aBigger;
+    uiZ64 =
+        packToExtF80UI64( (softfloat_roundingMode == softfloat_round_min), 0 );
+    uiZ0 = 0;
+    goto uiZ;
  bBigger:
     signZ = ! signZ;
     sig128 = softfloat_sub128( sigB, 0, sigA, sigExtra );
@@ -122,7 +130,7 @@ extFloat80_t
     if ( expA == 0x7FFF ) {
         if ( sigA & UINT64_C( 0x7FFFFFFFFFFFFFFF ) ) goto propagateNaN;
         uiZ64 = uiA64;
-        uiZ0  = uiA0;
+        uiZ0  = UINT64_C( 0x8000000000000000 );
         goto uiZ;
     }
     if ( ! expB ) {
@@ -135,6 +143,12 @@ extFloat80_t
     sigExtra = sig128.v0;
  newlyAlignedABigger:
     expZ = expA;
+    if ( sigB < sigA ) goto aBigger;
+    if ( sigA < sigB ) goto bBigger;
+    uiZ64 =
+        packToExtF80UI64( (softfloat_roundingMode == softfloat_round_min), 0 );
+    uiZ0 = 0;
+    goto uiZ;
  aBigger:
     sig128 = softfloat_sub128( sigA, 0, sigB, sigExtra );
     /*------------------------------------------------------------------------
