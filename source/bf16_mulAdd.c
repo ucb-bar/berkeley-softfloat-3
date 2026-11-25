@@ -49,10 +49,10 @@ bfloat16_t bf16_mulAdd( bfloat16_t a, bfloat16_t b, bfloat16_t c )
 
     uint_fast8_t roundingMode = softfloat_roundingMode;
 
-    /* Add rounding to odd to prevent double rounding, unless the product
-     * is zero, in which case we know the sum will be exact, and we need
-     * rounding-mode-specific minus-zero handling. */
-    if ( (prod.v << 1) != 0 )
+    /* Add rounding to odd to prevent double rounding, unless the sum
+     * exactly cancels, in which case the sign depends on the original
+     * rounding mode. */
+    if ( ( prod.v ^ f64C.v ) != packToF64UI( 1, 0, 0 ) )
         softfloat_roundingMode = softfloat_round_odd;
 
     float64_t sum = f64_add( prod, f64C );
