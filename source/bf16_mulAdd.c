@@ -59,6 +59,13 @@ bfloat16_t bf16_mulAdd( bfloat16_t a, bfloat16_t b, bfloat16_t c )
 
     softfloat_roundingMode = roundingMode;
 
+    /* An exact cancellation gives -0 under round-toward-negative and +0
+     * otherwise.  Round-to-odd always gives +0, so fix up the sign here.
+     * Round-to-odd never rounds a nonzero sum to zero, so a zero sum from a
+     * nonzero product is always an exact cancellation. */
+    if ( (prod.v << 1) != 0 && (sum.v << 1) == 0 )
+        sum.v = packToF64UI( roundingMode == softfloat_round_min, 0, 0 );
+
     return f64_to_bf16( sum );
 }
 
